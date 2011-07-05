@@ -5585,6 +5585,7 @@ static int nl80211_set_rekey_data(struct sk_buff *skb, struct genl_info *info)
 	return err;
 }
 
+<<<<<<< HEAD
 static int nl80211_register_unexpected_frame(struct sk_buff *skb,
 					     struct genl_info *info)
 {
@@ -5670,6 +5671,8 @@ static int nl80211_register_beacons(struct sk_buff *skb, struct genl_info *info)
 	return 0;
 }
 
+=======
+>>>>>>> dce9936... cfg80211/nl80211: support GTK rekey offload
 #define NL80211_FLAG_NEED_WIPHY		0x01
 #define NL80211_FLAG_NEED_NETDEV	0x02
 #define NL80211_FLAG_NEED_RTNL		0x04
@@ -6208,6 +6211,7 @@ static struct genl_ops nl80211_ops[] = {
 		.internal_flags = NL80211_FLAG_NEED_NETDEV_UP |
 				  NL80211_FLAG_NEED_RTNL,
 	},
+<<<<<<< HEAD
 	{
 		.cmd = NL80211_CMD_TDLS_MGMT,
 		.doit = nl80211_tdls_mgmt,
@@ -6248,6 +6252,8 @@ static struct genl_ops nl80211_ops[] = {
 		.internal_flags = NL80211_FLAG_NEED_WIPHY |
 				  NL80211_FLAG_NEED_RTNL,
 	},
+=======
+>>>>>>> dce9936... cfg80211/nl80211: support GTK rekey offload
 };
 
 static struct genl_multicast_group nl80211_mlme_mcgrp = {
@@ -7278,6 +7284,7 @@ void nl80211_gtk_rekey_notify(struct cfg80211_registered_device *rdev,
 	nlmsg_free(msg);
 }
 
+<<<<<<< HEAD
 void nl80211_pmksa_candidate_notify(struct cfg80211_registered_device *rdev,
 				    struct net_device *netdev, int index,
 				    const u8 *bssid, bool preauth, gfp_t gfp)
@@ -7324,6 +7331,8 @@ void nl80211_pmksa_candidate_notify(struct cfg80211_registered_device *rdev,
 	nlmsg_free(msg);
 }
 
+=======
+>>>>>>> dce9936... cfg80211/nl80211: support GTK rekey offload
 void
 nl80211_send_cqm_pktloss_notify(struct cfg80211_registered_device *rdev,
 				struct net_device *netdev, const u8 *peer,

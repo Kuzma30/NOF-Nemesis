@@ -1096,6 +1096,7 @@ void cfg80211_gtk_rekey_notify(struct net_device *dev, const u8 *bssid,
 	nl80211_gtk_rekey_notify(rdev, dev, bssid, replay_ctr, gfp);
 }
 EXPORT_SYMBOL(cfg80211_gtk_rekey_notify);
+<<<<<<< HEAD
 
 void cfg80211_pmksa_candidate_notify(struct net_device *dev, int index,
 				     const u8 *bssid, bool preauth, gfp_t gfp)
@@ -1120,3 +1121,5 @@ bool cfg80211_rx_spurious_frame(struct net_device *dev,
 	return nl80211_unexpected_frame(dev, addr, gfp);
 }
 EXPORT_SYMBOL(cfg80211_rx_spurious_frame);
+=======
+>>>>>>> dce9936... cfg80211/nl80211: support GTK rekey offload

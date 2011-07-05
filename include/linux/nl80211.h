@@ -491,6 +491,7 @@
  *	this command may also be sent by the driver as an MLME event to
  *	inform userspace of the new replay counter.
  *
+<<<<<<< HEAD
  * @NL80211_CMD_PMKSA_CANDIDATE: This is used as an event to inform userspace
  *	of PMKSA caching dandidates.
  *
@@ -520,6 +521,8 @@
  *	OLBC handling in hostapd. Beacons are reported in %NL80211_CMD_FRAME
  *	messages. Note that per PHY only one application may register.
  *
+=======
+>>>>>>> dce9936... cfg80211/nl80211: support GTK rekey offload
  * @NL80211_CMD_MAX: highest used command number
  * @__NL80211_CMD_AFTER_LAST: internal use
  */
@@ -644,6 +647,7 @@ enum nl80211_commands {
 
 	NL80211_CMD_SET_REKEY_OFFLOAD,
 
+<<<<<<< HEAD
 	NL80211_CMD_PMKSA_CANDIDATE,
 
 	NL80211_CMD_TDLS_OPER,
@@ -655,6 +659,8 @@ enum nl80211_commands {
 
 	NL80211_CMD_REGISTER_BEACONS,
 
+=======
+>>>>>>> dce9936... cfg80211/nl80211: support GTK rekey offload
 	/* add new commands above here */
 
 	/* used to define NL80211_CMD_MAX below */
@@ -1073,6 +1079,7 @@ enum nl80211_commands {
  * @%NL80211_ATTR_REKEY_DATA: nested attribute containing the information
  *	necessary for GTK rekeying in the device, see &enum nl80211_rekey_data.
  *
+<<<<<<< HEAD
  * @NL80211_ATTR_SCAN_SUPP_RATES: rates per to be advertised as supported in scan,
  *	nested array attribute containing an entry for each band, with the entry
  *	being a list of supported rates as defined by IEEE 802.11 7.3.2.2 but
@@ -1129,6 +1136,8 @@ enum nl80211_commands {
  *	with support for the features listed in this attribute, see
  *	&enum nl80211_ap_sme_features.
  *
+=======
+>>>>>>> dce9936... cfg80211/nl80211: support GTK rekey offload
  * @NL80211_ATTR_MAX: highest attribute number currently defined
  * @__NL80211_ATTR_AFTER_LAST: internal use
  */
@@ -2585,6 +2594,7 @@ enum nl80211_rekey_data {
 	MAX_NL80211_REKEY_DATA = NUM_NL80211_REKEY_DATA - 1
 };
 
+<<<<<<< HEAD
 /**
  * enum nl80211_hidden_ssid - values for %NL80211_ATTR_HIDDEN_SSID
  * @NL80211_HIDDEN_SSID_NOT_IN_USE: do not hide SSID (i.e., broadcast it in
@@ -2667,4 +2677,6 @@ enum nl80211_ap_sme_features {
 };
  */
 
+=======
+>>>>>>> dce9936... cfg80211/nl80211: support GTK rekey offload
 #endif /* __LINUX_NL80211_H */

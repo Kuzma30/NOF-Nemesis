@@ -1550,6 +1550,7 @@ struct cfg80211_ops {
 
 	int	(*set_rekey_data)(struct wiphy *wiphy, struct net_device *dev,
 				  struct cfg80211_gtk_rekey_data *data);
+<<<<<<< HEAD
 
 	int	(*tdls_mgmt)(struct wiphy *wiphy, struct net_device *dev,
 			     u8 *peer, u8 action_code,  u8 dialog_token,
@@ -1559,6 +1560,8 @@ struct cfg80211_ops {
 
 	int	(*probe_client)(struct wiphy *wiphy, struct net_device *dev,
 				const u8 *peer, u64 *cookie);
+=======
+>>>>>>> dce9936... cfg80211/nl80211: support GTK rekey offload
 };
 
 /*
@@ -3145,6 +3148,7 @@ void cfg80211_cqm_pktloss_notify(struct net_device *dev,
 void cfg80211_gtk_rekey_notify(struct net_device *dev, const u8 *bssid,
 			       const u8 *replay_ctr, gfp_t gfp);
 
+<<<<<<< HEAD
 /**
  * cfg80211_pmksa_candidate_notify - notify about PMKSA caching candidate
  * @dev: network device
@@ -3198,6 +3202,8 @@ void cfg80211_report_obss_beacon(struct wiphy *wiphy,
 				 const u8 *frame, size_t len,
 				 int freq, gfp_t gfp);
 
+=======
+>>>>>>> dce9936... cfg80211/nl80211: support GTK rekey offload
 /* Logging, debugging and troubleshooting/diagnostic helpers. */
 
 /* wiphy_printk helpers, similar to dev_printk */

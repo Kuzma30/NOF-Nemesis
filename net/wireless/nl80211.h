@@ -113,6 +113,7 @@ void nl80211_gtk_rekey_notify(struct cfg80211_registered_device *rdev,
 			      struct net_device *netdev, const u8 *bssid,
 			      const u8 *replay_ctr, gfp_t gfp);
 
+<<<<<<< HEAD
 void nl80211_pmksa_candidate_notify(struct cfg80211_registered_device *rdev,
 				    struct net_device *netdev, int index,
 				    const u8 *bssid, bool preauth, gfp_t gfp);
@@ -120,4 +121,6 @@ void nl80211_pmksa_candidate_notify(struct cfg80211_registered_device *rdev,
 bool nl80211_unexpected_frame(struct net_device *dev,
 			      const u8 *addr, gfp_t gfp);
 
+=======
+>>>>>>> dce9936... cfg80211/nl80211: support GTK rekey offload
 #endif /* __NET_WIRELESS_NL80211_H */
