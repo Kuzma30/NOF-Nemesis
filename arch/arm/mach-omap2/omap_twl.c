@@ -279,6 +279,7 @@ static struct omap_voltdm_pmic omap443x_447x_mpu_pmic = {
 	.on_volt		= 1375000,
 	.onlp_volt		= 1375000,
 	.ret_volt		= 750000,
+<<<<<<< HEAD
 	.off_volt		= 0,
 	.volt_setup_time	= 0,
 	.switch_on_time		= 549,
@@ -306,6 +307,8 @@ static struct omap_voltdm_pmic omap443x_446x_iva_pmic = {
 	.on_volt		= 1188000,
 	.onlp_volt		= 1188000,
 	.ret_volt		= 750000,
+=======
+>>>>>>> 2e4e8a9... OMAP4430: TWL data: update retention voltages to spec rev 0.6
 	.off_volt		= 0,
 	.volt_setup_time	= 0,
 	.switch_on_time		= 549,
