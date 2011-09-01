@@ -249,7 +249,10 @@ struct omap_hsmmc_host {
 	int			use_reg;
 	int			req_in_progress;
 	unsigned int		flags;
+<<<<<<< HEAD
 	unsigned int		errata;
+=======
+>>>>>>> 13a1538... MMC: OMAP HSMMC: Enable Auto CMD12
 
 	struct	omap_mmc_platform_data	*pdata;
 	int			shutdown;
@@ -931,8 +934,12 @@ omap_hsmmc_start_command(struct omap_hsmmc_host *host, struct mmc_command *cmd,
 		cmdtype = 0x3;
 
 	cmdreg = (cmd->opcode << 24) | (resptype << 16) | (cmdtype << 22);
+<<<<<<< HEAD
 	if ((host->flags & AUTO_CMD12) && mmc_op_multi(cmd->opcode) &&
 								!no_autocmd12)
+=======
+	if ((host->flags & AUTO_CMD12) && mmc_op_multi(cmd->opcode))
+>>>>>>> 13a1538... MMC: OMAP HSMMC: Enable Auto CMD12
 		cmdreg |= ACEN_ACMD12;
 
 	if (data) {
@@ -1010,7 +1017,11 @@ omap_hsmmc_xfer_done(struct omap_hsmmc_host *host, struct mmc_data *data)
 		data->bytes_xfered = 0;
 
 	if (data->stop && ((!(host->flags & AUTO_CMD12)) || data->error))
+<<<<<<< HEAD
 		omap_hsmmc_start_command(host, data->stop, NULL, 0);
+=======
+		omap_hsmmc_start_command(host, data->stop, NULL);
+>>>>>>> 13a1538... MMC: OMAP HSMMC: Enable Auto CMD12
 	else {
 		if (data->stop)
 			data->stop->resp[0] = OMAP_HSMMC_READ(host->base,
@@ -1019,6 +1030,7 @@ omap_hsmmc_xfer_done(struct omap_hsmmc_host *host, struct mmc_data *data)
 	}
 
 	return;
+<<<<<<< HEAD
 }
 
 static int
@@ -1035,6 +1047,8 @@ omap_hsmmc_errata_i761(struct omap_hsmmc_host *host, struct mmc_command *cmd)
 		return rsp10 & csre;
 	}
 	return 0;
+=======
+>>>>>>> 13a1538... MMC: OMAP HSMMC: Enable Auto CMD12
 }
 
 /*
@@ -2427,6 +2441,7 @@ static int __init omap_hsmmc_probe(struct platform_device *pdev)
 	}
 	host->power_mode = MMC_POWER_OFF;
 	host->flags	= AUTO_CMD12;
+<<<<<<< HEAD
 	host->shutdown = 0;
 
 	host->errata = 0;
@@ -2436,6 +2451,8 @@ static int __init omap_hsmmc_probe(struct platform_device *pdev)
 	host->errata = 0;
 	if (cpu_is_omap44xx())
 		host->errata |= OMAP_HSMMC_ERRATA_I761;
+=======
+>>>>>>> 13a1538... MMC: OMAP HSMMC: Enable Auto CMD12
 
 	host->master_clock = OMAP_MMC_MASTER_CLOCK;
 	if (mmc_slot(host).features & HSMMC_HAS_48MHZ_MASTER_CLK)
