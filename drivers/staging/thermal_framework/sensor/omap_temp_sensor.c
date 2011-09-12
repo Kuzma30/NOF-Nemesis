@@ -1223,7 +1223,11 @@ static int omap_temp_sensor_resume(struct platform_device *pdev)
 
 void omap_temp_sensor_idle(int idle_state)
 {
+<<<<<<< HEAD
 	if (!cpu_is_omap446x() && !cpu_is_omap447x())
+=======
+	if (!cpu_is_omap446x())
+>>>>>>> 458f3f3... Fix panic on 4430 for the temp sensor idle
 		return;
 
 	if (idle_state)
