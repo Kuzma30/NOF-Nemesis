@@ -637,7 +637,11 @@ void elv_drain_elevator(struct request_queue *q)
 
 	lockdep_assert_held(q->queue_lock);
 
+<<<<<<< HEAD
 	while (q->elevator->type->ops.elevator_dispatch_fn(q, 1))
+=======
+	while (q->elevator->ops->elevator_dispatch_fn(q, 1))
+>>>>>>> a0fdd23... block: reorganize queue draining
 		;
 	if (q->nr_sorted && printed++ < 10) {
 		printk(KERN_ERR "%s: forced dispatching is broken "
@@ -993,6 +997,7 @@ static int elevator_switch(struct request_queue *q, struct elevator_type *new_e)
 		return err;
 	}
 
+<<<<<<< HEAD
 	/* turn on BYPASS and drain all requests w/ elevator private data */
 	elv_quiesce_start(q);
 
@@ -1000,15 +1005,46 @@ static int elevator_switch(struct request_queue *q, struct elevator_type *new_e)
 	if (q->elevator->registered) {
 		elv_unregister_queue(q);
 		err = __elv_register_queue(q, e);
+=======
+	/*
+	 * Turn on BYPASS and drain all requests w/ elevator private data
+	 */
+	elv_quiesce_start(q);
+
+	/*
+	 * Remember old elevator.
+	 */
+	old_elevator = q->elevator;
+
+	/*
+	 * attach and start new elevator
+	 */
+	spin_lock_irq(q->queue_lock);
+	elevator_attach(q, e, data);
+	spin_unlock_irq(q->queue_lock);
+
+	if (old_elevator->registered) {
+		__elv_unregister_queue(old_elevator);
+
+		err = elv_register_queue(q);
+>>>>>>> a0fdd23... block: reorganize queue draining
 		if (err)
 			goto fail_register;
 	}
 
+<<<<<<< HEAD
 	/* done, replace the old one with new one and turn off BYPASS */
 	spin_lock_irq(q->queue_lock);
 	old_elevator = q->elevator;
 	q->elevator = e;
 	spin_unlock_irq(q->queue_lock);
+=======
+	/*
+	 * finally exit old elevator and turn off BYPASS.
+	 */
+	elevator_exit(old_elevator);
+	elv_quiesce_end(q);
+>>>>>>> a0fdd23... block: reorganize queue draining
 
 	elevator_exit(old_elevator);
 	elv_quiesce_end(q);
