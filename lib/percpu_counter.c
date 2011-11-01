@@ -10,8 +10,14 @@
 #include <linux/module.h>
 #include <linux/debugobjects.h>
 
+#ifdef CONFIG_HOTPLUG_CPU
 static LIST_HEAD(percpu_counters);
+<<<<<<< HEAD
 static DEFINE_SPINLOCK(percpu_counters_lock);
+=======
+static DEFINE_MUTEX(percpu_counters_lock);
+#endif
+>>>>>>> 296f5b9... lib/percpu_counter.c: enclose hotplug only variables in hotplug ifdef
 
 #ifdef CONFIG_DEBUG_OBJECTS_PERCPU_COUNTER
 
