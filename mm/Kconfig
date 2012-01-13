@@ -372,9 +372,15 @@ config CLEANCACHE
 	  If unsure, say Y to enable cleancache
 
 config FRONTSWAP
+<<<<<<< HEAD
 	bool "Enable frontswap to cache swap pages"
 	depends on SWAP
 	default y
+=======
+	bool "Enable frontswap to cache swap pages if tmem is present"
+	depends on SWAP
+	default n
+>>>>>>> 9c14c58... mm: frontswap: config and doc files
 	help
 	  Frontswap is so named because it can be thought of as the opposite
 	  of a "backing" store for a swap device.  The data is stored into
@@ -387,4 +393,7 @@ config FRONTSWAP
 	  and swap data is stored as normal on the matching swap device.
 
 	  If unsure, say Y to enable frontswap.
+<<<<<<< HEAD
 	  
+=======
+>>>>>>> 9c14c58... mm: frontswap: config and doc files
