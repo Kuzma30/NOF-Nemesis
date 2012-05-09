@@ -120,10 +120,39 @@ static inline int arch_spin_trylock(arch_spinlock_t *lock)
 
 static inline void arch_spin_unlock(arch_spinlock_t *lock)
 {
+	unsigned long tmp;
+	u32 slock;
+
 	smp_mb();
 	lock->tickets.owner++;
 	dsb_sev();
 }
+
+<<<<<<< HEAD
+static inline int arch_spin_is_locked(arch_spinlock_t *lock)
+{
+	struct __raw_tickets tickets = ACCESS_ONCE(lock->tickets);
+	return tickets.owner != tickets.next;
+}
+=======
+	__asm__ __volatile__(
+"	mov	%1, #1\n"
+"1:	ldrex	%0, [%2]\n"
+"	uadd16	%0, %0, %1\n"
+"	strex	%1, %0, [%2]\n"
+"	teq	%1, #0\n"
+"	bne	1b"
+	: "=&r" (slock), "=&r" (tmp)
+	: "r" (&lock->slock)
+	: "cc");
+>>>>>>> 76bc5e4... ARM: spinlock: use ticket algorithm for ARMv6+ locking implementation
+
+static inline int arch_spin_is_contended(arch_spinlock_t *lock)
+{
+	struct __raw_tickets tickets = ACCESS_ONCE(lock->tickets);
+	return (tickets.next - tickets.owner) > 1;
+}
+#define arch_spin_is_contended	arch_spin_is_contended
 
 static inline int arch_spin_is_locked(arch_spinlock_t *lock)
 {
