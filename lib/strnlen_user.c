@@ -1,5 +1,9 @@
 #include <linux/kernel.h>
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+#include <linux/export.h>
+>>>>>>> d814027... lib: add generic strnlen_user() function
 #include <linux/uaccess.h>
 
 #include <asm/word-at-a-time.h>
@@ -8,7 +12,11 @@
 #ifdef __LITTLE_ENDIAN
 #  define aligned_byte_mask(n) ((1ul << 8*(n))-1)
 #else
+<<<<<<< HEAD
 #  define aligned_byte_mask(n) (~0xfful << (BITS_PER_LONG - 8 - 8*(n)))
+=======
+#  define aligned_byte_mask(n) (~0xfful << 8*(7-(n)))
+>>>>>>> d814027... lib: add generic strnlen_user() function
 #endif
 
 /*
