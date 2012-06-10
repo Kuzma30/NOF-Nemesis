@@ -25,6 +25,7 @@
 #include <linux/wait.h>
 
 #define UHID_NAME	"uhid"
+<<<<<<< HEAD
 #define UHID_BUFSIZE	32
 
 struct uhid_device {
@@ -415,11 +416,19 @@ static int uhid_char_open(struct inode *inode, struct file *file)
 	file->private_data = uhid;
 	nonseekable_open(inode, file);
 
+=======
+
+static struct miscdevice uhid_misc;
+
+static int uhid_char_open(struct inode *inode, struct file *file)
+{
+>>>>>>> 608abd6... HID: uhid: introduce user-space I/O driver support for HID
 	return 0;
 }
 
 static int uhid_char_release(struct inode *inode, struct file *file)
 {
+<<<<<<< HEAD
 	struct uhid_device *uhid = file->private_data;
 	unsigned int i;
 
@@ -430,12 +439,15 @@ static int uhid_char_release(struct inode *inode, struct file *file)
 
 	kfree(uhid);
 
+=======
+>>>>>>> 608abd6... HID: uhid: introduce user-space I/O driver support for HID
 	return 0;
 }
 
 static ssize_t uhid_char_read(struct file *file, char __user *buffer,
 				size_t count, loff_t *ppos)
 {
+<<<<<<< HEAD
 	struct uhid_device *uhid = file->private_data;
 	int ret;
 	unsigned long flags;
@@ -479,11 +491,15 @@ try_again:
 
 	mutex_unlock(&uhid->devlock);
 	return ret ? ret : len;
+=======
+	return 0;
+>>>>>>> 608abd6... HID: uhid: introduce user-space I/O driver support for HID
 }
 
 static ssize_t uhid_char_write(struct file *file, const char __user *buffer,
 				size_t count, loff_t *ppos)
 {
+<<<<<<< HEAD
 	struct uhid_device *uhid = file->private_data;
 	int ret;
 	size_t len;
@@ -525,10 +541,14 @@ unlock:
 
 	/* return "count" not "len" to not confuse the caller */
 	return ret ? ret : count;
+=======
+	return 0;
+>>>>>>> 608abd6... HID: uhid: introduce user-space I/O driver support for HID
 }
 
 static unsigned int uhid_char_poll(struct file *file, poll_table *wait)
 {
+<<<<<<< HEAD
 	struct uhid_device *uhid = file->private_data;
 
 	poll_wait(file, &uhid->waitq, wait);
@@ -536,6 +556,8 @@ static unsigned int uhid_char_poll(struct file *file, poll_table *wait)
 	if (uhid->head != uhid->tail)
 		return POLLIN | POLLRDNORM;
 
+=======
+>>>>>>> 608abd6... HID: uhid: introduce user-space I/O driver support for HID
 	return 0;
 }
 
