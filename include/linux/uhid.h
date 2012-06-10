@@ -23,6 +23,7 @@
 #include <linux/types.h>
 
 enum uhid_event_type {
+<<<<<<< HEAD
 	UHID_CREATE,
 	UHID_DESTROY,
 	UHID_START,
@@ -86,10 +87,14 @@ struct uhid_feature_answer_req {
 	__u16 err;
 	__u16 size;
 	__u8 data[UHID_DATA_MAX];
+=======
+	UHID_DUMMY,
+>>>>>>> 75ed91b... HID: uhid: add internal message buffer
 };
 
 struct uhid_event {
 	__u32 type;
+<<<<<<< HEAD
 
 	union {
 		struct uhid_create_req create;
@@ -99,6 +104,8 @@ struct uhid_event {
 		struct uhid_feature_req feature;
 		struct uhid_feature_answer_req feature_answer;
 	} u;
+=======
+>>>>>>> 75ed91b... HID: uhid: add internal message buffer
 } __attribute__((__packed__));
 
 #endif /* __UHID_H_ */
