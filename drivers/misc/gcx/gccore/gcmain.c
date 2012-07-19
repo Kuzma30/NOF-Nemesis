@@ -580,7 +580,11 @@ void gc_commit(struct gcicommit *gcicommit, bool fromuser)
 	gccorecontext->gcpipe = gcicommit->exitpipe;
 
 	/* Go through all buffers one at a time. */
+<<<<<<< HEAD
 	list_for_each(head, &gcicommit->buffer) {
+=======
+	list_for_each(head, &gccommit->buffer) {
+>>>>>>> d005644... gcx: split in several files by function.
 		gcbuffer = list_entry(head, struct gcbuffer, link);
 		GCDBG(GCZONE_COMMIT, "gcbuffer = 0x%08X\n",
 		      (unsigned int) gcbuffer);
@@ -617,8 +621,13 @@ void gc_commit(struct gcicommit *gcicommit, bool fromuser)
 		}
 
 		/* Process fixups. */
+<<<<<<< HEAD
 		gcicommit->gcerror = gcmmu_fixup(&gcbuffer->fixup, logical);
 		if (gcicommit->gcerror != GCERR_NONE)
+=======
+		gccommit->gcerror = gcmmu_fixup(&gcbuffer->fixup, logical);
+		if (gccommit->gcerror != GCERR_NONE)
+>>>>>>> d005644... gcx: split in several files by function.
 			goto exit;
 	}
 

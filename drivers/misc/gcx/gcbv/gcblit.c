@@ -66,6 +66,7 @@ GCDBG_FILTERDEF(gcblit, GCZONE_NONE,
 		"blit")
 
 
+<<<<<<< HEAD
 static enum bverror do_blit_end(struct bvbltparams *bvbltparams,
 				struct gcbatch *batch)
 {
@@ -81,13 +82,30 @@ static enum bverror do_blit_end(struct bvbltparams *bvbltparams,
 
 	GCDBG(GCZONE_BLIT, "finalizing the blit, scrcount = %d\n",
 	      gcblit->srccount);
+=======
+static enum bverror do_blit_end(struct bvbltparams *bltparams,
+				struct gcbatch *batch)
+{
+	enum bverror bverror;
+	struct gcmobltconfig *gcmobltconfig;
+	struct gcmostart *gcmostart;
+
+	GCENTER(GCZONE_BLIT);
+
+	GCDBG(GCZONE_BLIT, "finalizing the blit, scrcount = %d\n",
+	      batch->gcblit.srccount);
+>>>>>>> d005644... gcx: split in several files by function.
 
 	/***********************************************************************
 	 * Configure the operation.
 	 */
 
 	/* Allocate command buffer. */
+<<<<<<< HEAD
 	bverror = claim_buffer(bvbltparams, batch,
+=======
+	bverror = claim_buffer(bltparams, batch,
+>>>>>>> d005644... gcx: split in several files by function.
 			       sizeof(struct gcmobltconfig),
 			       (void **) &gcmobltconfig);
 	if (bverror != BVERR_NONE)
@@ -96,10 +114,17 @@ static enum bverror do_blit_end(struct bvbltparams *bvbltparams,
 	/* Configure multi-source control. */
 	gcmobltconfig->multisource_ldst = gcmobltconfig_multisource_ldst;
 	gcmobltconfig->multisource.raw = 0;
+<<<<<<< HEAD
 	gcmobltconfig->multisource.reg.srccount = gcblit->srccount - 1;
 
 	GCDBG(GCZONE_BLIT, "blockenable = %d\n", gcblit->blockenable);
 	if (gcblit->blockenable) {
+=======
+	gcmobltconfig->multisource.reg.srccount = batch->gcblit.srccount - 1;
+
+	GCDBG(GCZONE_BLIT, "blockenable = %d\n", batch->blockenable);
+	if (batch->blockenable) {
+>>>>>>> d005644... gcx: split in several files by function.
 		gcmobltconfig->multisource.reg.horblock
 			= GCREG_DE_MULTI_SOURCE_HORIZONTAL_BLOCK_PIXEL16;
 		gcmobltconfig->multisource.reg.verblock
@@ -112,6 +137,7 @@ static enum bverror do_blit_end(struct bvbltparams *bvbltparams,
 	}
 
 	/* Set destination configuration. */
+<<<<<<< HEAD
 	GCDBG(GCZONE_BLIT, "  swizzle code = %d\n", gcblit->swizzle);
 	GCDBG(GCZONE_BLIT, "  format code = %d\n", gcblit->format);
 
@@ -120,6 +146,20 @@ static enum bverror do_blit_end(struct bvbltparams *bvbltparams,
 	gcmobltconfig->dstconfig.reg.swizzle = gcblit->swizzle;
 	gcmobltconfig->dstconfig.reg.format = gcblit->format;
 	gcmobltconfig->dstconfig.reg.command = gcblit->multisrc
+=======
+	GCDBG(GCZONE_BLIT, "format entry = 0x%08X\n",
+	      (unsigned int) batch->dstformat);
+	GCDBG(GCZONE_BLIT, "  swizzle code = %d\n",
+	      batch->dstformat->swizzle);
+	GCDBG(GCZONE_BLIT, "  format code = %d\n",
+	      batch->dstformat->format);
+
+	gcmobltconfig->dstconfig_ldst = gcmobltconfig_dstconfig_ldst;
+	gcmobltconfig->dstconfig.raw = 0;
+	gcmobltconfig->dstconfig.reg.swizzle = batch->dstformat->swizzle;
+	gcmobltconfig->dstconfig.reg.format = batch->dstformat->format;
+	gcmobltconfig->dstconfig.reg.command = batch->gcblit.multisrc
+>>>>>>> d005644... gcx: split in several files by function.
 		? GCREG_DEST_CONFIG_COMMAND_MULTI_SOURCE_BLT
 		: GCREG_DEST_CONFIG_COMMAND_BIT_BLT;
 
@@ -127,20 +167,31 @@ static enum bverror do_blit_end(struct bvbltparams *bvbltparams,
 	gcmobltconfig->rop_ldst = gcmobltconfig_rop_ldst;
 	gcmobltconfig->rop.raw = 0;
 	gcmobltconfig->rop.reg.type = GCREG_ROP_TYPE_ROP3;
+<<<<<<< HEAD
 	gcmobltconfig->rop.reg.fg = (unsigned char) gcblit->rop;
+=======
+	gcmobltconfig->rop.reg.fg = (unsigned char) batch->gcblit.rop;
+>>>>>>> d005644... gcx: split in several files by function.
 
 	/***********************************************************************
 	 * Start the operation.
 	 */
 
 	/* Allocate command buffer. */
+<<<<<<< HEAD
 	bverror = claim_buffer(bvbltparams, batch,
 			       sizeof(struct gcmostartde),
 			       (void **) &gcmostartde);
+=======
+	bverror = claim_buffer(bltparams, batch,
+			       sizeof(struct gcmostart),
+			       (void **) &gcmostart);
+>>>>>>> d005644... gcx: split in several files by function.
 	if (bverror != BVERR_NONE)
 		goto exit;
 
 	/* Set START_DE command. */
+<<<<<<< HEAD
 	gcmostartde->startde.cmd.fld = gcfldstartde;
 
 	/* Set destination rectangle. */
@@ -152,13 +203,32 @@ static enum bverror do_blit_end(struct bvbltparams *bvbltparams,
 	GCDBG(GCZONE_BLIT, "dstrect = (%d,%d)-(%d,%d)\n",
 	      gcmostartde->rect.left, gcmostartde->rect.top,
 	      gcmostartde->rect.right, gcmostartde->rect.bottom);
+=======
+	gcmostart->startde.cmd.fld = gcfldstartde;
+
+	/* Set destination rectangle. */
+	gcmostart->rect.left = batch->left;
+	gcmostart->rect.top = batch->top;
+	gcmostart->rect.right = batch->right;
+	gcmostart->rect.bottom = batch->bottom;
+
+	GCDBG(GCZONE_BLIT, "dstrect = (%d,%d)-(%d,%d)\n",
+	      gcmostart->rect.left, gcmostart->rect.top,
+	      gcmostart->rect.right, gcmostart->rect.bottom);
+>>>>>>> d005644... gcx: split in several files by function.
 
 	/* Reset the finalizer. */
 	batch->batchend = do_end;
 
+<<<<<<< HEAD
 	gc_debug_blt(gcblit->srccount,
 		     abs(gcblit->dstrect.right - gcblit->dstrect.left),
 		     abs(gcblit->dstrect.bottom - gcblit->dstrect.top));
+=======
+	gc_debug_blt(batch->gcblit.srccount,
+		     abs(batch->right - batch->left),
+		     abs(batch->bottom - batch->top));
+>>>>>>> d005644... gcx: split in several files by function.
 
 exit:
 	GCEXITARG(GCZONE_BLIT, "bv%s = %d\n",
@@ -166,14 +236,21 @@ exit:
 	return bverror;
 }
 
+<<<<<<< HEAD
 enum bverror do_blit(struct bvbltparams *bvbltparams,
 		     struct gcbatch *batch,
 		     struct surfaceinfo *srcinfo)
+=======
+enum bverror do_blit(struct bvbltparams *bltparams,
+		     struct gcbatch *batch,
+		     struct srcinfo *srcinfo)
+>>>>>>> d005644... gcx: split in several files by function.
 {
 	enum bverror bverror = BVERR_NONE;
 	struct gccontext *gccontext = get_context();
 
 	struct gcmosrc *gcmosrc;
+<<<<<<< HEAD
 	struct gcmoxsrcalpha *gcmoxsrcalpha;
 	struct gcblit *gcblit;
 
@@ -190,6 +267,30 @@ enum bverror do_blit(struct bvbltparams *bvbltparams,
 	int srcpixalign, srcbyteshift;
 
 	struct gcrect srcclipped;
+=======
+	struct gcmosrcalpha *gcmosrcalpha;
+
+	unsigned int index;
+
+	struct bvbuffmap *dstmap;
+	struct bvbuffdesc *dstdesc;
+	struct bvsurfgeom *dstgeom;
+	struct bvformatxlate *dstformat;
+	int dstshiftX, dstshiftY;
+	int dstalign, dstbyteshift;
+
+	struct bvbuffmap *srcmap;
+	struct gcalpha *srcgca;
+	struct bvrect *srcrect;
+	struct bvbuffdesc *srcdesc;
+	struct bvsurfgeom *srcgeom;
+	struct bvformatxlate *srcformat;
+	int srcshiftX, srcshiftY;
+	int srcalign, srcbyteshift;
+
+	int srcleft, srctop;
+	int dstleft, dsttop, dstright, dstbottom;
+>>>>>>> d005644... gcx: split in several files by function.
 	int srcsurfwidth, srcsurfheight;
 	unsigned int physwidth, physheight;
 	int orthogonal;
@@ -197,6 +298,7 @@ enum bverror do_blit(struct bvbltparams *bvbltparams,
 
 	GCENTER(GCZONE_BLIT);
 
+<<<<<<< HEAD
 	/* Get a shortcut to the destination surface. */
 	dstinfo = &batch->dstinfo;
 
@@ -208,6 +310,21 @@ enum bverror do_blit(struct bvbltparams *bvbltparams,
 	/* Setup rotation. */
 	process_dest_rotation(bvbltparams, batch);
 
+=======
+	/* Create source object shortcuts. */
+	srcmap = NULL;
+	srcgca = srcinfo->gca;
+	srcrect = srcinfo->rect;
+	srcdesc = srcinfo->buf.desc;
+	srcgeom = srcinfo->geom;
+	srcformat = srcinfo->format;
+
+	/* Create destination object shortcuts. */
+	dstmap = NULL;
+	dstdesc = bltparams->dstdesc;
+	dstgeom = bltparams->dstgeom;
+	dstformat = batch->dstformat;
+>>>>>>> d005644... gcx: split in several files by function.
 
 	/***********************************************************************
 	 * Determine source surface alignment offset.
@@ -215,6 +332,7 @@ enum bverror do_blit(struct bvbltparams *bvbltparams,
 
 	/* Determine whether the source and the destination are orthogonal
 	 * to each other. */
+<<<<<<< HEAD
 	orthogonal = (srcinfo->angle % 2) != (dstinfo->angle % 2);
 
 	/* Compute clipped source rectangle. */
@@ -231,10 +349,28 @@ enum bverror do_blit(struct bvbltparams *bvbltparams,
 			      "invalid source rectangle.");
 		goto exit;
 	}
+=======
+	orthogonal = (srcinfo->angle % 2) != (batch->dstangle % 2);
+
+	/* Compute adjusted destination rectangle. */
+	dstleft = batch->clippedleft + batch->dstoffsetX;
+	dsttop = batch->clippedtop + batch->dstoffsetY;
+	dstright = batch->clippedright + batch->dstoffsetX;
+	dstbottom = batch->clippedbottom + batch->dstoffsetY;
+
+	/* Compute clipped source origin. */
+	srcleft = srcrect->left + batch->deltaleft;
+	srctop = srcrect->top + batch->deltatop;
+
+	GCDBG(GCZONE_SURF, "adjusted dstrect = (%d,%d)-(%d,%d), %dx%d\n",
+		dstleft, dsttop, dstright, dstbottom,
+		dstright - dstleft, dstbottom - dsttop);
+>>>>>>> d005644... gcx: split in several files by function.
 
 	/* Compute the source surface shift. */
 	switch (srcinfo->angle) {
 	case ROT_ANGLE_0:
+<<<<<<< HEAD
 		srcshiftX = srcclipped.left - batch->dstadjusted.left;
 		srcshiftY = srcclipped.top  - batch->dstadjusted.top;
 		break;
@@ -256,6 +392,29 @@ enum bverror do_blit(struct bvbltparams *bvbltparams,
 		srcshiftX = (srcinfo->geom->height - srcclipped.top)
 			  - (batch->dstheight - batch->dstadjusted.top);
 		srcshiftY = srcclipped.left - batch->dstadjusted.left;
+=======
+		srcshiftX = srcleft - dstleft;
+		srcshiftY = srctop - dsttop;
+		break;
+
+	case ROT_ANGLE_90:
+		srcshiftX = srctop - dsttop;
+		srcshiftY = (srcgeom->width - srcleft)
+			  - (batch->dstwidth - dstleft);
+		break;
+
+	case ROT_ANGLE_180:
+		srcshiftX = (srcgeom->width - srcleft)
+			  - (batch->dstwidth - dstleft);
+		srcshiftY = (srcgeom->height - srctop)
+			  - (batch->dstheight - dsttop);
+		break;
+
+	case ROT_ANGLE_270:
+		srcshiftX = (srcgeom->height - srctop)
+			  - (batch->dstheight - dsttop);
+		srcshiftY = srcleft - dstleft;
+>>>>>>> d005644... gcx: split in several files by function.
 		break;
 
 	default:
@@ -264,30 +423,49 @@ enum bverror do_blit(struct bvbltparams *bvbltparams,
 	}
 
 	/* Compute the source surface offset in bytes. */
+<<<<<<< HEAD
 	srcbyteshift = srcshiftY * (int) srcinfo->geom->virtstride
 		     + srcshiftX * (int) srcinfo->format.bitspp / 8;
 
 	/* Compute the source offset in pixels needed to compensate
 	 * for the surface base address misalignment if any. */
 	srcpixalign = get_pixel_offset(srcinfo, srcbyteshift);
+=======
+	srcbyteshift = srcshiftY * (int) srcgeom->virtstride
+		     + srcshiftX * (int) srcformat->bitspp / 8;
+
+	/* Compute the source offset in pixels needed to compensate
+	 * for the surface base address misalignment if any. */
+	srcalign = get_pixel_offset(srcdesc, srcformat, srcbyteshift);
+>>>>>>> d005644... gcx: split in several files by function.
 
 	GCDBG(GCZONE_SURF, "source surface %d:\n", srcinfo->index + 1);
 	GCDBG(GCZONE_SURF, "  surface offset (pixels) = %d,%d\n",
 	      srcshiftX, srcshiftY);
 	GCDBG(GCZONE_SURF, "  surface offset (bytes) = 0x%08X\n",
 	      srcbyteshift);
+<<<<<<< HEAD
 	GCDBG(GCZONE_SURF, "  srcpixalign = %d\n",
 	      srcpixalign);
 
 	/* Apply the source alignment. */
 	srcbyteshift += srcpixalign * (int) srcinfo->format.bitspp / 8;
 	srcshiftX += srcpixalign;
+=======
+	GCDBG(GCZONE_SURF, "  srcalign = %d\n",
+	      srcalign);
+
+	/* Apply the source alignment. */
+	srcbyteshift += srcalign * (int) srcformat->bitspp / 8;
+	srcshiftX += srcalign;
+>>>>>>> d005644... gcx: split in several files by function.
 
 	GCDBG(GCZONE_SURF, "  adjusted surface offset (pixels) = %d,%d\n",
 	      srcshiftX, srcshiftY);
 	GCDBG(GCZONE_SURF, "  adjusted surface offset (bytes) = 0x%08X\n",
 	      srcbyteshift);
 
+<<<<<<< HEAD
 	/* Determine the destination surface shift. Vertical shift only applies
 	 * if the destination angle is ahead by 270 degrees. */
 	dstshiftX = dstinfo->pixalign;
@@ -301,6 +479,20 @@ enum bverror do_blit(struct bvbltparams *bvbltparams,
 	/* Compute the destination offset in pixels needed to compensate
 	 * for the surface base address misalignment if any. */
 	dstpixalign = get_pixel_offset(dstinfo, dstbyteshift);
+=======
+	/* Determine the destination surface shift. */
+	dstshiftX = batch->dstalign;
+	dstshiftY = (((srcinfo->angle + 3) % 4) == batch->dstangle)
+			? srcalign : 0;
+
+	/* Compute the destination surface offset in bytes. */
+	dstbyteshift = dstshiftY * (int) dstgeom->virtstride
+		     + dstshiftX * (int) dstformat->bitspp / 8;
+
+	/* Compute the destination offset in pixels needed to compensate
+		* for the surface base address misalignment if any. */
+	dstalign = get_pixel_offset(dstdesc, dstformat, dstbyteshift);
+>>>>>>> d005644... gcx: split in several files by function.
 
 	GCDBG(GCZONE_SURF, "destination surface:\n");
 	GCDBG(GCZONE_SURF, "  surface offset (pixels) = %d,%d\n",
@@ -308,6 +500,7 @@ enum bverror do_blit(struct bvbltparams *bvbltparams,
 	GCDBG(GCZONE_SURF, "  surface offset (bytes) = 0x%08X\n",
 	      dstbyteshift);
 	GCDBG(GCZONE_SURF, "  realignment = %d\n",
+<<<<<<< HEAD
 	      dstpixalign);
 
 	if ((dstpixalign != 0) ||
@@ -326,36 +519,84 @@ enum bverror do_blit(struct bvbltparams *bvbltparams,
 		      srcbyteshift);
 		GCDBG(GCZONE_SURF, "  dstsurf offset (bytes) = 0x%08X\n",
 		      dstinfo->bytealign);
+=======
+	      dstalign);
+
+	if ((srcformat->format == GCREG_DE_FORMAT_NV12) ||
+	    (dstalign != 0) ||
+	    ((srcalign != 0) && (srcinfo->angle == batch->dstangle))) {
+		/* Compute the source offset in pixels needed to compensate
+		 * for the surface base address misalignment if any. */
+		srcalign = get_pixel_offset(srcdesc, srcformat, 0);
+
+		/* Compute the surface offsets in bytes. */
+		srcbyteshift = srcalign * (int) srcformat->bitspp / 8;
+		dstbyteshift = batch->dstalign * (int) dstformat->bitspp / 8;
+
+		GCDBG(GCZONE_SURF, "recomputed for single-source setup:\n");
+		GCDBG(GCZONE_SURF, "  srcalign = %d\n",
+		      srcalign);
+		GCDBG(GCZONE_SURF, "  srcsurf offset (bytes) = 0x%08X\n",
+		      srcbyteshift);
+		GCDBG(GCZONE_SURF, "  dstsurf offset (bytes) = 0x%08X\n",
+		      dstbyteshift);
+>>>>>>> d005644... gcx: split in several files by function.
 
 		switch (srcinfo->angle) {
 		case ROT_ANGLE_0:
 			/* Adjust left coordinate. */
+<<<<<<< HEAD
 			srcclipped.left -= srcpixalign;
 
 			/* Determine source size. */
 			srcsurfwidth = srcinfo->geom->width - srcpixalign;
 			srcsurfheight = srcinfo->geom->height;
+=======
+			srcleft -= srcalign;
+
+			/* Determine source size. */
+			srcsurfwidth = srcgeom->width - srcalign;
+			srcsurfheight = srcgeom->height;
+>>>>>>> d005644... gcx: split in several files by function.
 			break;
 
 		case ROT_ANGLE_90:
 			/* Adjust top coordinate. */
+<<<<<<< HEAD
 			srcclipped.top -= srcpixalign;
 
 			/* Determine source size. */
 			srcsurfwidth = srcinfo->geom->height - srcpixalign;
 			srcsurfheight = srcinfo->geom->width;
+=======
+			srctop -= srcalign;
+
+			/* Determine source size. */
+			srcsurfwidth = srcgeom->height - srcalign;
+			srcsurfheight = srcgeom->width;
+>>>>>>> d005644... gcx: split in several files by function.
 			break;
 
 		case ROT_ANGLE_180:
 			/* Determine source size. */
+<<<<<<< HEAD
 			srcsurfwidth = srcinfo->geom->width - srcpixalign;
 			srcsurfheight = srcinfo->geom->height;
+=======
+			srcsurfwidth = srcgeom->width - srcalign;
+			srcsurfheight = srcgeom->height;
+>>>>>>> d005644... gcx: split in several files by function.
 			break;
 
 		case ROT_ANGLE_270:
 			/* Determine source size. */
+<<<<<<< HEAD
 			srcsurfwidth = srcinfo->geom->height - srcpixalign;
 			srcsurfheight = srcinfo->geom->width;
+=======
+			srcsurfwidth = srcgeom->height - srcalign;
+			srcsurfheight = srcgeom->width;
+>>>>>>> d005644... gcx: split in several files by function.
 			break;
 
 		default:
@@ -364,6 +605,7 @@ enum bverror do_blit(struct bvbltparams *bvbltparams,
 		}
 
 		GCDBG(GCZONE_SURF, "srcrect origin = %d,%d\n",
+<<<<<<< HEAD
 		      srcclipped.left, srcclipped.top);
 		GCDBG(GCZONE_SURF, "source physical size = %dx%d\n",
 		      srcsurfwidth, srcsurfheight);
@@ -375,6 +617,15 @@ enum bverror do_blit(struct bvbltparams *bvbltparams,
 		/* Set the physical destination size. */
 		physwidth = dstinfo->physwidth;
 		physheight = dstinfo->physheight;
+=======
+		      srcleft, srctop);
+		GCDBG(GCZONE_SURF, "source physical size = %dx%d\n",
+		      srcsurfwidth, srcsurfheight);
+
+		/* Set the physical destination size. */
+		physwidth = batch->dstphyswidth;
+		physheight = batch->dstphysheight;
+>>>>>>> d005644... gcx: split in several files by function.
 
 		/* Disable multi source for YUV and for the cases where
 		 * the destination and the base address alignment does
@@ -383,12 +634,18 @@ enum bverror do_blit(struct bvbltparams *bvbltparams,
 		GCDBG(GCZONE_SURF, "multi-source disabled.\n");
 	} else {
 		/* Source origin is not used in multi-source setup. */
+<<<<<<< HEAD
 		srcclipped.left = 0;
 		srcclipped.top = 0;
+=======
+		srcleft = 0;
+		srctop = 0;
+>>>>>>> d005644... gcx: split in several files by function.
 
 		/* Adjust the destination to match the source geometry. */
 		switch (srcinfo->angle) {
 		case ROT_ANGLE_0:
+<<<<<<< HEAD
 			/* Adjust the destination horizontally. */
 			dstoffsetX = srcpixalign;
 			dstoffsetY = 0;
@@ -403,10 +660,24 @@ enum bverror do_blit(struct bvbltparams *bvbltparams,
 				physwidth  = dstinfo->physwidth;
 				physheight = dstinfo->physheight
 					   - srcpixalign;
+=======
+			dstleft -= srcalign;
+			dstright -= srcalign;
+
+			/* Apply the source alignment. */
+			if ((batch->dstangle == ROT_ANGLE_0) ||
+			    (batch->dstangle == ROT_ANGLE_180)) {
+				physwidth = batch->dstphyswidth - srcalign;
+				physheight = batch->dstphysheight;
+			} else {
+				physwidth = batch->dstphyswidth;
+				physheight = batch->dstphysheight - srcalign;
+>>>>>>> d005644... gcx: split in several files by function.
 			}
 			break;
 
 		case ROT_ANGLE_90:
+<<<<<<< HEAD
 			/* Adjust the destination vertically. */
 			dstoffsetX = 0;
 			dstoffsetY = srcpixalign;
@@ -421,10 +692,24 @@ enum bverror do_blit(struct bvbltparams *bvbltparams,
 				physwidth  = dstinfo->physwidth
 					   - srcpixalign;
 				physheight = dstinfo->physheight;
+=======
+			dsttop -= srcalign;
+			dstbottom -= srcalign;
+
+			/* Apply the source alignment. */
+			if ((batch->dstangle == ROT_ANGLE_0) ||
+			    (batch->dstangle == ROT_ANGLE_180)) {
+				physwidth = batch->dstphyswidth;
+				physheight = batch->dstphysheight - srcalign;
+			} else {
+				physwidth = batch->dstphyswidth - srcalign;
+				physheight = batch->dstphysheight;
+>>>>>>> d005644... gcx: split in several files by function.
 			}
 			break;
 
 		case ROT_ANGLE_180:
+<<<<<<< HEAD
 			/* No adjustment necessary. */
 			dstoffsetX = 0;
 			dstoffsetY = 0;
@@ -439,10 +724,21 @@ enum bverror do_blit(struct bvbltparams *bvbltparams,
 				physwidth  = dstinfo->physwidth;
 				physheight = dstinfo->physheight
 					   - srcpixalign;
+=======
+			/* Apply the source alignment. */
+			if ((batch->dstangle == ROT_ANGLE_0) ||
+			    (batch->dstangle == ROT_ANGLE_180)) {
+				physwidth = batch->dstphyswidth - srcalign;
+				physheight = batch->dstphysheight;
+			} else {
+				physwidth = batch->dstphyswidth;
+				physheight = batch->dstphysheight - srcalign;
+>>>>>>> d005644... gcx: split in several files by function.
 			}
 			break;
 
 		case ROT_ANGLE_270:
+<<<<<<< HEAD
 			/* No adjustment necessary. */
 			dstoffsetX = 0;
 			dstoffsetY = 0;
@@ -457,14 +753,27 @@ enum bverror do_blit(struct bvbltparams *bvbltparams,
 				physwidth  = dstinfo->physwidth
 					   - srcpixalign;
 				physheight = dstinfo->physheight;
+=======
+			/* Apply the source alignment. */
+			if ((batch->dstangle == ROT_ANGLE_0) ||
+			    (batch->dstangle == ROT_ANGLE_180)) {
+				physwidth = batch->dstphyswidth;
+				physheight = batch->dstphysheight - srcalign;
+			} else {
+				physwidth = batch->dstphyswidth - srcalign;
+				physheight = batch->dstphysheight;
+>>>>>>> d005644... gcx: split in several files by function.
 			}
 			break;
 
 		default:
 			physwidth = 0;
 			physheight = 0;
+<<<<<<< HEAD
 			dstoffsetX = 0;
 			dstoffsetY = 0;
+=======
+>>>>>>> d005644... gcx: split in several files by function.
 		}
 
 		/* Source geometry is now the same as the destination. */
@@ -481,6 +790,7 @@ enum bverror do_blit(struct bvbltparams *bvbltparams,
 		GCDBG(GCZONE_SURF, "multi-source enabled.\n");
 	}
 
+<<<<<<< HEAD
 	/* Misaligned source may cause the destination parameters
 	 * to change, verify whether this has happened. */
 	if ((batch->dstbyteshift != dstbyteshift) ||
@@ -497,18 +807,36 @@ enum bverror do_blit(struct bvbltparams *bvbltparams,
 
 		/* Now we need to end the current batch and program
 		 * the hardware with the new destination. */
+=======
+	/* Verify if the destination has been modified. */
+	if ((batch->dstbyteshift != dstbyteshift) ||
+	    (batch->physwidth != physwidth) ||
+	    (batch->physheight != physheight)) {
+		/* Set new values. */
+		batch->dstbyteshift = dstbyteshift;
+		batch->physwidth = physwidth;
+		batch->physheight = physheight;
+
+		/* Mark as modified. */
+>>>>>>> d005644... gcx: split in several files by function.
 		batch->batchflags |= BVBATCH_DST;
 	}
 
 	/* Check if we need to finalize existing batch. */
 	if ((batch->batchend != do_blit_end) ||
+<<<<<<< HEAD
 	    (batch->op.blit.srccount == 4) ||
 	    (batch->op.blit.multisrc == 0) ||
+=======
+	    (batch->gcblit.srccount == 4) ||
+	    (batch->gcblit.multisrc == 0) ||
+>>>>>>> d005644... gcx: split in several files by function.
 	    (multisrc == 0) ||
 	    ((batch->batchflags & (BVBATCH_DST |
 				   BVBATCH_CLIPRECT |
 				   BVBATCH_DESTRECT)) != 0)) {
 		/* Finalize existing batch if any. */
+<<<<<<< HEAD
 		bverror = batch->batchend(bvbltparams, batch);
 		if (bverror != BVERR_NONE)
 			goto exit;
@@ -555,6 +883,47 @@ enum bverror do_blit(struct bvbltparams *bvbltparams,
 	bverror = do_map(srcinfo->buf.desc, batch, &srcmap);
 	if (bverror != BVERR_NONE) {
 		bvbltparams->errdesc = gccontext->bverrorstr;
+=======
+		bverror = batch->batchend(bltparams, batch);
+		if (bverror != BVERR_NONE)
+			goto exit;
+
+		/* Initialize the new batch. */
+		batch->batchend = do_blit_end;
+		batch->blockenable = 0;
+		batch->gcblit.srccount = 0;
+		batch->gcblit.multisrc = multisrc;
+		batch->gcblit.rop = srcinfo->rop;
+	}
+
+	/* Set destination coordinates. */
+	batch->left = dstleft;
+	batch->top = dsttop;
+	batch->right = dstright;
+	batch->bottom = dstbottom;
+
+	/* Map the destination. */
+	bverror = do_map(dstdesc, batch, &dstmap);
+	if (bverror != BVERR_NONE) {
+		bltparams->errdesc = gccontext->bverrorstr;
+		goto exit;
+	}
+
+	/* Set the new destination. */
+	bverror = set_dst(bltparams, batch, dstmap);
+	if (bverror != BVERR_NONE)
+		goto exit;
+
+	/* Reset the modified flag. */
+	batch->batchflags &= ~(BVBATCH_DST |
+			       BVBATCH_CLIPRECT |
+			       BVBATCH_DESTRECT);
+
+	/* Map the source. */
+	bverror = do_map(srcdesc, batch, &srcmap);
+	if (bverror != BVERR_NONE) {
+		bltparams->errdesc = gccontext->bverrorstr;
+>>>>>>> d005644... gcx: split in several files by function.
 		goto exit;
 	}
 
@@ -564,25 +933,44 @@ enum bverror do_blit(struct bvbltparams *bvbltparams,
 
 	/* We need to walk in blocks if the source and the destination
 	 * surfaces are orthogonal to each other. */
+<<<<<<< HEAD
 	batch->op.blit.blockenable |= orthogonal;
 
 	/* Allocate command buffer. */
 	bverror = claim_buffer(bvbltparams, batch,
+=======
+	batch->blockenable = orthogonal;
+
+	/* Allocate command buffer. */
+	bverror = claim_buffer(bltparams, batch,
+>>>>>>> d005644... gcx: split in several files by function.
 			       sizeof(struct gcmosrc),
 			       (void **) &gcmosrc);
 	if (bverror != BVERR_NONE)
 		goto exit;
 
 	/* Shortcut to the register index. */
+<<<<<<< HEAD
 	index = batch->op.blit.srccount;
+=======
+	index = batch->gcblit.srccount;
+
+	add_fixup(bltparams, batch, &gcmosrc->address, srcbyteshift);
+>>>>>>> d005644... gcx: split in several files by function.
 
 	/* Set surface parameters. */
 	gcmosrc->address_ldst = gcmosrc_address_ldst[index];
 	gcmosrc->address = GET_MAP_HANDLE(srcmap);
+<<<<<<< HEAD
 	add_fixup(bvbltparams, batch, &gcmosrc->address, srcbyteshift);
 
 	gcmosrc->stride_ldst = gcmosrc_stride_ldst[index];
 	gcmosrc->stride = srcinfo->geom->virtstride;
+=======
+
+	gcmosrc->stride_ldst = gcmosrc_stride_ldst[index];
+	gcmosrc->stride = srcgeom->virtstride;
+>>>>>>> d005644... gcx: split in several files by function.
 
 	gcmosrc->rotation_ldst = gcmosrc_rotation_ldst[index];
 	gcmosrc->rotation.raw = 0;
@@ -590,12 +978,21 @@ enum bverror do_blit(struct bvbltparams *bvbltparams,
 
 	gcmosrc->config_ldst = gcmosrc_config_ldst[index];
 	gcmosrc->config.raw = 0;
+<<<<<<< HEAD
 	gcmosrc->config.reg.swizzle = srcinfo->format.swizzle;
 	gcmosrc->config.reg.format = srcinfo->format.format;
 
 	gcmosrc->origin_ldst = gcmosrc_origin_ldst[index];
 	gcmosrc->origin.reg.x = srcclipped.left;
 	gcmosrc->origin.reg.y = srcclipped.top;
+=======
+	gcmosrc->config.reg.swizzle = srcformat->swizzle;
+	gcmosrc->config.reg.format = srcformat->format;
+
+	gcmosrc->origin_ldst = gcmosrc_origin_ldst[index];
+	gcmosrc->origin.reg.x = srcleft;
+	gcmosrc->origin.reg.y = srctop;
+>>>>>>> d005644... gcx: split in several files by function.
 
 	gcmosrc->size_ldst = gcmosrc_size_ldst[index];
 	gcmosrc->size.reg = gcregsrcsize_max;
@@ -608,20 +1005,29 @@ enum bverror do_blit(struct bvbltparams *bvbltparams,
 		= gcmosrc_rotationangle_ldst[index];
 	gcmosrc->rotationangle.raw = 0;
 	gcmosrc->rotationangle.reg.src = rotencoding[srcinfo->angle];
+<<<<<<< HEAD
 	gcmosrc->rotationangle.reg.dst = rotencoding[dstinfo->angle];
+=======
+	gcmosrc->rotationangle.reg.dst = rotencoding[batch->dstangle];
+>>>>>>> d005644... gcx: split in several files by function.
 	gcmosrc->rotationangle.reg.src_mirror = srcinfo->mirror;
 	gcmosrc->rotationangle.reg.dst_mirror = GCREG_MIRROR_NONE;
 
 	gcmosrc->rop_ldst = gcmosrc_rop_ldst[index];
 	gcmosrc->rop.raw = 0;
 	gcmosrc->rop.reg.type = GCREG_ROP_TYPE_ROP3;
+<<<<<<< HEAD
 	gcmosrc->rop.reg.fg = (unsigned char) batch->op.blit.rop;
+=======
+	gcmosrc->rop.reg.fg = (unsigned char) batch->gcblit.rop;
+>>>>>>> d005644... gcx: split in several files by function.
 
 	gcmosrc->mult_ldst = gcmosrc_mult_ldst[index];
 	gcmosrc->mult.raw = 0;
 	gcmosrc->mult.reg.srcglobalpremul
 	= GCREG_COLOR_MULTIPLY_MODES_SRC_GLOBAL_PREMULTIPLY_DISABLE;
 
+<<<<<<< HEAD
 	if (srcinfo->format.premultiplied)
 		gcmosrc->mult.reg.srcpremul
 		= GCREG_COLOR_MULTIPLY_MODES_SRC_PREMULTIPLY_DISABLE;
@@ -819,6 +1225,156 @@ enum bverror do_blit(struct bvbltparams *bvbltparams,
 	}
 
 	batch->op.blit.srccount += 1;
+=======
+	if ((srcgeom->format & OCDFMTDEF_NON_PREMULT) != 0)
+		gcmosrc->mult.reg.srcpremul
+		= GCREG_COLOR_MULTIPLY_MODES_SRC_PREMULTIPLY_ENABLE;
+	else
+		gcmosrc->mult.reg.srcpremul
+		= GCREG_COLOR_MULTIPLY_MODES_SRC_PREMULTIPLY_DISABLE;
+
+	if ((dstgeom->format & OCDFMTDEF_NON_PREMULT) != 0) {
+		gcmosrc->mult.reg.dstpremul
+		= GCREG_COLOR_MULTIPLY_MODES_SRC_PREMULTIPLY_ENABLE;
+
+		gcmosrc->mult.reg.dstdemul
+		= GCREG_COLOR_MULTIPLY_MODES_DST_DEMULTIPLY_ENABLE;
+	} else {
+		gcmosrc->mult.reg.dstpremul
+		= GCREG_COLOR_MULTIPLY_MODES_SRC_PREMULTIPLY_DISABLE;
+
+		gcmosrc->mult.reg.dstdemul
+		= GCREG_COLOR_MULTIPLY_MODES_DST_DEMULTIPLY_DISABLE;
+	}
+
+	if (srcformat->format == GCREG_DE_FORMAT_NV12) {
+		struct gcmosrcplanaryuv *yuv;
+		int uvshift = srcbyteshift;
+
+#if 0
+		/* TODO: needs rework */
+		if (multisrc && (srcsurftop % 2)) {
+			/* We can't shift the uv plane by an odd number
+			 * of rows. */
+			BVSETBLTERROR(BVERR_SRC1RECT,
+				      "src/dst y coordinate combination"
+				      " not supported");
+			goto exit;
+		}
+#endif
+
+		bverror = claim_buffer(bltparams, batch,
+				       sizeof(struct gcmosrcplanaryuv),
+				       (void **) &yuv);
+		if (bverror != BVERR_NONE)
+			goto exit;
+
+		yuv->uplaneaddress_ldst =
+			gcmosrc_uplaneaddress_ldst[index];
+		yuv->uplanestride_ldst =
+			gcmosrc_uplanestride_ldst[index];
+		yuv->vplaneaddress_ldst =
+			gcmosrc_vplaneaddress_ldst[index];
+		yuv->vplanestride_ldst =
+			gcmosrc_vplanestride_ldst[index];
+
+#if 0
+		/* TODO: needs rework */
+		if (multisrc) {
+			/* UV plane is half height. */
+			uvshift = (srcsurftop / 2)
+				* (int) srcgeom->virtstride
+				+ srcsurfleft
+				* (int) srcformat->bitspp / 8;
+		} else {
+			/* No shift needed for single source walker. */
+			uvshift = 0;
+		}
+#endif
+
+		GCDBG(GCZONE_SURF, "  uvshift = 0x%08X (%d)\n",
+			uvshift, uvshift);
+
+		/* add fixed offset from Y plane */
+		uvshift += srcgeom->virtstride * srcgeom->height;
+
+		GCDBG(GCZONE_SURF, "  final uvshift = 0x%08X (%d)\n",
+			uvshift, uvshift);
+
+		yuv->uplaneaddress = GET_MAP_HANDLE(srcmap);
+		add_fixup(bltparams, batch, &yuv->uplaneaddress, uvshift);
+
+		yuv->uplanestride = srcgeom->virtstride;
+
+		yuv->vplaneaddress = GET_MAP_HANDLE(srcmap);
+		add_fixup(bltparams, batch, &yuv->vplaneaddress, uvshift);
+
+		yuv->vplanestride = srcgeom->virtstride;
+	}
+
+	if (srcgca != NULL) {
+		gcmosrc->alphacontrol_ldst
+			= gcmosrc_alphacontrol_ldst[index];
+		gcmosrc->alphacontrol.raw = 0;
+		gcmosrc->alphacontrol.reg.enable
+			= GCREG_ALPHA_CONTROL_ENABLE_ON;
+
+		/* Allocate command buffer. */
+		bverror = claim_buffer(bltparams, batch,
+				       sizeof(struct gcmosrcalpha),
+				       (void **) &gcmosrcalpha);
+		if (bverror != BVERR_NONE)
+			goto exit;
+
+		gcmosrcalpha->alphamodes_ldst
+			= gcmosrcalpha_alphamodes_ldst[index];
+		gcmosrcalpha->alphamodes.raw = 0;
+		gcmosrcalpha->alphamodes.reg.src_global_alpha
+			= srcgca->src_global_alpha_mode;
+		gcmosrcalpha->alphamodes.reg.dst_global_alpha
+			= srcgca->dst_global_alpha_mode;
+
+		gcmosrcalpha->alphamodes.reg.src_blend
+			= srcgca->srcconfig->factor_mode;
+		gcmosrcalpha->alphamodes.reg.src_color_reverse
+			= srcgca->srcconfig->color_reverse;
+
+		gcmosrcalpha->alphamodes.reg.dst_blend
+			= srcgca->dstconfig->factor_mode;
+		gcmosrcalpha->alphamodes.reg.dst_color_reverse
+			= srcgca->dstconfig->color_reverse;
+
+		GCDBG(GCZONE_BLEND, "dst blend:\n");
+		GCDBG(GCZONE_BLEND, "  factor = %d\n",
+			gcmosrcalpha->alphamodes.reg.dst_blend);
+		GCDBG(GCZONE_BLEND, "  inverse = %d\n",
+			gcmosrcalpha->alphamodes.reg.dst_color_reverse);
+
+		GCDBG(GCZONE_BLEND, "src blend:\n");
+		GCDBG(GCZONE_BLEND, "  factor = %d\n",
+			gcmosrcalpha->alphamodes.reg.src_blend);
+		GCDBG(GCZONE_BLEND, "  inverse = %d\n",
+			gcmosrcalpha->alphamodes.reg.src_color_reverse);
+
+		gcmosrcalpha->srcglobal_ldst
+			= gcmosrcalpha_srcglobal_ldst[index];
+		gcmosrcalpha->srcglobal.raw = srcgca->src_global_color;
+
+		gcmosrcalpha->dstglobal_ldst
+			= gcmosrcalpha_dstglobal_ldst[index];
+		gcmosrcalpha->dstglobal.raw = srcgca->dst_global_color;
+	} else {
+		GCDBG(GCZONE_BLEND, "blending disabled.\n");
+
+		gcmosrc->alphacontrol_ldst
+			= gcmosrc_alphacontrol_ldst[index];
+		gcmosrc->alphacontrol.raw = 0;
+		gcmosrc->alphacontrol.reg.enable
+			= GCREG_ALPHA_CONTROL_ENABLE_OFF;
+	}
+
+	batch->gcblit.srccount += 1;
+>>>>>>> d005644... gcx: split in several files by function.
 
 exit:
 	GCEXITARG(GCZONE_BLIT, "bv%s = %d\n",

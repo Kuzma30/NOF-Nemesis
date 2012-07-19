@@ -448,6 +448,7 @@ static void destroy_callback(void)
 static int gc_getcaps_wrapper(struct gcicaps *gcicaps)
 {
 	int ret = 0;
+<<<<<<< HEAD
 	struct gcicaps cpcaps;
 
 	GCENTER(GCZONE_CAPS);
@@ -470,6 +471,11 @@ static int gc_commit_wrapper(struct gcicommit *gcicommit)
 	bool buffercopied = false;
 	bool unmapcopied = false;
 	struct gcicommit cpcommit;
+=======
+	bool buffercopied = false;
+	bool unmapcopied = false;
+	struct gccommit cpcommit;
+>>>>>>> d005644... gcx: split in several files by function.
 	struct gccallbackinfo *gccallbackinfo;
 
 	struct list_head *gcbufferhead;
@@ -496,7 +502,11 @@ static int gc_commit_wrapper(struct gcicommit *gcicommit)
 
 	/* Make a copy of the user buffer list. */
 	gcbufferhead = cpcommit.buffer.next;
+<<<<<<< HEAD
 	while (gcbufferhead != &gcicommit->buffer) {
+=======
+	while (gcbufferhead != &gccommit->buffer) {
+>>>>>>> d005644... gcx: split in several files by function.
 		gcbuffer = list_entry(gcbufferhead, struct gcbuffer, link);
 		GCDBG(GCZONE_COMMIT, "copying buffer 0x%08X.\n",
 		      (unsigned int) gcbuffer);
@@ -574,7 +584,11 @@ static int gc_commit_wrapper(struct gcicommit *gcicommit)
 	/* Copy scheduled unmappings to the local list. */
 	GCDBG(GCZONE_COMMIT, "copying unmaps.\n");
 	gcschedunmaphead = cpcommit.unmap.next;
+<<<<<<< HEAD
 	while (gcschedunmaphead != &gcicommit->unmap) {
+=======
+	while (gcschedunmaphead != &gccommit->unmap) {
+>>>>>>> d005644... gcx: split in several files by function.
 		/* Get a pointer to the user structure. */
 		gcschedunmap = list_entry(gcschedunmaphead,
 					  struct gcschedunmap,

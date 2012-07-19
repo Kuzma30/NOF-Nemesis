@@ -65,7 +65,11 @@ GCDBG_FILTERDEF(gcfill, GCZONE_NONE,
 
 
 static inline unsigned int extract_component(unsigned int pixel,
+<<<<<<< HEAD
 					     const struct bvcomponent *desc)
+=======
+					     struct bvcomponent *desc)
+>>>>>>> d005644... gcx: split in several files by function.
 {
 	unsigned int component;
 	unsigned int component8;
@@ -129,10 +133,17 @@ static unsigned int getinternalcolor(void *ptr, struct bvformatxlate *format)
 		GCDBG(GCZONE_COLOR, "srcpixel=0x%08X\n", srcpixel);
 	}
 
+<<<<<<< HEAD
 	r = extract_component(srcpixel, &format->cs.rgb.comp->r);
 	g = extract_component(srcpixel, &format->cs.rgb.comp->g);
 	b = extract_component(srcpixel, &format->cs.rgb.comp->b);
 	a = extract_component(srcpixel, &format->cs.rgb.comp->a);
+=======
+	r = extract_component(srcpixel, &format->rgba.r);
+	g = extract_component(srcpixel, &format->rgba.g);
+	b = extract_component(srcpixel, &format->rgba.b);
+	a = extract_component(srcpixel, &format->rgba.a);
+>>>>>>> d005644... gcx: split in several files by function.
 
 	GCDBG(GCZONE_COLOR, "(r,g,b,a)=0x%02X,0x%02X,0x%02X,0x%02X\n",
 	      r, g, b, a);
@@ -144,6 +155,7 @@ static unsigned int getinternalcolor(void *ptr, struct bvformatxlate *format)
 	return dstpixel;
 }
 
+<<<<<<< HEAD
 enum bverror do_fill(struct bvbltparams *bvbltparams,
 		     struct gcbatch *batch,
 		     struct surfaceinfo *srcinfo)
@@ -151,6 +163,15 @@ enum bverror do_fill(struct bvbltparams *bvbltparams,
 	enum bverror bverror;
 	struct gccontext *gccontext = get_context();
 	struct surfaceinfo *dstinfo;
+=======
+enum bverror do_fill(struct bvbltparams *bltparams,
+		     struct gcbatch *batch,
+		     struct srcinfo *srcinfo)
+{
+	enum bverror bverror;
+	struct gccontext *gccontext = get_context();
+	int dstbyteshift;
+>>>>>>> d005644... gcx: split in several files by function.
 	struct gcmofill *gcmofill;
 	unsigned char *fillcolorptr;
 	struct bvbuffmap *dstmap = NULL;
@@ -158,6 +179,7 @@ enum bverror do_fill(struct bvbltparams *bvbltparams,
 	GCENTER(GCZONE_FILL);
 
 	/* Finish previous batch if any. */
+<<<<<<< HEAD
 	bverror = batch->batchend(bvbltparams, batch);
 	if (bverror != BVERR_NONE)
 		goto exit;
@@ -181,20 +203,47 @@ enum bverror do_fill(struct bvbltparams *bvbltparams,
 		batch->dstbyteshift = dstinfo->bytealign;
 		batch->dstphyswidth = dstinfo->physwidth;
 		batch->dstphysheight = dstinfo->physheight;
+=======
+	bverror = batch->batchend(bltparams, batch);
+	if (bverror != BVERR_NONE)
+		goto exit;
+
+	/* Compute the surface offset in bytes. */
+	dstbyteshift = batch->dstalign * (int) batch->dstformat->bitspp / 8;
+
+	/* Verify if the destination parameter have been modified. */
+	if ((batch->dstbyteshift != dstbyteshift) ||
+	    (batch->physwidth != batch->dstphyswidth) ||
+	    (batch->physheight != batch->dstphysheight)) {
+		/* Set new values. */
+		batch->dstbyteshift = dstbyteshift;
+		batch->physwidth = batch->dstphyswidth;
+		batch->physheight = batch->dstphysheight;
+>>>>>>> d005644... gcx: split in several files by function.
 
 		/* Mark as modified. */
 		batch->batchflags |= BVBATCH_DST;
 	}
 
 	/* Map the destination. */
+<<<<<<< HEAD
 	bverror = do_map(bvbltparams->dstdesc, batch, &dstmap);
 	if (bverror != BVERR_NONE) {
 		bvbltparams->errdesc = gccontext->bverrorstr;
+=======
+	bverror = do_map(bltparams->dstdesc, batch, &dstmap);
+	if (bverror != BVERR_NONE) {
+		bltparams->errdesc = gccontext->bverrorstr;
+>>>>>>> d005644... gcx: split in several files by function.
 		goto exit;
 	}
 
 	/* Set the new destination. */
+<<<<<<< HEAD
 	bverror = set_dst(bvbltparams, batch, dstmap);
+=======
+	bverror = set_dst(bltparams, batch, dstmap);
+>>>>>>> d005644... gcx: split in several files by function.
 	if (bverror != BVERR_NONE)
 		goto exit;
 
@@ -207,7 +256,11 @@ enum bverror do_fill(struct bvbltparams *bvbltparams,
 	** Allocate command buffer.
 	*/
 
+<<<<<<< HEAD
 	bverror = claim_buffer(bvbltparams, batch,
+=======
+	bverror = claim_buffer(bltparams, batch,
+>>>>>>> d005644... gcx: split in several files by function.
 			       sizeof(struct gcmofill),
 			       (void **) &gcmofill);
 	if (bverror != BVERR_NONE)
@@ -240,12 +293,21 @@ enum bverror do_fill(struct bvbltparams *bvbltparams,
 
 	fillcolorptr
 		= (unsigned char *) srcinfo->buf.desc->virtaddr
+<<<<<<< HEAD
 		+ srcinfo->rect.top * srcinfo->geom->virtstride
 		+ srcinfo->rect.left * srcinfo->format.bitspp / 8;
 
 	gcmofill->clearcolor_ldst = gcmofill_clearcolor_ldst;
 	gcmofill->clearcolor.raw = getinternalcolor(fillcolorptr,
 						    &srcinfo->format);
+=======
+		+ srcinfo->rect->top * srcinfo->geom->virtstride
+		+ srcinfo->rect->left * srcinfo->format->bitspp / 8;
+
+	gcmofill->clearcolor_ldst = gcmofill_clearcolor_ldst;
+	gcmofill->clearcolor.raw = getinternalcolor(fillcolorptr,
+						    srcinfo->format);
+>>>>>>> d005644... gcx: split in several files by function.
 
 	/***********************************************************************
 	** Configure and start fill.
@@ -254,24 +316,40 @@ enum bverror do_fill(struct bvbltparams *bvbltparams,
 	/* Set destination configuration. */
 	gcmofill->dstconfig_ldst = gcmofill_dstconfig_ldst;
 	gcmofill->dstconfig.raw = 0;
+<<<<<<< HEAD
 	gcmofill->dstconfig.reg.swizzle = dstinfo->format.swizzle;
 	gcmofill->dstconfig.reg.format = dstinfo->format.format;
+=======
+	gcmofill->dstconfig.reg.swizzle = batch->dstformat->swizzle;
+	gcmofill->dstconfig.reg.format = batch->dstformat->format;
+>>>>>>> d005644... gcx: split in several files by function.
 	gcmofill->dstconfig.reg.command = GCREG_DEST_CONFIG_COMMAND_CLEAR;
 
 	/* Set ROP3. */
 	gcmofill->rop_ldst = gcmofill_rop_ldst;
 	gcmofill->rop.raw = 0;
 	gcmofill->rop.reg.type = GCREG_ROP_TYPE_ROP3;
+<<<<<<< HEAD
 	gcmofill->rop.reg.fg = (unsigned char) bvbltparams->op.rop;
+=======
+	gcmofill->rop.reg.fg = (unsigned char) bltparams->op.rop;
+>>>>>>> d005644... gcx: split in several files by function.
 
 	/* Set START_DE command. */
 	gcmofill->startde.cmd.fld = gcfldstartde;
 
 	/* Set destination rectangle. */
+<<<<<<< HEAD
 	gcmofill->rect.left = batch->dstadjusted.left;
 	gcmofill->rect.top = batch->dstadjusted.top;
 	gcmofill->rect.right = batch->dstadjusted.right;
 	gcmofill->rect.bottom = batch->dstadjusted.bottom;
+=======
+	gcmofill->rect.left = batch->clippedleft + batch->dstoffsetX;
+	gcmofill->rect.top = batch->clippedtop + batch->dstoffsetY;
+	gcmofill->rect.right = batch->clippedright + batch->dstoffsetX;
+	gcmofill->rect.bottom = batch->clippedbottom + batch->dstoffsetY;
+>>>>>>> d005644... gcx: split in several files by function.
 
 exit:
 	GCEXITARG(GCZONE_FILL, "bv%s = %d\n",

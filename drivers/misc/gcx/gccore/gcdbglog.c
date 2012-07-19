@@ -114,7 +114,11 @@
 #endif
 
 #if GC_SHOW_TIME
+<<<<<<< HEAD
 #define GC_TIME_FORMAT "[%5ld.%10ld] "
+=======
+#define GC_TIME_FORMAT "[%5ld.%ld] "
+>>>>>>> d005644... gcx: split in several files by function.
 #endif
 
 #if GC_SHOW_DUMP_LINE

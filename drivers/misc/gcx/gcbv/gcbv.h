@@ -61,8 +61,11 @@
  * Miscellaneous defines and macros.
  */
 
+<<<<<<< HEAD
 #define GC_MAX_BASE_ALIGN 64
 
+=======
+>>>>>>> d005644... gcx: split in several files by function.
 #if !defined(BVBATCH_DESTRECT)
 #define BVBATCH_DESTRECT (BVBATCH_DSTRECT_ORIGIN | BVBATCH_DSTRECT_SIZE)
 #endif
@@ -75,6 +78,14 @@
 #define BVBATCH_SRC2RECT (BVBATCH_SRC2RECT_ORIGIN | BVBATCH_SRC2RECT_SIZE)
 #endif
 
+<<<<<<< HEAD
+=======
+#define EQ_SIZE(rect1, rect2) \
+( \
+	(rect1->width == rect2->width) && (rect1->height == rect2->height) \
+)
+
+>>>>>>> d005644... gcx: split in several files by function.
 #define STRUCTSIZE(structptr, lastmember) \
 ( \
 	(size_t) &structptr->lastmember + \
@@ -113,6 +124,7 @@ do { \
 	bverror = error; \
 } while (0)
 
+<<<<<<< HEAD
 #define GCPRINT_RECT(zone, name, rect) \
 { \
 	GCDBG(zone, \
@@ -158,6 +170,8 @@ struct gcfiltercache {
 	struct list_head list;			/* gcfilterkernel */
 };
 
+=======
+>>>>>>> d005644... gcx: split in several files by function.
 
 /*******************************************************************************
  * Global data structure.
@@ -167,6 +181,7 @@ struct gccontext {
 	/* Last generated error message. */
 	char bverrorstr[128];
 
+<<<<<<< HEAD
 	/* Capabilities and characteristics. */
 	unsigned int gcmodel;
 	unsigned int gcrevision;
@@ -178,6 +193,8 @@ struct gccontext {
 	union gcfeatures2 gcfeatures2;
 	union gcfeatures3 gcfeatures3;
 
+=======
+>>>>>>> d005644... gcx: split in several files by function.
 	/* Dynamically allocated structure cache. */
 	struct bvbuffmap *buffmapvac;		/* bvbuffmap */
 	struct list_head unmapvac;		/* gcschedunmap */
@@ -195,6 +212,7 @@ struct gccontext {
 	GCLOCK_TYPE fixuplock;
 	GCLOCK_TYPE maplock;
 	GCLOCK_TYPE callbacklock;
+<<<<<<< HEAD
 
 	/* Kernel table cache. */
 	struct gcfilterkernel *loadedfilter;	/* gcfilterkernel */
@@ -203,6 +221,8 @@ struct gccontext {
 	/* Temporary buffer descriptor. */
 	struct bvbuffdesc *tmpbuffdesc;
 	void *tmpbuff;
+=======
+>>>>>>> d005644... gcx: split in several files by function.
 };
 
 
@@ -227,8 +247,15 @@ struct bvbuffmapinfo {
  * Color format.
  */
 
+<<<<<<< HEAD
 #define BVFMT_RGB	1
 #define BVFMT_YUV	2
+=======
+enum bvformattype {
+	BVFMT_RGB,
+	BVFMT_YUV
+};
+>>>>>>> d005644... gcx: split in several files by function.
 
 struct bvcomponent {
 	unsigned int shift;
@@ -244,6 +271,7 @@ struct bvcsrgb {
 };
 
 struct bvformatxlate {
+<<<<<<< HEAD
 	unsigned int type;
 	unsigned int bitspp;
 	unsigned int allocbitspp;
@@ -261,6 +289,13 @@ struct bvformatxlate {
 			unsigned int planecount;
 		} yuv;
 	} cs;
+=======
+	enum bvformattype type;
+	unsigned bitspp;
+	unsigned format;
+	unsigned swizzle;
+	struct bvcsrgb rgba;
+>>>>>>> d005644... gcx: split in several files by function.
 };
 
 
@@ -320,6 +355,7 @@ extern const unsigned int rotencoding[];
 
 
 /*******************************************************************************
+<<<<<<< HEAD
  * Surface descriptor.
  */
 
@@ -364,6 +400,8 @@ struct surfaceinfo {
 
 
 /*******************************************************************************
+=======
+>>>>>>> d005644... gcx: split in several files by function.
  * Batch structures.
  */
 
@@ -374,6 +412,7 @@ typedef enum bverror (*gcbatchend) (struct bvbltparams *bvbltparams,
 
 /* Blit states. */
 struct gcblit {
+<<<<<<< HEAD
 	/* Number of sources in the operation. */
 	unsigned int srccount;
 
@@ -426,6 +465,11 @@ struct gcfilter {
 	 * the surface misalignment and the source angle. */
 	struct gcrect dstadjusted;
 	struct gcrect dstadjustedaux;
+=======
+	unsigned int srccount;
+	unsigned int multisrc;
+	unsigned short rop;
+>>>>>>> d005644... gcx: split in several files by function.
 };
 
 /* Batch header. */
@@ -440,6 +484,7 @@ struct gcbatch {
 	gcbatchend batchend;
 
 	/* State of the current operation. */
+<<<<<<< HEAD
 	struct {
 		struct gcblit blit;
 		struct gcfilter filter;
@@ -475,14 +520,70 @@ struct gcbatch {
 	unsigned int dstphyswidth;
 	unsigned int dstphysheight;
 
+=======
+	struct gcblit gcblit;
+
+	/* Destination format. */
+	struct bvformatxlate *dstformat;
+
+	/* Clipping deltas; used to correct the source coordinates for
+	 * single source blits. */
+	int deltaleft;
+	int deltatop;
+	int deltaright;
+	int deltabottom;
+
+	/* Clipped destination rectangle coordinates. */
+	unsigned short clippedleft;
+	unsigned short clippedtop;
+	unsigned short clippedright;
+	unsigned short clippedbottom;
+
+	/* Destination base address alignment in pixels. */
+	int dstalign;
+
+	/* Destination origin offset. */
+	unsigned int dstoffsetX;
+	unsigned int dstoffsetY;
+
+	/* Rotation angle. */
+	int dstangle;
+
+	/* Geometry size of the destination surface. */
+	unsigned int dstwidth;
+	unsigned int dstheight;
+
+	/* Physical size of the destination surface. */
+	unsigned int dstphyswidth;
+	unsigned int dstphysheight;
+
+	/* Computed destination rectangle coordinates; in multi-source
+	 * setup can be modified to match new destination and source
+	 * geometry. */
+	unsigned short left;
+	unsigned short top;
+	unsigned short right;
+	unsigned short bottom;
+
+	/* Physical size of the matched destination and source surfaces
+	 * for multi-source setup. */
+	unsigned int physwidth;
+	unsigned int physheight;
+
+>>>>>>> d005644... gcx: split in several files by function.
 	/* Alignment byte offset for the destination surface; in multi-
 	 * source setup can be modified to match new destination and source
 	 * geometry. */
 	int dstbyteshift;
 
+<<<<<<< HEAD
 	/* Destination rectangle adjustment offsets. */
 	int dstoffsetX;
 	int dstoffsetY;
+=======
+	/* Block walker enable. */
+	int blockenable;
+>>>>>>> d005644... gcx: split in several files by function.
 
 #if GCDEBUG_ENABLE
 	/* Rectangle validation storage. */
@@ -507,18 +608,63 @@ struct gcbatch {
 
 
 /*******************************************************************************
+<<<<<<< HEAD
+=======
+ * srcinfo is used by blitters to define an array of valid sources.
+ */
+
+struct srcinfo {
+	/* BLTsville source index (0 for src1 and 1 for src2). */
+	int index;
+
+	/* Source surface buffer descriptor. */
+	union bvinbuff buf;
+
+	/* Source surface geometry. */
+	struct bvsurfgeom *geom;
+
+	/* Source rectangle. */
+	struct bvrect *rect;
+
+	/* Source surface format. */
+	struct bvformatxlate *format;
+
+	/* Source rotation angle. */
+	int angle;
+	unsigned int rot;
+
+	/* Mirror setting. */
+	unsigned int mirror;
+
+	/* ROP. */
+	unsigned short rop;
+
+	/* Blending info. */
+	struct gcalpha *gca;
+};
+
+
+/*******************************************************************************
+>>>>>>> d005644... gcx: split in several files by function.
  * Internal API entries.
  */
 
 /* Get the pointer to the context. */
 struct gccontext *get_context(void);
 
+<<<<<<< HEAD
 /* Validation. */
 bool valid_rect(struct bvsurfgeom *bvsurfgeom, struct gcrect *gcrect);
 
 /* Parsers. */
 enum bverror parse_format(struct bvbltparams *bvbltparams,
 			  struct surfaceinfo *surfaceinfo);
+=======
+/* Parsers. */
+enum bverror parse_format(struct bvbltparams *bvbltparams,
+			  enum ocdformat ocdformat,
+			  struct bvformatxlate **format);
+>>>>>>> d005644... gcx: split in several files by function.
 enum bverror parse_blend(struct bvbltparams *bvbltparams,
 			 enum bvblend blend,
 			 struct gcalpha *gca);
@@ -526,6 +672,7 @@ enum bverror parse_destination(struct bvbltparams *bvbltparams,
 			       struct gcbatch *gcbatch);
 enum bverror parse_source(struct bvbltparams *bvbltparams,
 			  struct gcbatch *gcbatch,
+<<<<<<< HEAD
 			  struct bvrect *srcrect,
 			  struct surfaceinfo *srcinfo);
 enum bverror parse_scalemode(struct bvbltparams *bvbltparams,
@@ -537,6 +684,14 @@ void process_dest_rotation(struct bvbltparams *bvbltparams,
 
 /* Return surface alignment offset. */
 int get_pixel_offset(struct surfaceinfo *surfaceinfo, int offset);
+=======
+			  struct srcinfo *srcinfo);
+
+/* Return surface alignment offset. */
+int get_pixel_offset(struct bvbuffdesc *bvbuffdesc,
+		     struct bvformatxlate *format,
+		     int offset);
+>>>>>>> d005644... gcx: split in several files by function.
 
 /* Buffer mapping. */
 enum bverror do_map(struct bvbuffdesc *bvbuffdesc,
@@ -563,11 +718,14 @@ enum bverror claim_buffer(struct bvbltparams *bvbltparams,
 			  unsigned int size,
 			  void **buffer);
 
+<<<<<<< HEAD
 /* Temporary buffer management. */
 enum bverror allocate_temp(struct bvbltparams *bvbltparams,
 			   unsigned int size);
 enum bverror free_temp(bool schedule);
 
+=======
+>>>>>>> d005644... gcx: split in several files by function.
 /* Program the destination. */
 enum bverror set_dst(struct bvbltparams *bltparams,
 		     struct gcbatch *batch,
@@ -576,6 +734,7 @@ enum bverror set_dst(struct bvbltparams *bltparams,
 /* Rendering entry points. */
 enum bverror do_fill(struct bvbltparams *bltparams,
 		     struct gcbatch *gcbatch,
+<<<<<<< HEAD
 		     struct surfaceinfo *srcinfo);
 enum bverror do_blit(struct bvbltparams *bltparams,
 		     struct gcbatch *gcbatch,
@@ -583,5 +742,14 @@ enum bverror do_blit(struct bvbltparams *bltparams,
 enum bverror do_filter(struct bvbltparams *bvbltparams,
 		       struct gcbatch *gcbatch,
 		       struct surfaceinfo *srcinfo);
+=======
+		     struct srcinfo *srcinfo);
+enum bverror do_blit(struct bvbltparams *bltparams,
+		     struct gcbatch *gcbatch,
+		     struct srcinfo *srcinfo);
+enum bverror do_filter(struct bvbltparams *bvbltparams,
+		       struct gcbatch *gcbatch,
+		       struct srcinfo *srcinfo);
+>>>>>>> d005644... gcx: split in several files by function.
 
 #endif

@@ -56,6 +56,7 @@
 
 #define GCZONE_NONE		0
 #define GCZONE_ALL		(~0U)
+<<<<<<< HEAD
 #define GCZONE_KERNEL		(1 << 0)
 #define GCZONE_FILTER		(1 << 1)
 #define GCZONE_BLEND		(1 << 2)
@@ -1878,4 +1879,75 @@ exit:
 	GCEXITARG(GCZONE_FILTER, "bv%s = %d\n",
 		  (bverror == BVERR_NONE) ? "result" : "error", bverror);
 	return bverror;
+=======
+#define GCZONE_FILTER		(1 << 11)
+
+GCDBG_FILTERDEF(gcfilter, GCZONE_NONE,
+		"filter")
+
+enum bverror do_filter(struct bvbltparams *bltparams,
+		       struct gcbatch *batch,
+		       struct srcinfo *srcinfo)
+{
+/*	enum bverror bverror = BVERR_NONE;*/
+	int verpass;
+
+	GCENTER(GCZONE_FILTER);
+
+	GCDBG(GCZONE_FILTER, "source rectangle:\n");
+	GCDBG(GCZONE_FILTER, "  stride = %d, geom = %dx%d\n",
+		srcinfo->geom->virtstride,
+		srcinfo->geom->width, srcinfo->geom->height);
+	GCDBG(GCZONE_FILTER, "  rotation = %d\n",
+		srcinfo->angle);
+	GCDBG(GCZONE_FILTER, "  rect = (%d,%d)-(%d,%d), %dx%d\n",
+		srcinfo->rect->left, srcinfo->rect->top,
+		srcinfo->rect->left + srcinfo->rect->width,
+		srcinfo->rect->top + srcinfo->rect->height,
+		srcinfo->rect->width, srcinfo->rect->height);
+
+	GCDBG(GCZONE_FILTER, "destination rectangle:\n");
+	GCDBG(GCZONE_FILTER, "  stride = %d, geom size = %dx%d\n",
+		bltparams->dstgeom->virtstride,
+		bltparams->dstgeom->width, bltparams->dstgeom->height);
+	GCDBG(GCZONE_FILTER, "  rotaton = %d\n",
+		batch->dstangle);
+	GCDBG(GCZONE_FILTER, "  rect = (%d,%d)-(%d,%d), %dx%d\n",
+		bltparams->dstrect.left, bltparams->dstrect.top,
+		bltparams->dstrect.left + bltparams->dstrect.width,
+		bltparams->dstrect.top + bltparams->dstrect.height,
+		bltparams->dstrect.width, bltparams->dstrect.height);
+
+	/***********************************************************************
+	 * Update kernel arrays.
+	 */
+
+	/* Do we need the vertical pass? */
+	verpass = (srcinfo->rect->height != bltparams->dstrect.height);
+
+#if 0
+	/* Recompute the table if necessary. */
+	gcmONERROR(_CalculateSyncTable(
+	hardware,
+	State->newHorKernelSize,
+	srcRectSize.x,
+	destRectSize.x,
+	horKernel
+	));
+
+	gcmONERROR(_CalculateSyncTable(
+	hardware,
+	State->newVerKernelSize,
+	srcRectSize.y,
+	destRectSize.y,
+	verKernel
+	));
+#endif
+
+	GCEXITARG(GCZONE_FILTER, "bv%s = %d\n",
+		  (bverror == BVERR_NONE) ? "result" : "error", bverror);
+
+	/* Not implemented yet */
+	return BVERR_OP;
+>>>>>>> d005644... gcx: split in several files by function.
 }

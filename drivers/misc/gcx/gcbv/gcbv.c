@@ -64,8 +64,11 @@
 #define GCZONE_BATCH		(1 << 5)
 #define GCZONE_BLIT		(1 << 6)
 #define GCZONE_CACHE		(1 << 7)
+<<<<<<< HEAD
 #define GCZONE_CALLBACK		(1 << 8)
 #define GCZONE_TEMP		(1 << 9)
+=======
+>>>>>>> d005644... gcx: split in several files by function.
 
 GCDBG_FILTERDEF(gcbv, GCZONE_NONE,
 		"mapping",
@@ -255,6 +258,7 @@ static struct bvsurferrorid g_masksurferr = { "mask", BVERR_MASKDESC };
  * Callback info management.
  */
 
+<<<<<<< HEAD
 /* BLTsville callback function. */
 struct gccallbackbltsville {
 	/* Function pointer. */
@@ -282,6 +286,16 @@ struct gccallbackinfo {
 		/* Information for freeing a surface. */
 		struct gccallbackfreesurface freesurface;
 	} info;
+=======
+/* Callback information. */
+struct gccallbackinfo {
+	/* BLTsville callback function. */
+	void (*callbackfn) (struct bvcallbackerror *err,
+			    unsigned long callbackdata);
+
+	/* Callback data. */
+	unsigned long callbackdata;
+>>>>>>> d005644... gcx: split in several files by function.
 
 	/* Previous/next callback information. */
 	struct list_head link;
@@ -319,6 +333,7 @@ exit:
 	GCUNLOCK(&gccontext->callbacklock);
 
 	return bverror;
+<<<<<<< HEAD
 }
 
 static void free_callback(struct gccallbackinfo *gccallbackinfo)
@@ -620,6 +635,172 @@ static int verify_surface(unsigned int tile,
 		if (surf->tileparams == NULL)
 			return GCBVERR_TILE;
 
+=======
+}
+
+static void free_callback(struct gccallbackinfo *gccallbackinfo)
+{
+	struct gccontext *gccontext = get_context();
+
+	/* Lock access to callback info lists. */
+	GCLOCK(&gccontext->callbacklock);
+
+	list_move(&gccallbackinfo->link, &gccontext->callbackvac);
+
+	/* Unlock access to callback info lists. */
+	GCUNLOCK(&gccontext->callbacklock);
+}
+
+void gccallback(void *callbackparam)
+{
+	struct gccallbackinfo *gccallbackinfo;
+
+	GCENTER(GCZONE_BLIT);
+
+	gccallbackinfo = (struct gccallbackinfo *) callbackparam;
+	GCDBG(GCZONE_BLIT, "bltsville_callback = 0x%08X\n",
+		(unsigned int) gccallbackinfo->callbackfn);
+	GCDBG(GCZONE_BLIT, "bltsville_param    = 0x%08X\n",
+		(unsigned int) gccallbackinfo->callbackdata);
+
+	gccallbackinfo->callbackfn(NULL, gccallbackinfo->callbackdata);
+	free_callback(gccallbackinfo);
+
+	GCEXIT(GCZONE_BLIT);
+}
+
+
+/*******************************************************************************
+ * Program the destination.
+ */
+
+enum bverror set_dst(struct bvbltparams *bltparams,
+		     struct gcbatch *batch,
+		     struct bvbuffmap *dstmap)
+{
+	enum bverror bverror = BVERR_NONE;
+	struct gcmodst *gcmodst;
+
+	GCENTER(GCZONE_DEST);
+
+	/* Did destination surface change? */
+	if ((batch->batchflags & BVBATCH_DST) != 0) {
+		/* Allocate command buffer. */
+		bverror = claim_buffer(bltparams, batch,
+				       sizeof(struct gcmodst),
+				       (void **) &gcmodst);
+		if (bverror != BVERR_NONE)
+			goto exit;
+
+		/* Add the address fixup. */
+		add_fixup(bltparams, batch, &gcmodst->address,
+			  batch->dstbyteshift);
+
+		/* Set surface parameters. */
+		gcmodst->address_ldst = gcmodst_address_ldst;
+		gcmodst->address = GET_MAP_HANDLE(dstmap);
+		gcmodst->stride = bltparams->dstgeom->virtstride;
+
+		/* Set surface width and height. */
+		gcmodst->rotation.raw = 0;
+		gcmodst->rotation.reg.surf_width = batch->physwidth;
+		gcmodst->rotationheight_ldst = gcmodst_rotationheight_ldst;
+		gcmodst->rotationheight.raw = 0;
+		gcmodst->rotationheight.reg.height = batch->physheight;
+
+		/* Set clipping. */
+		gcmodst->clip_ldst = gcmodst_clip_ldst;
+		gcmodst->cliplt.raw = 0;
+		gcmodst->cliprb.raw = 0;
+		gcmodst->cliprb.reg.right = GC_CLIP_RESET_RIGHT;
+		gcmodst->cliprb.reg.bottom = GC_CLIP_RESET_BOTTOM;
+	}
+
+exit:
+	GCEXITARG(GCZONE_DEST, "bv%s = %d\n",
+		  (bverror == BVERR_NONE) ? "result" : "error", bverror);
+	return bverror;
+}
+
+
+/*******************************************************************************
+ * Surface compare and validation.
+ */
+
+static inline bool equal_rects(struct bvrect *rect1, struct bvrect *rect2)
+{
+	if (rect1->left != rect2->left)
+		return false;
+
+	if (rect1->top != rect2->top)
+		return false;
+
+	if (rect1->width != rect2->width)
+		return false;
+
+	if (rect1->height != rect2->height)
+		return false;
+
+	return true;
+}
+
+/* The function verifies whether the two buffer descriptors and rectangles
+   define the same physical area. */
+static bool same_phys_area(struct bvbuffdesc *surf1, struct bvrect *rect1,
+			   struct bvbuffdesc *surf2, struct bvrect *rect2)
+{
+	struct bvphysdesc *physdesc1;
+	struct bvphysdesc *physdesc2;
+
+	/* If pointers are the same, things are much easier. */
+	if (surf1 == surf2)
+		/* Compare the rectangles. For simplicity we don't consider
+		   cases with partially overlapping rectangles at this time. */
+		return equal_rects(rect1, rect2);
+
+	/* Assume diffrent areas if the types are different. */
+	if (surf1->auxtype != surf2->auxtype)
+		return false;
+
+	if (surf1->auxtype == BVAT_PHYSDESC) {
+		physdesc1 = (struct bvphysdesc *) surf1->auxptr;
+		physdesc2 = (struct bvphysdesc *) surf2->auxptr;
+
+		/* Same physical descriptor? */
+		if (physdesc1 == physdesc2)
+			return equal_rects(rect1, rect2);
+
+		/* Same page array? */
+		if (physdesc1->pagearray == physdesc2->pagearray)
+			return equal_rects(rect1, rect2);
+
+		/* Pageoffsets must match since different buffers
+		 * can share the same first page (eg nv12).
+		 */
+		if (physdesc1->pageoffset != physdesc2->pageoffset)
+			return false;
+
+		/* Assume the same surface if first pages match. */
+		if (physdesc1->pagearray[0] == physdesc2->pagearray[0])
+			return equal_rects(rect1, rect2);
+
+	} else {
+		if (surf1->virtaddr == surf2->virtaddr)
+			return equal_rects(rect1, rect2);
+	}
+
+	return false;
+}
+
+static int verify_surface(unsigned int tile,
+			  union bvinbuff *surf,
+			  struct bvsurfgeom *geom)
+{
+	if (tile) {
+		if (surf->tileparams == NULL)
+			return GCBVERR_TILE;
+
+>>>>>>> d005644... gcx: split in several files by function.
 		if (surf->tileparams->structsize <
 		    STRUCTSIZE(surf->tileparams, srcheight))
 			return GCBVERR_TILE_VERS;
@@ -652,8 +833,11 @@ static int verify_surface(unsigned int tile,
 void bv_init(void)
 {
 	struct gccontext *gccontext = get_context();
+<<<<<<< HEAD
 	struct gcicaps gcicaps;
 	unsigned i, j;
+=======
+>>>>>>> d005644... gcx: split in several files by function.
 
 	GCDBG_REGISTER(gcbv);
 	GCDBG_REGISTER(gcparser);
@@ -675,6 +859,7 @@ void bv_init(void)
 	INIT_LIST_HEAD(&gccontext->batchvac);
 	INIT_LIST_HEAD(&gccontext->callbacklist);
 	INIT_LIST_HEAD(&gccontext->callbackvac);
+<<<<<<< HEAD
 
 	/* Initialize the filter cache. */
 	for (i = 0; i < GC_FILTER_COUNT; i += 1)
@@ -694,6 +879,8 @@ void bv_init(void)
 		gccontext->gcfeatures2 = gcicaps.gcfeatures2;
 		gccontext->gcfeatures3 = gcicaps.gcfeatures3;
 	}
+=======
+>>>>>>> d005644... gcx: split in several files by function.
 }
 
 void bv_exit(void)
@@ -705,12 +892,16 @@ void bv_exit(void)
 	struct gcbuffer *gcbuffer;
 	struct gcfixup *gcfixup;
 	struct gcbatch *gcbatch;
+<<<<<<< HEAD
 	struct gccallbackinfo *gccallbackinfo;
+=======
+>>>>>>> d005644... gcx: split in several files by function.
 
 	while (gccontext->buffmapvac != NULL) {
 		bvbuffmap = gccontext->buffmapvac;
 		gccontext->buffmapvac = bvbuffmap->nextmap;
 		gcfree(bvbuffmap);
+<<<<<<< HEAD
 	}
 
 	while (!list_empty(&gccontext->unmapvac)) {
@@ -751,6 +942,36 @@ void bv_exit(void)
 		gccallbackinfo = list_entry(head, struct gccallbackinfo, link);
 		list_del(head);
 		gcfree(gccallbackinfo);
+=======
+	}
+
+	while (!list_empty(&gccontext->unmapvac)) {
+		head = gccontext->unmapvac.next;
+		gcschedunmap = list_entry(head, struct gcschedunmap, link);
+		list_del(head);
+		gcfree(gcschedunmap);
+	}
+
+	while (!list_empty(&gccontext->buffervac)) {
+		head = gccontext->buffervac.next;
+		gcbuffer = list_entry(head, struct gcbuffer, link);
+		list_del(head);
+		gcfree(gcbuffer);
+	}
+
+	while (!list_empty(&gccontext->fixupvac)) {
+		head = gccontext->fixupvac.next;
+		gcfixup = list_entry(head, struct gcfixup, link);
+		list_del(head);
+		gcfree(gcfixup);
+	}
+
+	while (!list_empty(&gccontext->batchvac)) {
+		head = gccontext->batchvac.next;
+		gcbatch = list_entry(head, struct gcbatch, link);
+		list_del(head);
+		gcfree(gcbatch);
+>>>>>>> d005644... gcx: split in several files by function.
 	}
 
 	free_temp(false);
@@ -957,6 +1178,11 @@ enum bverror bv_blt(struct bvbltparams *bvbltparams)
 	bvbltparams->errdesc = NULL;
 
 	/* Verify the destination parameters structure. */
+<<<<<<< HEAD
+=======
+	GCDBG(GCZONE_DEST, "verifying destination parameters.\n");
+
+>>>>>>> d005644... gcx: split in several files by function.
 	res = verify_surface(0, (union bvinbuff *) &bvbltparams->dstdesc,
 				bvbltparams->dstgeom);
 	if (res != -1) {
@@ -1107,12 +1333,26 @@ enum bverror bv_blt(struct bvbltparams *bvbltparams)
 			goto exit;
 		}
 
+<<<<<<< HEAD
 		/* Reset the number of sources. */
+=======
+		/* Parse destination parameters. */
+		bverror = parse_destination(bvbltparams, gcbatch);
+		if (bverror != BVERR_NONE)
+			goto exit;
+
+>>>>>>> d005644... gcx: split in several files by function.
 		srccount = 0;
 
 		/* Verify the src1 parameters structure. */
 		if (src1used) {
+<<<<<<< HEAD
 			GCDBG(GCZONE_SRC, "source #1: used\n");
+=======
+			GCDBG(GCZONE_SRC, "src1used\n");
+			GCDBG(GCZONE_SRC, "verifying source1 parameters.\n");
+
+>>>>>>> d005644... gcx: split in several files by function.
 			res = verify_surface(
 				bvbltparams->flags & BVBATCH_TILE_SRC1,
 				&bvbltparams->src1, bvbltparams->src1geom);
@@ -1136,6 +1376,7 @@ enum bverror bv_blt(struct bvbltparams *bvbltparams)
 				srcinfo[srccount].index = 0;
 				srcinfo[srccount].buf = bvbltparams->src1;
 				srcinfo[srccount].geom = bvbltparams->src1geom;
+<<<<<<< HEAD
 				srcinfo[srccount].newgeom
 					= gcbatch->batchflags
 						& BVBATCH_SRC1;
@@ -1147,6 +1388,11 @@ enum bverror bv_blt(struct bvbltparams *bvbltparams)
 
 				bverror = parse_source(bvbltparams, gcbatch,
 						       &bvbltparams->src1rect,
+=======
+				srcinfo[srccount].rect = &bvbltparams->src1rect;
+
+				bverror = parse_source(bvbltparams, gcbatch,
+>>>>>>> d005644... gcx: split in several files by function.
 						       &srcinfo[srccount]);
 				if (bverror != BVERR_NONE)
 					goto exit;
@@ -1157,7 +1403,13 @@ enum bverror bv_blt(struct bvbltparams *bvbltparams)
 
 		/* Verify the src2 parameters structure. */
 		if (src2used) {
+<<<<<<< HEAD
 			GCDBG(GCZONE_SRC, "source #2: used\n");
+=======
+			GCDBG(GCZONE_SRC, "src2used\n");
+			GCDBG(GCZONE_SRC, "verifying source2 parameters.\n");
+
+>>>>>>> d005644... gcx: split in several files by function.
 			res = verify_surface(
 				bvbltparams->flags & BVBATCH_TILE_SRC2,
 				&bvbltparams->src2, bvbltparams->src2geom);
@@ -1181,6 +1433,7 @@ enum bverror bv_blt(struct bvbltparams *bvbltparams)
 				srcinfo[srccount].index = 1;
 				srcinfo[srccount].buf = bvbltparams->src2;
 				srcinfo[srccount].geom = bvbltparams->src2geom;
+<<<<<<< HEAD
 				srcinfo[srccount].newgeom
 					= gcbatch->batchflags
 						& BVBATCH_SRC2;
@@ -1192,6 +1445,11 @@ enum bverror bv_blt(struct bvbltparams *bvbltparams)
 
 				bverror = parse_source(bvbltparams, gcbatch,
 						       &bvbltparams->src2rect,
+=======
+				srcinfo[srccount].rect = &bvbltparams->src2rect;
+
+				bverror = parse_source(bvbltparams, gcbatch,
+>>>>>>> d005644... gcx: split in several files by function.
 						       &srcinfo[srccount]);
 				if (bverror != BVERR_NONE)
 					goto exit;
@@ -1202,7 +1460,13 @@ enum bverror bv_blt(struct bvbltparams *bvbltparams)
 
 		/* Verify the mask parameters structure. */
 		if (maskused) {
+<<<<<<< HEAD
 			GCDBG(GCZONE_MASK, "mask: used\n");
+=======
+			GCDBG(GCZONE_MASK, "maskused\n");
+			GCDBG(GCZONE_MASK, "verifying mask parameters.\n");
+
+>>>>>>> d005644... gcx: split in several files by function.
 			res = verify_surface(
 				bvbltparams->flags & BVBATCH_TILE_MASK,
 				&bvbltparams->mask, bvbltparams->maskgeom);
@@ -1235,8 +1499,11 @@ enum bverror bv_blt(struct bvbltparams *bvbltparams)
 				      srcinfo[i].index + 1);
 
 				if (gca == NULL) {
+<<<<<<< HEAD
 					GCDBG(GCZONE_BLIT,
 					      "  blending disabled.\n");
+=======
+>>>>>>> d005644... gcx: split in several files by function.
 					srcinfo[i].rop = bvbltparams->op.rop;
 					srcinfo[i].gca = NULL;
 				} else if ((i + 1) != srccount) {
@@ -1260,6 +1527,7 @@ enum bverror bv_blt(struct bvbltparams *bvbltparams)
 					}
 				}
 
+<<<<<<< HEAD
 				GCDBG(GCZONE_BLIT, "  srcsize %dx%d.\n",
 				      srcrect[i]->width, srcrect[i]->height);
 				GCDBG(GCZONE_BLIT, "  dstsize %dx%d.\n",
@@ -1281,6 +1549,17 @@ enum bverror bv_blt(struct bvbltparams *bvbltparams)
 							  &srcinfo[i]);
 				} else {
 					GCDBG(GCZONE_BLIT, "  op: filter.\n");
+=======
+				if ((srcinfo[i].rect->width == 1) &&
+				    (srcinfo[i].rect->height == 1) &&
+				    (bvbltparams->src1.desc->virtaddr))
+					bverror = do_fill(bvbltparams, gcbatch,
+							&srcinfo[i]);
+				else if (EQ_SIZE(srcinfo[i].rect, dstrect))
+					bverror = do_blit(bvbltparams, gcbatch,
+							  &srcinfo[i]);
+				else
+>>>>>>> d005644... gcx: split in several files by function.
 					bverror = do_filter(bvbltparams,
 							    gcbatch,
 							    &srcinfo[i]);
@@ -1338,9 +1617,15 @@ enum bverror bv_blt(struct bvbltparams *bvbltparams)
 					goto exit;
 				}
 
+<<<<<<< HEAD
 				gccallbackinfo->info.callback.fn
 					= bvbltparams->callbackfn;
 				gccallbackinfo->info.callback.data
+=======
+				gccallbackinfo->callbackfn
+					= bvbltparams->callbackfn;
+				gccallbackinfo->callbackdata
+>>>>>>> d005644... gcx: split in several files by function.
 					= bvbltparams->callbackdata;
 
 				gcicommit.callback = callbackbltsville;
@@ -1368,25 +1653,44 @@ enum bverror bv_blt(struct bvbltparams *bvbltparams)
 		/* Process scheduled unmappings. */
 		do_unmap_implicit(gcbatch);
 
+<<<<<<< HEAD
 		INIT_LIST_HEAD(&gcicommit.unmap);
 		list_splice_init(&gcbatch->unmap, &gcicommit.unmap);
+=======
+		INIT_LIST_HEAD(&gccommit.unmap);
+		list_splice_init(&gcbatch->unmap, &gccommit.unmap);
+>>>>>>> d005644... gcx: split in several files by function.
 
 		/* Pass the batch for execution. */
 		GCDUMPBATCH(gcbatch);
 
+<<<<<<< HEAD
 		gcicommit.gcerror = GCERR_NONE;
 		gcicommit.entrypipe = GCPIPE_2D;
 		gcicommit.exitpipe = GCPIPE_2D;
 
 		INIT_LIST_HEAD(&gcicommit.buffer);
 		list_splice_init(&gcbatch->buffer, &gcicommit.buffer);
+=======
+		gccommit.gcerror = GCERR_NONE;
+		gccommit.entrypipe = GCPIPE_2D;
+		gccommit.exitpipe = GCPIPE_2D;
+
+		INIT_LIST_HEAD(&gccommit.buffer);
+		list_splice_init(&gcbatch->buffer, &gccommit.buffer);
+>>>>>>> d005644... gcx: split in several files by function.
 
 		GCDBG(GCZONE_BLIT, "submitting the batch.\n");
 		gc_commit_wrapper(&gcicommit);
 
 		/* Move the lists back to the batch. */
+<<<<<<< HEAD
 		list_splice_init(&gcicommit.buffer, &gcbatch->buffer);
 		list_splice_init(&gcicommit.unmap, &gcbatch->unmap);
+=======
+		list_splice_init(&gccommit.buffer, &gcbatch->buffer);
+		list_splice_init(&gccommit.unmap, &gcbatch->unmap);
+>>>>>>> d005644... gcx: split in several files by function.
 
 		/* Error? */
 		if (gcicommit.gcerror != GCERR_NONE) {
