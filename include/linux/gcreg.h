@@ -9298,6 +9298,8 @@ struct gcmodst {
 
 /*******************************************************************************
 ** Modular operations: alpha
+<<<<<<< HEAD
+=======
 */
 
 static const struct gccmdldstate gcmoalpha_config_ldst =
@@ -9372,6 +9374,250 @@ struct gcmoglobal {
 ** Modular operations: xsrcalpha
 */
 
+static const struct gccmdldstate gcmoxsrcalpha_alphamodes_ldst[4] = {
+	GCLDSTATE(gcregBlock4AlphaModesRegAddrs + 0, 1),
+	GCLDSTATE(gcregBlock4AlphaModesRegAddrs + 1, 1),
+	GCLDSTATE(gcregBlock4AlphaModesRegAddrs + 2, 1),
+	GCLDSTATE(gcregBlock4AlphaModesRegAddrs + 3, 1),
+};
+
+static const struct gccmdldstate gcmoxsrcalpha_srcglobal_ldst[4] = {
+	GCLDSTATE(gcregBlock4GlobalSrcColorRegAddrs + 0, 1),
+	GCLDSTATE(gcregBlock4GlobalSrcColorRegAddrs + 1, 1),
+	GCLDSTATE(gcregBlock4GlobalSrcColorRegAddrs + 2, 1),
+	GCLDSTATE(gcregBlock4GlobalSrcColorRegAddrs + 3, 1),
+};
+
+static const struct gccmdldstate gcmoxsrcalpha_dstglobal_ldst[4] = {
+	GCLDSTATE(gcregBlock4GlobalDestColorRegAddrs + 0, 1),
+	GCLDSTATE(gcregBlock4GlobalDestColorRegAddrs + 1, 1),
+	GCLDSTATE(gcregBlock4GlobalDestColorRegAddrs + 2, 1),
+	GCLDSTATE(gcregBlock4GlobalDestColorRegAddrs + 3, 1),
+};
+
+struct gcmoxsrcalpha {
+	/* gcregBlock4AlphaModesRegAddrs */
+	struct gccmdldstate alphamodes_ldst;
+
+		/* gcregBlock4AlphaModesRegAddrs */
+		union {
+			struct gcregalphamodes reg;
+			unsigned int raw;
+		} alphamodes;
+
+	/* gcregBlock4GlobalSrcColorRegAddrs */
+	struct gccmdldstate srcglobal_ldst;
+
+		/* gcregBlock4GlobalSrcColorRegAddrs */
+		union {
+			struct gcregglobalsrccolor reg;
+			unsigned int raw;
+		} srcglobal;
+
+	/* gcregBlock4GlobalDestColorRegAddrs */
+	struct gccmdldstate dstglobal_ldst;
+
+		/* gcregBlock4GlobalDestColorRegAddrs */
+		union {
+			struct gcregglobaldstcolor reg;
+			unsigned int raw;
+		} dstglobal;
+};
+
+/*******************************************************************************
+** Modular operations: yuv
+*/
+
+static const struct gccmdldstate gcmoyuv_plane_ldst =
+	GCLDSTATE(gcregUPlaneAddressRegAddrs, 4);
+
+static const struct gccmdldstate gcmoyuv_pectrl_ldst =
+	GCLDSTATE(gcregPEControlRegAddrs, 1);
+
+struct gcmoyuv {
+	/* Plane state block. */
+	struct gccmdldstate plane_ldst;
+
+		/* gcregBlock4UPlaneAddressRegAddrs */
+		unsigned int uplaneaddress;
+
+		/* gcregBlock4UPlaneStrideRegAddrs */
+		unsigned int uplanestride;
+
+		/* gcregBlock4VPlaneAddressRegAddrs */
+		unsigned int vplaneaddress;
+
+		/* gcregBlock4VPlaneStrideRegAddrs */
+		unsigned int vplanestride;
+
+		/* Alignment filler. */
+		unsigned int _filler1;
+
+	/* gcregBlock4PEControlRegAddrs */
+	struct gccmdldstate pectrl_ldst;
+
+		/* gcregBlock4PEControlRegAddrs */
+		unsigned int pectrl;
+};
+
+/*******************************************************************************
+** Modular operations: xsrcyuv
+*/
+
+static const struct gccmdldstate gcmoxsrcyuv_uplaneaddress_ldst[4] = {
+	GCLDSTATE(gcregBlock4UPlaneAddressRegAddrs + 0, 1),
+	GCLDSTATE(gcregBlock4UPlaneAddressRegAddrs + 1, 1),
+	GCLDSTATE(gcregBlock4UPlaneAddressRegAddrs + 2, 1),
+	GCLDSTATE(gcregBlock4UPlaneAddressRegAddrs + 3, 1),
+};
+
+static const struct gccmdldstate gcmoxsrcyuv_uplanestride_ldst[4] = {
+	GCLDSTATE(gcregBlock4UPlaneStrideRegAddrs + 0, 1),
+	GCLDSTATE(gcregBlock4UPlaneStrideRegAddrs + 1, 1),
+	GCLDSTATE(gcregBlock4UPlaneStrideRegAddrs + 2, 1),
+	GCLDSTATE(gcregBlock4UPlaneStrideRegAddrs + 3, 1),
+};
+
+static const struct gccmdldstate gcmoxsrcyuv_vplaneaddress_ldst[4] = {
+	GCLDSTATE(gcregBlock4VPlaneAddressRegAddrs + 0, 1),
+	GCLDSTATE(gcregBlock4VPlaneAddressRegAddrs + 1, 1),
+	GCLDSTATE(gcregBlock4VPlaneAddressRegAddrs + 2, 1),
+	GCLDSTATE(gcregBlock4VPlaneAddressRegAddrs + 3, 1),
+};
+
+static const struct gccmdldstate gcmoxsrcyuv_vplanestride_ldst[4] = {
+	GCLDSTATE(gcregBlock4VPlaneStrideRegAddrs + 0, 1),
+	GCLDSTATE(gcregBlock4VPlaneStrideRegAddrs + 1, 1),
+	GCLDSTATE(gcregBlock4VPlaneStrideRegAddrs + 2, 1),
+	GCLDSTATE(gcregBlock4VPlaneStrideRegAddrs + 3, 1),
+};
+
+static const struct gccmdldstate gcmoxsrcyuv_pectrl_ldst[4] = {
+	GCLDSTATE(gcregBlock4PEControlRegAddrs + 0, 1),
+	GCLDSTATE(gcregBlock4PEControlRegAddrs + 1, 1),
+	GCLDSTATE(gcregBlock4PEControlRegAddrs + 2, 1),
+	GCLDSTATE(gcregBlock4PEControlRegAddrs + 3, 1),
+};
+
+struct gcmoxsrcyuv {
+	/* gcregBlock4UPlaneAddressRegAddrs */
+	struct gccmdldstate uplaneaddress_ldst;
+
+		/* gcregBlock4UPlaneAddressRegAddrs */
+		unsigned int uplaneaddress;
+
+	/* gcregBlock4UPlaneStrideRegAddrs */
+	struct gccmdldstate uplanestride_ldst;
+
+		/* gcregBlock4UPlaneStrideRegAddrs */
+		unsigned int uplanestride;
+
+	/* gcregBlock4VPlaneAddressRegAddrs */
+	struct gccmdldstate vplaneaddress_ldst;
+
+		/* gcregBlock4VPlaneAddressRegAddrs */
+		unsigned int vplaneaddress;
+
+	/* gcregBlock4VPlaneStrideRegAddrs */
+	struct gccmdldstate vplanestride_ldst;
+
+		/* gcregBlock4VPlaneStrideRegAddrs */
+		unsigned int vplanestride;
+
+	/* gcregBlock4PEControlRegAddrs */
+	struct gccmdldstate pectrl_ldst;
+
+		/* gcregBlock4PEControlRegAddrs */
+		unsigned int pectrl;
+};
+
+/*******************************************************************************
+** Modular operations: src
+>>>>>>> 5a480ff... gcx: added scaling support.
+*/
+
+static const struct gccmdldstate gcmoalpha_config_ldst =
+	GCLDSTATE(gcregAlphaControlRegAddrs, 2);
+
+struct gcmoalpha {
+	/* Alpha control block. */
+	struct gccmdldstate config_ldst;
+
+<<<<<<< HEAD
+		/* gcregAlphaControlRegAddrs */
+		union {
+			struct gcregalphacontrol reg;
+			unsigned int raw;
+		} control;
+
+		/* gcregAlphaModesRegAddrs */
+		union {
+			struct gcregalphamodes reg;
+			unsigned int raw;
+		} mode;
+
+		/* Alignment filler. */
+		unsigned int _filler;
+};
+
+/*******************************************************************************
+** Modular operations: alphaoff
+*/
+
+static const struct gccmdldstate gcmoalphaoff_control_ldst =
+	GCLDSTATE(gcregAlphaControlRegAddrs, 1);
+=======
+static const struct gccmdldstate gcmosrc_rotation_ldst[4] = {
+	GCLDSTATE(gcregBlock4SrcRotationConfigRegAddrs + 0, 1),
+	GCLDSTATE(gcregBlock4SrcRotationConfigRegAddrs + 1, 1),
+	GCLDSTATE(gcregBlock4SrcRotationConfigRegAddrs + 2, 1),
+	GCLDSTATE(gcregBlock4SrcRotationConfigRegAddrs + 3, 1),
+};
+>>>>>>> 5a480ff... gcx: added scaling support.
+
+struct gcmoalphaoff {
+	/* gcregAlphaControlRegAddrs */
+	struct gccmdldstate control_ldst;
+
+		/* gcregAlphaControlRegAddrs */
+		union {
+			struct gcregalphacontrol reg;
+			unsigned int raw;
+		} control;
+};
+
+/*******************************************************************************
+** Modular operations: alphaglobal
+*/
+
+static const struct gccmdldstate gcmoglobal_color_ldst =
+	GCLDSTATE(gcregGlobalSrcColorRegAddrs, 2);
+
+struct gcmoglobal {
+	/* Global color block. */
+	struct gccmdldstate color_ldst;
+
+		/* gcregGlobalSrcColorRegAddrs */
+		union {
+			struct gcregglobalsrccolor reg;
+			unsigned int raw;
+		} srcglobal;
+
+		/* gcregGlobalDestColorRegAddrs */
+		union {
+			struct gcregglobaldstcolor reg;
+			unsigned int raw;
+		} dstglobal;
+
+		/* Alignment filler. */
+		unsigned int _filler;
+};
+
+/*******************************************************************************
+** Modular operations: xsrcalpha
+*/
+
+<<<<<<< HEAD
 static const struct gccmdldstate gcmoxsrcalpha_alphamodes_ldst[4] = {
 	GCLDSTATE(gcregBlock4AlphaModesRegAddrs + 0, 1),
 	GCLDSTATE(gcregBlock4AlphaModesRegAddrs + 1, 1),
@@ -9687,6 +9933,8 @@ static const struct gccmdldstate gcmosrc_alphacontrol_ldst[4] = {
 	GCLDSTATE(gcregBlock4AlphaControlRegAddrs + 3, 1),
 };
 
+=======
+>>>>>>> 5a480ff... gcx: added scaling support.
 struct gcmosrc {
 	/* gcregBlock4SrcAddressRegAddrs */
 	struct gccmdldstate address_ldst;
