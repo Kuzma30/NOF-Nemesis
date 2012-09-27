@@ -340,6 +340,7 @@ obj-$(CONFIG_OMAP_HSI_DEVICE)		+= omap_hsi.o
 obj-$(CONFIG_ION_OMAP)			+= omap4_ion.o
 obj-$(CONFIG_ARCH_OMAP4)		+= omap_dmm.o
 obj-$(CONFIG_OMAP_FIQ_DEBUGGER)		+= omap_fiq_debugger.o
+<<<<<<< HEAD
 
 ifeq ($(CONFIG_OMAP_REBOOT_REASON),y)
 obj-$(CONFIG_ARCH_OMAP4)		+= omap4-reboot-reason.o
@@ -348,3 +349,7 @@ endif
 obj-$(CONFIG_OMAP_RAM_CONSOLE)		+= omap_ram_console.o
 obj-$(CONFIG_ARCH_OMAP4)		+= omap_gcxxx.o
 obj-$(CONFIG_OMAP_RFKILL_STE_MODEM)	+= omap-rfkill-ste.o
+=======
+obj-$(CONFIG_RQ_STATS)			+= rq_stats.o
+
+>>>>>>> cbcf6d3... rq_stats: add run queue statistic collection to kernel tick scheduler
