@@ -750,9 +750,16 @@ static int __init create_log(char *log_name, int size)
 	struct logger_log *log;
 	unsigned char *buffer;
 
+<<<<<<< HEAD
 	buffer = vmalloc(size);
 	if (buffer == NULL)
 		return -ENOMEM;
+=======
+DEFINE_LOGGER_DEVICE(log_main, LOGGER_LOG_MAIN, 64*1024)
+DEFINE_LOGGER_DEVICE(log_events, LOGGER_LOG_EVENTS, 32*1024)
+DEFINE_LOGGER_DEVICE(log_radio, LOGGER_LOG_RADIO, 32*1024)
+DEFINE_LOGGER_DEVICE(log_system, LOGGER_LOG_SYSTEM, 64*1024)
+>>>>>>> b6a79ec... Reduced Android Logger RAM usage. TNX to sakindia123@xda for point.
 
 	log = kzalloc(sizeof(struct logger_log), GFP_KERNEL);
 	if (log == NULL) {
