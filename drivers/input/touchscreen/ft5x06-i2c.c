@@ -132,12 +132,30 @@ enum ftx_factory_mode
 	FACTORY_MODE_MAX
 };
 
+<<<<<<< HEAD
 static u8 ft5606_factory_mode[FACTORY_MODE_MAX] = {
 	[FACTORY_MODE_0] = FACTORY_MODE0,
 	[FACTORY_MODE_1] = FACTORY_MODE1,
 	[FACTORY_MODE_2] = FACTORY_MODE2,
 	[FACTORY_MODE_3] = FACTORY_MODE3,
 };
+=======
+typedef struct ft506_touch_data {
+	unsigned char x_h;
+	unsigned char x_l;
+	unsigned char y_h;
+	unsigned char y_l;
+	unsigned char res1;
+	unsigned char res2;
+} point_data;
+
+typedef struct ft506 {
+	unsigned char mode;
+	unsigned char gesture_id;
+	unsigned char status;
+	point_data points[FT_NUM_MT_TCH_ID];
+} ft506_data;
+>>>>>>> cea2935... Update ft5x06 driver.
 
 enum ftx_power_supply_state
 {
@@ -424,6 +442,7 @@ static int ftx_get_raw_data(struct ft5x06 *ts)
 		goto error_scan_not_done;
 	}
 
+<<<<<<< HEAD
 	DBG_PRINT(dbg_level_verbose, "%s: " FTX_TAG ": %s(): VERBOSE: Reading raw data...\n", dev_name(&(ts->client->dev)), __func__);
 
 	max_data_points = (ts->ftx_raw_data_tx_end - ts->ftx_raw_data_tx_start + 1) * (ts->ftx_raw_data_rx_end - ts->ftx_raw_data_rx_start + 1);
@@ -476,6 +495,63 @@ static int ftx_get_raw_data(struct ft5x06 *ts)
 					readlen = regval > FT5606_TEST_MODE_RX ? FT5606_TEST_MODE_RX*2 : regval*2;
 					regval = FT5x06_FMREG_RAWDATA_0_H;
 				}
+=======
+/* The ft5x06_xy_worker function reads the XY coordinates and sends them to
+ * the input layer.  It is scheduled from the interrupt (or timer).
+ */
+void ft5x06_xy_worker(struct work_struct *work)
+{
+	struct ft5x06 *ts = container_of(work, struct ft5x06, work);
+	int retval = 0;
+	ft506_data tch_data;
+	u8 _id;
+	u8 id, tilt, rev_x, rev_y;
+	u8 i, loc;
+	u8 prv_tch = 0;		/* number of previous touches */
+	u8 cur_tch;		/* number of current touches */
+	u16 tmp_trk[FT_NUM_TRK_ID];
+	u16 snd_trk[FT_NUM_TRK_ID];
+	u16 cur_trk[FT_NUM_TRK_ID];
+	u16 cur_st_tch[FT_NUM_ST_TCH_ID];
+	u16 cur_mt_tch[FT_NUM_MT_TCH_ID];
+	/* if NOT FT_USE_TRACKING_ID then
+	 * only uses FT_NUM_MT_TCH_ID positions */
+	u16 cur_mt_pos[FT_NUM_TRK_ID][2];
+	/* if NOT FT_USE_TRACKING_ID then
+	 * only uses FT_NUM_MT_TCH_ID positions */
+	u8 cur_mt_z[FT_NUM_TRK_ID];
+	u8 curr_tool_width;
+	u16 st_x1, st_y1;
+	u8 st_z1;
+	u16 st_x2, st_y2;
+	u8 st_z2;
+	static u8 prev_gest = 0;
+	static u8 gest_count = 0;
+
+	if (inpt == NULL) {
+		inpt = ts->input;
+	}
+
+	g_xy_data.gest_id = 0;
+
+	retval =
+		i2c_smbus_read_i2c_block_data(ts->client, FT5x06_WMREG_DEVICE_MODE,
+										sizeof(ft506_data), (u8 *)&tch_data);
+	if (retval < 0) {
+		printk(KERN_ERR
+		       "%s() - ERROR: Could not read from the Touch Panel registers.\n",
+		       __FUNCTION__);
+	} else {
+		g_xy_data.gest_id = tch_data.gesture_id;
+	}
+
+	/* some firmwares dublicate data in high bits so we use only 4 low bits*/
+	cur_tch = tch_data.status & 0xf;
+
+	if (cur_tch > FT_NUM_MT_TCH_ID) {
+		cur_tch = FT_NUM_MT_TCH_ID;
+	}
+>>>>>>> cea2935... Update ft5x06 driver.
 
 				retval = ft5x0x_i2c_Read(ts->client, &regval, 1,  (u8*)ts->ftx_raw_data + bytes_written, readlen);
 				if (0 > retval)
@@ -499,6 +575,7 @@ static int ftx_get_raw_data(struct ft5x06 *ts)
 		ts->ftx_raw_data[iLoop] = ((ts->ftx_raw_data[iLoop] >> 8) & 0xFF) | ((ts->ftx_raw_data[iLoop] << 8) & 0xFF00);
 	}
 
+<<<<<<< HEAD
 error_read_raw_data:
 error_scan_not_done:
 error_read_scan_status:
@@ -508,6 +585,12 @@ error_initiate_scan:
 	if(0 > retval)
 	{
 		DBG_PRINT(dbg_level_error, "%s: " FTX_TAG ": %s(): ERROR: Could not write to DEVICE MODE register.\n", dev_name(&(ts->client->dev)), __func__);
+=======
+	/* send no events if no previous touches and no new touches */
+	if ((prv_tch == FT_NTCH)
+	    && (cur_tch == FT_NTCH)) {
+		goto exit_xy_worker;
+>>>>>>> cea2935... Update ft5x06 driver.
 	}
 	msleep(100);
 
@@ -590,6 +673,7 @@ static ssize_t ftx_dbgfs_write_raw_data_params(struct ft5x06 *ts, struct file *f
 	}
 	buf_pos += buf_offset;
 
+<<<<<<< HEAD
 	retval = sscanf(write_buf+buf_pos, "%d%n", &tmp_rx_end, &buf_offset);
 	if (retval <= 0)
 	{
@@ -751,6 +835,138 @@ static ssize_t ftx_dbgfs_read_raw_data(struct ft5x06 *ts, struct file *file, cha
 	}
 	*offset += bytes_read;
 	DBG_PRINT(dbg_level_verbose, "%s: " FTX_TAG ": %s(): VERBOSE: Read %d bytes (%d chars) from %s.\n", dev_name(&ts->client->dev), __func__, bytes_read, chars_read, tmp_dbgfs_entry->name);
+=======
+	/* process the touches */
+	u8 counter = 0;
+	/* TODO: try to use hardware events. */
+	for(id = 0; id < FT_NUM_MT_TCH_ID, counter < cur_tch; id++)
+	{
+		_id = (tch_data.points[id].y_h>>4);
+        cur_mt_pos[id][FT_XPOS] = GET_COORDINATE(tch_data.points[id].x_l, tch_data.points[id].x_h);
+        cur_mt_pos[id][FT_YPOS] = GET_COORDINATE(tch_data.points[id].y_l, tch_data.points[id].y_h);
+
+        cur_mt_pos[id][FT_YPOS] = cur_mt_pos[id][FT_YPOS] * 600 / 768;
+        if (tilt)
+        {
+            FLIP_XY(cur_mt_pos[id][FT_XPOS], cur_mt_pos[id][FT_YPOS]);
+        }
+        if (rev_x)
+        {
+            cur_mt_pos[id][FT_XPOS] = INVERT_X(cur_mt_pos[id][FT_XPOS], ts->platform_data->maxx);
+        }
+        if (rev_y)
+         {
+             cur_mt_pos[id][FT_YPOS] = INVERT_Y(cur_mt_pos[id][FT_YPOS], ts->platform_data->maxy-1);
+         }
+         if (cur_mt_pos[id][FT_XPOS] != 4095) {
+             cur_trk[_id] = FT_TCH;
+             cur_mt_tch[id] = _id;
+             ++counter;
+         }
+	}
+
+	/* handle Multi-touch signals */
+	if (ts->platform_data->use_mt) {
+		if (ts->platform_data->use_trk_id) {
+			/* terminate any previous touch where the track
+			 * is missing from the current event */
+			for (id = 0; id < FT_NUM_TRK_ID; id++) {
+				if ((ts->act_trk[id] != FT_NTCH)
+				    && (cur_trk[id] == FT_NTCH)) {
+					input_report_abs(ts->input,
+							 ABS_MT_TRACKING_ID,
+							 id);
+					input_report_abs(ts->input,
+							 ABS_MT_TOUCH_MAJOR,
+							 FT_NTCH);
+					input_report_abs(ts->input,
+							 ABS_MT_WIDTH_MAJOR,
+							 curr_tool_width);
+					input_report_abs(ts->input,
+							 ABS_MT_POSITION_X,
+							 ts->
+							 prv_mt_pos[id]
+							 [FT_XPOS]);
+					input_report_abs(ts->input,
+							 ABS_MT_POSITION_Y,
+							 ts->
+							 prv_mt_pos[id]
+							 [FT_YPOS]);
+
+					input_report_key(ts->input, BTN_TOUCH,
+							 0);
+
+					FT_MT_SYNC(ts->input);
+
+					ts->act_trk[id] = FT_NTCH;
+					ts->prv_mt_pos[id][FT_XPOS] = 0;
+					ts->prv_mt_pos[id][FT_YPOS] = 0;
+				}
+			}
+
+			/* set Multi-Touch current event signals */
+			for (id = 0; id < FT_NUM_MT_TCH_ID; id++) {
+				if (cur_mt_tch[id] < FT_NUM_TRK_ID) {
+					input_report_abs(ts->input,
+							 ABS_MT_TRACKING_ID,
+							 cur_mt_tch[id]);
+					input_report_abs(ts->input,
+							 ABS_MT_TOUCH_MAJOR,
+							 0xe);
+					input_report_abs(ts->input,
+							 ABS_MT_WIDTH_MAJOR,
+							 curr_tool_width);
+					input_report_abs(ts->input,
+							 ABS_MT_POSITION_X,
+							 cur_mt_pos[id]
+							 [FT_XPOS]);
+					input_report_abs(ts->input,
+							 ABS_MT_POSITION_Y,
+							 cur_mt_pos[id]
+							 [FT_YPOS]);
+
+					input_report_key(ts->input, BTN_TOUCH,
+							 1);
+
+					FT_MT_SYNC(ts->input);
+
+					ts->act_trk[id] = FT_TCH;
+					ts->prv_mt_pos[id][FT_XPOS] =
+					    cur_mt_pos[id][FT_XPOS];
+					ts->prv_mt_pos[id][FT_YPOS] =
+					    cur_mt_pos[id][FT_YPOS];
+				}
+			}
+		} else {
+			/* set temporary track array elements to voids */
+			for (id = 0; id < FT_NUM_MT_TCH_ID; id++) {
+				tmp_trk[id] = FT_IGNR_TCH;
+				snd_trk[id] = FT_IGNR_TCH;
+			}
+
+			/* get what is currently active */
+			for (i = 0, id = 0;
+			     id < FT_NUM_TRK_ID && i < FT_NUM_MT_TCH_ID; id++) {
+				if (cur_trk[id] == FT_TCH) {
+					/* only incr counter if track found */
+					tmp_trk[i] = id;
+					i++;
+				}
+			}
+
+			/* pack in still active previous touches */
+			for (id = 0, prv_tch = 0; id < FT_NUM_MT_TCH_ID; id++) {
+				if (tmp_trk[id] < FT_NUM_TRK_ID) {
+					if (ft5x06_inlist
+					    (ts->prv_mt_tch, tmp_trk[id], &loc,
+					     FT_NUM_MT_TCH_ID)) {
+						loc &= FT_NUM_MT_TCH_ID - 1;
+						snd_trk[loc] = tmp_trk[id];
+						prv_tch++;
+					}
+				}
+			}
+>>>>>>> cea2935... Update ft5x06 driver.
 
 err_copy_to_user:
 	kfree(usr_buf);

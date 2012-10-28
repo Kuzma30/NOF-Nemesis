@@ -270,6 +270,7 @@ static void ft5x06_platform_resume(void)
 }
 
 static struct ft5x06_platform_data ft5x06_platform_data = {
+<<<<<<< HEAD
         .maxx = 1024,//600,
         .maxy = 600, //1024,
 //        .flags = REVERSE_Y_FLAG | REVERSE_X_FLAG, //FLIP_DATA_FLAG | REVERSE_Y_FLAG | REVERSE_X_FLAG,
@@ -281,6 +282,19 @@ static struct ft5x06_platform_data ft5x06_platform_data = {
         .use_gestures = 1,
 //      .platform_suspend = ft5x06_platform_suspend,
 //      .platform_resume = ft5x06_platform_resume,
+=======
+	.maxx = 600,
+	.maxy = 1024,
+	.flags = FLIP_DATA_FLAG | REVERSE_X_FLAG,
+	.reset_gpio = OMAP_FT5x06_RESET_GPIO,
+	.use_st = FT_USE_ST,
+	.use_mt = FT_USE_MT,
+	.use_trk_id = 1,
+	.use_sleep = FT_USE_SLEEP,
+	.use_gestures = 1,
+	.platform_suspend = ft5x06_platform_suspend,
+	.platform_resume = ft5x06_platform_resume,
+>>>>>>> cea2935... Update ft5x06 driver.
 };
 
 #ifdef CONFIG_CHARGER_MAX8903
