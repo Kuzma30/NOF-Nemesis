@@ -2671,6 +2671,7 @@ static long binder_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 		break;
 	case BINDER_SET_CONTEXT_MGR:
 		if (binder_context_mgr_node != NULL) {
+<<<<<<< HEAD
 			pr_err("BINDER_SET_CONTEXT_MGR already set\n");
 			ret = -EBUSY;
 			goto err;
@@ -2680,6 +2681,17 @@ static long binder_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 				pr_err("BINDER_SET_CONTEXT_MGR bad uid %d != %d\n",
 				       from_kuid(&init_user_ns, current->cred->euid),
 				       from_kuid(&init_user_ns, binder_context_mgr_uid));
+=======
+			pr_err("BINDER_SET_CONTEXT_MGR already set\n"); 
+			ret = -EBUSY;
+			goto err;
+		}
+		if (binder_context_mgr_uid != -1) {
+			if (binder_context_mgr_uid != current->cred->euid) {
+				pr_err("BINDER_SET_CONTEXT_MGR bad uid %d != %d\n",       
+				       current->cred->euid,
+				       binder_context_mgr_uid);
+>>>>>>> a65f1b9... Staging: android: binder: Fixed multi-line strings
 				ret = -EPERM;
 				goto err;
 			}
