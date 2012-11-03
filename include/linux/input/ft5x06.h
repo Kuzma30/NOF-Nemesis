@@ -505,6 +505,7 @@
 struct i2c_client;
 
 struct ft5x06_platform_data {
+<<<<<<< HEAD
 	u32 max_tx_lines;
 	u32 max_rx_lines;
 	u32 maxx;
@@ -527,6 +528,31 @@ struct ft5x06_platform_data {
 	int (*release_resources)(struct device *dev);
 	int (*power_on)(struct device *dev);
 	int (*power_off)(struct device *dev);
+=======
+       u32 maxx;
+       u32 maxy;
+       u32 rawx;
+       u32 rawy;
+       u32 flags;
+    u32 reset_gpio;
+       u8 gen;
+       u8 use_st;
+       u8 use_mt;
+       u8 use_hndshk;
+       u8 use_trk_id;
+       u8 use_sleep;
+       u8 use_gestures;
+       u8 gest_set;
+       u8 act_intrvl;
+       u8 tch_tmout;
+       u8 lp_intrvl;
+       u8 power_state;
+       s32 (*init)(struct i2c_client *client);
+       s32 (*resume)(struct i2c_client *client);
+       void (*platform_suspend)(void);
+       void (*platform_resume)(void);
+       void (*update_flags)(struct ft5x06_platform_data* pd, struct i2c_client *client);
+>>>>>>> fc3e3e2b... ft5x06: Implement firmware detection.
 };
 
 struct ft5x06_xydata_t {
