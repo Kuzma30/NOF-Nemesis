@@ -109,7 +109,11 @@
 #define FT5x06_I2C_SLAVEADDRESS  	(0x70 >> 1)
 #define OMAP_FT5x06_POWER_GPIO   	36
 #define OMAP_FT5x06_GPIO     	37 /*99*/
+<<<<<<< HEAD
 #define LCD_BL_PWR_EN_GPIO      	38
+=======
+#define OMAP_LCD_ENABLE_PIN      	38
+>>>>>>> 9da5fad... Ported ft5x06 driver from Nook HD.
 #define OMAP_FT5x06_RESET_GPIO   	39 /*46*/
 #define LCD_CABC0_GPIO         	44
 #define LCD_CABC1_GPIO         	45
@@ -269,6 +273,7 @@ static void ft5x06_platform_resume(void)
 	printk("-----------------ft5x06 platform resume-------------\n");
 }
 
+<<<<<<< HEAD
 void ft5x06_update_flags(struct ft5x06_platform_data *pd, struct i2c_client *client) {
 	int retval = 0;
 	u8 firmware_id;
@@ -302,21 +307,20 @@ void ft5x06_update_flags(struct ft5x06_platform_data *pd, struct i2c_client *cli
 	}
 }
 
+=======
+>>>>>>> 9da5fad... Ported ft5x06 driver from Nook HD.
 static struct ft5x06_platform_data ft5x06_platform_data = {
-	.maxx = 600,
-	.maxy = 1024,
-	.rawx = 600,
-	.rawy = 1024,
-	.flags = FLIP_DATA_FLAG | REVERSE_X_FLAG,
-	.reset_gpio = OMAP_FT5x06_RESET_GPIO,
-	.use_st = FT_USE_ST,
-	.use_mt = FT_USE_MT,
-	.use_trk_id = 1,
-	.use_sleep = FT_USE_SLEEP,
-	.use_gestures = 0,
-	.platform_suspend = ft5x06_platform_suspend,
-	.platform_resume = ft5x06_platform_resume,
-	.update_flags = ft5x06_update_flags
+        .maxx = 600,
+        .maxy = 1024,
+        .flags =  FLIP_DATA_FLAG | REVERSE_Y_FLAG,
+        .reset_gpio = OMAP_FT5x06_RESET_GPIO,
+        .use_st = FT_USE_ST,
+        .use_mt = FT_USE_MT,
+        .use_trk_id = FT_USE_TRACKING_ID,
+        .use_sleep = FT_USE_SLEEP,
+        .use_gestures = 1,
+//      .platform_suspend = ft5x06_platform_suspend,
+//      .platform_resume = ft5x06_platform_resume,
 };
 
 #ifdef CONFIG_CHARGER_MAX8903
