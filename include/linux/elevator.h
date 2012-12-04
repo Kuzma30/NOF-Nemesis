@@ -23,6 +23,12 @@ typedef void (elevator_add_req_fn) (struct request_queue *, struct request *);
 typedef int (elevator_reinsert_req_fn) (struct request_queue *, struct request *);
 typedef bool (elevator_is_urgent_fn) (struct request_queue *);
 typedef int (elevator_queue_empty_fn) (struct request_queue *);
+<<<<<<< HEAD
+=======
+typedef int (elevator_reinsert_req_fn) (struct request_queue *,
+					struct request *);
+typedef bool (elevator_is_urgent_fn) (struct request_queue *);
+>>>>>>> b7e1c8f... block: Add API for urgent request handling
 typedef struct request *(elevator_request_list_fn) (struct request_queue *, struct request *);
 typedef void (elevator_completed_req_fn) (struct request_queue *, struct request *);
 typedef int (elevator_may_queue_fn) (struct request_queue *, int);
