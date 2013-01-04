@@ -283,14 +283,22 @@
  * The minimum number of bits of entropy before we wake up a read on
  * /dev/random.  Should be enough to do a significant reseed.
  */
+<<<<<<< HEAD
 static int random_read_wakeup_thresh = 128;
+=======
+static int random_read_wakeup_thresh = 256;
+>>>>>>> 8a31a0a... random: entropy tweaks are all the rage nowadays
 
 /*
  * If the entropy count falls under this number of bits, then we
  * should wake up processes which are selecting or polling on write
  * access to /dev/random.
  */
+<<<<<<< HEAD
 static int random_write_wakeup_thresh = 256;
+=======
+static int random_write_wakeup_thresh = 512;
+>>>>>>> 8a31a0a... random: entropy tweaks are all the rage nowadays
 
 /*
  * When the input pool goes over trickle_thresh, start dropping most
