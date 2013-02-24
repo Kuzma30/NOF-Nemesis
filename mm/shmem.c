@@ -2412,7 +2412,11 @@ static int shmem_parse_options(char *options, struct shmem_sb_info *sbinfo,
 			       bool remount)
 {
 	char *this_char, *value, *rest;
+<<<<<<< HEAD
 	struct mempolicy *mpol = NULL; 
+=======
+	struct mempolicy *mpol = NULL;
+>>>>>>> dc76bff... tmpfs: fix mempolicy object leaks
 
 	while (options != NULL) {
 		this_char = options;
@@ -2437,7 +2441,12 @@ static int shmem_parse_options(char *options, struct shmem_sb_info *sbinfo,
 			*value++ = 0;
 		} else {
 			printk(KERN_ERR
+<<<<<<< HEAD
 			    "tmpfs: No value for mount option '%s'\n", this_char);
+=======
+			    "tmpfs: No value for mount option '%s'\n",
+			    this_char);
+>>>>>>> dc76bff... tmpfs: fix mempolicy object leaks
 			goto error;
 		}
 
@@ -2481,6 +2490,7 @@ static int shmem_parse_options(char *options, struct shmem_sb_info *sbinfo,
 			if (*rest)
 				goto bad_val;
 		} else if (!strcmp(this_char,"mpol")) {
+<<<<<<< HEAD
 			    mpol_put(mpol);
 			    if (mpol_parse_str(value, &mpol, 1)) {
 				    mpol = NULL;
@@ -2488,6 +2498,16 @@ static int shmem_parse_options(char *options, struct shmem_sb_info *sbinfo,
 				} 				
 		} else {
 			printk(KERN_ERR "tmpfs: Bad mount option %s\n", this_char);
+=======
+			mpol_put(mpol);
+			if (mpol_parse_str(value, &mpol, 1)) {
+				mpol = NULL;
+				goto bad_val;
+			}
+		} else {
+			printk(KERN_ERR "tmpfs: Bad mount option %s\n",
+			       this_char);
+>>>>>>> dc76bff... tmpfs: fix mempolicy object leaks
 			goto error;
 		}
 	}
@@ -2495,9 +2515,16 @@ static int shmem_parse_options(char *options, struct shmem_sb_info *sbinfo,
 	return 0;
 
 bad_val:
+<<<<<<< HEAD
 	printk(KERN_ERR "tmpfs: Bad value '%s' for mount option '%s'\n", value, this_char);
 error:
 	mpol_put(mpol); 	
+=======
+	printk(KERN_ERR "tmpfs: Bad value '%s' for mount option '%s'\n",
+	       value, this_char);
+error:
+	mpol_put(mpol);
+>>>>>>> dc76bff... tmpfs: fix mempolicy object leaks
 	return 1;
 
 }
