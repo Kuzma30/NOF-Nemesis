@@ -133,6 +133,7 @@ static int lowmem_shrink(struct shrinker *s, struct shrink_control *sc)
 			rcu_read_unlock();
 			return 0;
 		}
+<<<<<<< HEAD
 
 		for (i = 0; i < white_size; i++) {
 			if (p->pid == white_list[i]) {
@@ -146,6 +147,15 @@ static int lowmem_shrink(struct shrinker *s, struct shrink_control *sc)
 			continue;
 		}
 
+=======
+#ifdef CONFIG_LMK_APP_PROTECTION
+		if (strcmp(p->comm, "putmethod.latin") == 0) {
+			lowmem_print(2, "lmk: skipping kill of %s\n", p->comm);
+			task_unlock(p);
+			continue;
+		}
+#endif
+>>>>>>> f51d5e7... lowmemorykiller: don't kill com.android.inputmethod.latin
 		oom_score_adj = p->signal->oom_score_adj;
 		if (oom_score_adj < min_score_adj) {
 			task_unlock(p);

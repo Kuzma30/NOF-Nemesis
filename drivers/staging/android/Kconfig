@@ -90,6 +90,12 @@ config ANDROID_LOW_MEMORY_KILLER
 	---help---
 	  Register processes to be killed when memory is low
 
+config LMK_APP_PROTECTION
+	bool "Do not kill certain predefined apps/processes"
+	default n
+	---help---
+	Do not kill e.g.: putmethod.latin
+
 endif # if ANDROID
 
 endmenu
