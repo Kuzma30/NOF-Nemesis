@@ -12,6 +12,13 @@
  */
 
 
+<<<<<<< HEAD
+=======
+#if defined(CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS)
+#define COPY4(dst, src)	\
+		* (u32 *) (void *) (dst) = * (const u32 *) (const void *) (src)
+#else
+>>>>>>> bf748d9... Force the kernel to follow the UNALIGNED code path.
 #define COPY4(dst, src)	\
 		put_unaligned(get_unaligned((const u32 *)(src)), (u32 *)(dst))
 #if defined(__x86_64__)
