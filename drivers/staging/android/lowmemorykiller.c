@@ -207,7 +207,18 @@ static void __exit lowmem_exit(void)
 }
 
 module_param_named(cost, lowmem_shrinker.seeks, int, S_IRUGO | S_IWUSR);
+<<<<<<< HEAD
 module_param_array_named(adj, lowmem_adj, short, &lowmem_adj_size,
+=======
+#ifdef CONFIG_ANDROID_LOW_MEMORY_KILLER_AUTODETECT_OOM_ADJ_VALUES
+__module_param_call(MODULE_PARAM_PREFIX, adj,
+		    &lowmem_adj_array_ops,
+		    .arr = &__param_arr_adj,
+		    S_IRUGO | S_IWUSR, 0);
+__MODULE_PARM_TYPE(adj, "array of int");
+#else
+module_param_array_named(adj, lowmem_adj, int, &lowmem_adj_size,
+>>>>>>> b829037... staging: android: lowmemorykiller: Add config option to support oom_adj values
 			 S_IRUGO | S_IWUSR);
 module_param_array_named(minfree, lowmem_minfree, uint, &lowmem_minfree_size,
 			 S_IRUGO | S_IWUSR);
