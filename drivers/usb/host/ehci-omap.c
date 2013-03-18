@@ -769,7 +769,11 @@ static struct hc_driver ehci_omap_hc_driver = {
 	.clear_tt_buffer_complete = ehci_clear_tt_buffer_complete,
 };
 
+<<<<<<< HEAD
 MODULE_ALIAS("platform:ehci-omap"); 
+=======
+MODULE_ALIAS("platform:ehci-omap");
+>>>>>>> 9851606... 3.0.67
 MODULE_AUTHOR("Texas Instruments, Inc.");
 MODULE_AUTHOR("Felipe Balbi <felipe.balbi@nokia.com>");
 
