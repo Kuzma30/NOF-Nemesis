@@ -2011,7 +2011,11 @@ unsigned long hugetlb_total_pages(void)
 
 	for_each_hstate(h)
 		nr_total_pages += h->nr_huge_pages * pages_per_huge_page(h);
+<<<<<<< HEAD
 	return nr_total_pages;
+=======
+	return nr_total_pages;	
+>>>>>>> ea8b582... small fixex and tweaks
 }
 
 static int hugetlb_acct_memory(struct hstate *h, long delta)
