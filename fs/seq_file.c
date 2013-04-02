@@ -14,6 +14,21 @@
 #include <asm/page.h>
 
 /**
+ * seq_files have a buffer which can may overflow. When this happens a larger
+ * buffer is reallocated and all the data will be printed again.
+ * The overflow state is true when m->count == m->size.
+ */
+static bool seq_overflow(struct seq_file *m)
+{
+	return m->count == m->size;
+}
+
+static void seq_set_overflow(struct seq_file *m)
+{
+	m->count = m->size;
+}
+
+/**
  *	seq_open -	initialize sequential file
  *	@file: file we initialize
  *	@op: method table describing the sequence
@@ -92,7 +107,7 @@ static int traverse(struct seq_file *m, loff_t offset)
 			error = 0;
 			m->count = 0;
 		}
-		if (m->count == m->size)
+		if (seq_overflow(m))
 			goto Eoverflow;
 		if (pos + m->count > offset) {
 			m->from = offset - pos;
@@ -232,7 +247,7 @@ Fill:
 			break;
 		}
 		err = m->op->show(m, p);
-		if (m->count == m->size || err) {
+		if (seq_overflow(m) || err) {
 			m->count = offs;
 			if (likely(err <= 0))
 				break;
@@ -359,7 +374,7 @@ int seq_escape(struct seq_file *m, const char *s, const char *esc)
 			*p++ = '0' + (c & 07);
 			continue;
 		}
-		m->count = m->size;
+		seq_set_overflow(m);
 		return -1;
         }
 	m->count = p - m->buf;
@@ -381,7 +396,7 @@ int seq_printf(struct seq_file *m, const char *f, ...)
 			return 0;
 		}
 	}
-	m->count = m->size;
+	seq_set_overflow(m);
 	return -1;
 }
 EXPORT_SYMBOL(seq_printf);
@@ -510,7 +525,7 @@ int seq_bitmap(struct seq_file *m, const unsigned long *bits,
 			return 0;
 		}
 	}
-	m->count = m->size;
+	seq_set_overflow(m);
 	return -1;
 }
 EXPORT_SYMBOL(seq_bitmap);
@@ -526,7 +541,7 @@ int seq_bitmap_list(struct seq_file *m, const unsigned long *bits,
 			return 0;
 		}
 	}
-	m->count = m->size;
+	seq_set_overflow(m);
 	return -1;
 }
 EXPORT_SYMBOL(seq_bitmap_list);
@@ -637,7 +652,7 @@ int seq_puts(struct seq_file *m, const char *s)
 		m->count += len;
 		return 0;
 	}
-	m->count = m->size;
+	seq_set_overflow(m);
 	return -1;
 }
 EXPORT_SYMBOL(seq_puts);
