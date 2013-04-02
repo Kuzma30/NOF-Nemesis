@@ -614,10 +614,17 @@ decode_negTokenInit(unsigned char *security_blob, int length,
 		}
 	}
 
+<<<<<<< HEAD
 	/*
 	 * We currently ignore anything at the end of the SPNEGO blob after
 	 * the mechTypes have been parsed, since none of that info is
 	 * used at the moment.
 	 */
+=======
+  /*
+   * We currently ignore anything at the end of the SPNEGO blob after the 
+   * mechTypes have been parsed, since none of that info is used now.
+   */
+>>>>>>> a10b117... fix W8 mount shares
 	return 1;
 }
