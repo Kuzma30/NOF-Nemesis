@@ -1579,11 +1579,20 @@ static int tcp_tso_should_defer(struct sock *sk, struct sk_buff *skb)
 			goto send_now;
 	}
 
+<<<<<<< HEAD
 	/* Ok, it looks like it is advisable to defer.
 	 * Do not rearm the timer if already set to not break TCP ACK clocking.
 	 */
 	if (!tp->tso_deferred)
 		tp->tso_deferred = 1 | (jiffies << 1);
+=======
+	/* 
+	 * It looks like it is advisable to defer, but do not rearm
+	 * the timer if already set, to not break TCP ACK clocking
+	 */
+	if (!tp->tso_deferred)
+	    tp->tso_deferred = 1 | (jiffies << 1); 
+>>>>>>> 6c440d7... preserve ACK clocking in TSO
 
 	return 1;
 
