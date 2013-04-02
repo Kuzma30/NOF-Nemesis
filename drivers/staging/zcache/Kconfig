@@ -1,5 +1,5 @@
 config ZCACHE
-	tristate "Dynamic compression of swap pages and clean pagecache pages"
+	tristate "Dynamic compression of swap pages"
 	depends on CLEANCACHE || FRONTSWAP
 	select XVMALLOC
 	select LZO_COMPRESS
@@ -7,7 +7,7 @@ config ZCACHE
 	default n
 	help
 	  Zcache doubles RAM efficiency while providing a significant
-	  performance boosts on many workloads.  Zcache uses lzo1x
+	  performance  boosts on  many  workloads.  Zcache uses lzo1x
 	  compression and an in-kernel implementation of transcendent
-	  memory to store clean page cache pages and swap in RAM,
+	  memory to store clean  page cache pages and swap in RAM,
 	  providing a noticeable reduction in disk I/O.
