@@ -226,8 +226,12 @@ again:
 
 		this_cpu = smp_processor_id();
 
+<<<<<<< HEAD
 		if (cpu != this_cpu && (hrtimer_check_target(timer, new_base)
 			|| !cpu_online(cpu))) {
+=======
+		if (cpu != this_cpu && hrtimer_check_target(timer, new_base)) {
+>>>>>>> 736da2e... hrtimer: Consider preemption when migrating hrtimer cpu_bases
 			raw_spin_unlock(&new_base->cpu_base->lock);
 			raw_spin_lock(&base->cpu_base->lock);
 			cpu = smp_processor_id();
