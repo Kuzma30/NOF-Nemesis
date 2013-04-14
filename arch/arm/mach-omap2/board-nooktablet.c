@@ -1451,13 +1451,13 @@ static struct omap_dss_device acclaim_boxer_device = {
 		.timings	= {
 			.x_res          = 1024,
 			.y_res          = 600,
-			.pixel_clock    = 86400, /* in kHz */
-			.hfp            = 70,   /* HFP fix 160 */
-			.hsw            = 40,    /* HSW = 1~140 */
-			.hbp            = 200,   /* HSW + HBP = 160 */
-			.vfp            = 10,    /* VFP fix 12 */
+			.pixel_clock    = 59100, /* in kHz */
+			.hfp            = 216,   /* HFP fix 160 */
+			.hsw            = 140,    /* HSW = 1~140 */
+			.hbp            = 160,   /* HSW + HBP = 160 */
+			.vfp            = 127,    /* VFP fix 12 */
 			.vsw            = 10,     /* VSW = 1~20 */
-			.vbp            = 11,    /* VSW + VBP = 23 */
+			.vbp            = 23,    /* VSW + VBP = 23 */
 		},
 		.width_in_um = 158000,
 		.height_in_um = 92000,
