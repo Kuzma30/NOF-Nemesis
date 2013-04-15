@@ -3467,15 +3467,9 @@ static int ftrace_module_notify_exit(struct notifier_block *self,
 }
 #endif /* CONFIG_MODULES */
 
-<<<<<<< HEAD
-struct notifier_block ftrace_module_nb = {
-	.notifier_call = ftrace_module_notify,
-	.priority = 0,
-=======
 struct notifier_block ftrace_module_enter_nb = {
 	.notifier_call = ftrace_module_notify_enter,
 	.priority = INT_MAX,	/* Run before anything that can use kprobes */
->>>>>>> bc9fe5b... 3.0.68
 };
 
 struct notifier_block ftrace_module_exit_nb = {
