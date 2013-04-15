@@ -1,6 +1,6 @@
 #
 # Automatically generated make config: don't edit
-# Linux/arm 3.0.62 Kernel Configuration
+# Linux/arm 3.0.72 Kernel Configuration
 #
 CONFIG_ARM=y
 CONFIG_HAVE_PWM=y
@@ -35,10 +35,14 @@ CONFIG_EXPERIMENTAL=y
 CONFIG_INIT_ENV_ARG_LIMIT=32
 CONFIG_CROSS_COMPILE="arm-eabi-"
 <<<<<<< HEAD
+<<<<<<< HEAD
 CONFIG_LOCALVERSION="NOF-Nemesis-V1.34"
 =======
 CONFIG_LOCALVERSION="-Nook_On_Fire_08"
 >>>>>>> 9d2f8b5... Nook on Fire 1st commit
+=======
+CONFIG_LOCALVERSION="-Nook_On_Fire_10"
+>>>>>>> b354a28... One commit to Build them all
 CONFIG_LOCALVERSION_AUTO=y
 CONFIG_HAVE_KERNEL_GZIP=y
 CONFIG_HAVE_KERNEL_LZMA=y

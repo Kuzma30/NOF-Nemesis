@@ -427,8 +427,7 @@ static int __init dmi_present(const char __iomem *p)
 	return 1;
 }
 
-<<<<<<< HEAD
-=======
+
 static int __init smbios_present(const char __iomem *p)
 {
 	u8 buf[32];
@@ -455,7 +454,6 @@ static int __init smbios_present(const char __iomem *p)
 	return 1;
 }
 
->>>>>>> cb8b405... 3.0.69
 void __init dmi_scan_machine(void)
 {
 	char __iomem *p, *q;
