@@ -584,7 +584,7 @@ static struct omap_musb_board_data musb_board_data = {
 #elif defined(CONFIG_USB_GADGET_MUSB_HDRC)
 	.mode			= MUSB_PERIPHERAL,
 #endif
-	.power			= 100,
+	.power			= 200,
 };
 
 static struct twl4030_usb_data acclaim_usbphy_data = {
@@ -606,21 +606,13 @@ static struct omap2_hsmmc_info mmc[] = {
 		.ocr_mask	= MMC_VDD_29_30,
 		.nonremovable	= true,
 		.no_off_init	= true,
-//#ifdef CONFIG_PM_RUNTIME
-//		.power_saving	= true,
-//#endif
 	},
 	{
 		.mmc		= 1,
 		.caps		= MMC_CAP_4_BIT_DATA 
 		| MMC_CAP_8_BIT_DATA
 		| MMC_CAP_1_8V_DDR,
-		.gpio_cd	= -EINVAL,
 		.gpio_wp	= -EINVAL,
-		.nonremovable 	= false,
-//#ifdef CONFIG_PM_RUNTIME
-//		.power_saving	= true,
-//#endif
 	},
 	{
 		.name           = "wl1271",
@@ -724,11 +716,41 @@ static struct regulator_init_data acclaim_vaux1 = {
 		.valid_ops_mask	 = REGULATOR_CHANGE_VOLTAGE
 					| REGULATOR_CHANGE_MODE
 					| REGULATOR_CHANGE_STATUS,
+					.always_on      = true,
 		.state_mem = {
 			.disabled	= true,
 		},
-		.always_on	= true,
+		..initial_state          = PM_SUSPEND_MEM, 
 	},
+};
+static struct regulator_consumer_supply acclaim_vaux2_supply[] = {
+REGULATOR_SUPPLY("av-switch", "soc-audio"),
+};
+
+static struct regulator_init_data tablet_vaux2 = {
+        .constraints = {
+                .min_uV = 1200000,
+                .max_uV = 2800000,
+                .apply_uV = true,
+                .valid_modes_mask = REGULATOR_MODE_NORMAL
+| REGULATOR_MODE_STANDBY,
+                .valid_ops_mask = REGULATOR_CHANGE_VOLTAGE
+| REGULATOR_CHANGE_MODE
+| REGULATOR_CHANGE_STATUS,
+                .state_mem = {
+                        .enabled = false,
+                        .disabled = true,
+                },
+.boot_on	= 1,
+        },
+.num_consumer_supplies	= 1,
+.consumer_supplies	= acclaim_vaux2_supply,
+};
+
+static struct regulator_consumer_supply acclaim_vwlan_supply[] = {
+        {
+                .supply = "vwlan",
+        },
 };
 
 static struct regulator_init_data acclaim_vaux3 = {
@@ -742,6 +764,7 @@ static struct regulator_init_data acclaim_vaux3 = {
 					| REGULATOR_CHANGE_MODE
 					| REGULATOR_CHANGE_STATUS,
 		.state_mem = {
+			.enabled        = false,
 			.disabled	= true,
 		},
 		.always_on	= true,
@@ -761,6 +784,7 @@ static struct regulator_init_data acclaim_vmmc = {
 					| REGULATOR_CHANGE_MODE
 					| REGULATOR_CHANGE_STATUS,
 		.state_mem = {
+			.enabled        = false,
 			.disabled	= true,
 		},
 	},
@@ -779,9 +803,9 @@ static struct regulator_init_data acclaim_vpp = {
 					| REGULATOR_CHANGE_MODE
 					| REGULATOR_CHANGE_STATUS,
 		.state_mem = {
+			.enabled        = false
 			.disabled	= true,
 		},
-		.initial_state          = PM_SUSPEND_MEM,
 	},
 };
 
@@ -789,15 +813,15 @@ static struct regulator_init_data acclaim_vana = {
 	.constraints = {
 		.min_uV			= 2100000,
 		.max_uV			= 2100000,
-		//.apply_uV		= true,
 		.valid_modes_mask	= REGULATOR_MODE_NORMAL
 					| REGULATOR_MODE_STANDBY,
 		.valid_ops_mask	 = REGULATOR_CHANGE_MODE
 					| REGULATOR_CHANGE_STATUS,
+		.always_on    = true, 
 		.state_mem = {
+			.enabled        = false,
 			.disabled	= true,
 		},
-		.initial_state          = PM_SUSPEND_MEM,
 	},
 };
 
@@ -805,17 +829,18 @@ static struct regulator_init_data acclaim_vcxio = {
 	.constraints = {
 		.min_uV			= 1800000,
 		.max_uV			= 1800000,
-		//.apply_uV		= true,
 		.valid_modes_mask	= REGULATOR_MODE_NORMAL
 		| REGULATOR_MODE_STANDBY,
 		.valid_ops_mask	 = REGULATOR_CHANGE_MODE
 		| REGULATOR_CHANGE_STATUS,
+		.always_on    = true,
 		.state_mem = {
 			.disabled	= true,
 		},
 		.initial_state          = PM_SUSPEND_MEM,
-		.always_on	= true,
 	},
+	.num_consumer_supplies	= ARRAY_SIZE(acclaim_vcxio_supply),
+	.consumer_supplies	= acclaim_vcxio_supply,
 };
 
 
@@ -827,7 +852,6 @@ static struct regulator_init_data acclaim_vusb = {
 	.constraints = {
 		.min_uV			= 3300000,
 		.max_uV			= 3300000,
-		//.apply_uV		= true,
 		.valid_modes_mask	= REGULATOR_MODE_NORMAL
 		| REGULATOR_MODE_STANDBY,
 		.valid_ops_mask	 =	REGULATOR_CHANGE_MODE
@@ -843,9 +867,8 @@ static struct regulator_init_data acclaim_vusb = {
 
 static struct regulator_init_data acclaim_clk32kg = {
 	.constraints = {
-		.valid_modes_mask	= REGULATOR_MODE_NORMAL,
 		.valid_ops_mask		= REGULATOR_CHANGE_STATUS,
-		.always_on	= true,
+		.boot_on    = true,
 	},
 };
 
