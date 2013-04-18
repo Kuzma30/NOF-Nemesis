@@ -307,7 +307,7 @@ void mmc_set_data_timeout(struct mmc_data *data, const struct mmc_card *card)
 			 * application note, it is recommended to
 			 * use fixed timeout not less than 500 ms
 			 */
-			limit_us = 500000;
+			limit_us = 3000000;
 		else
 			limit_us = 100000;
 
