@@ -81,9 +81,15 @@ static const struct row_queue_params row_queues_def[] = {
 	{false, 1, false}	/* ROWQ_PRIO_LOW_SWRITE */
 };
 
+<<<<<<< HEAD
 /* Default values for idling on read queues (in msec) */
 #define ROW_IDLE_TIME_MSEC 5
 #define ROW_READ_FREQ_MSEC 20
+=======
+/* Default values for idling on read queues */
+#define ROW_IDLE_TIME_MSEC 5	/* msec */
+#define ROW_READ_FREQ_MSEC 20	/* msec */
+>>>>>>> ecd2f29... Update ROW to the latest
 
 /**
  * struct rowq_idling_data -  parameters for idling on the queue
@@ -168,7 +174,7 @@ struct row_data {
 	unsigned int			cycle_flags;
 };
 
-#define RQ_ROWQ(rq) ((struct row_queue *) ((rq)->elevator_private[0]))
+#define RQ_ROWQ(rq) ((struct row_queue *) ((rq)->elv.priv[0]))
 
 #define row_log(q, fmt, args...)   \
 	blk_add_trace_msg(q, "%s():" fmt , __func__, ##args)
@@ -306,6 +312,7 @@ static void row_add_request(struct request_queue *q,
 	} else
 		row_log_rowq(rd, rqueue->prio,
 			"added request (total on queue=%d)", rqueue->nr_req);
+<<<<<<< HEAD
 }
 
 /**
@@ -346,6 +353,49 @@ static int row_reinsert_req(struct request_queue *q,
  * row_urgent_pending() - Return TRUE if there is an urgent
  *			  request on scheduler
  * @q:	requests queue
+=======
+}
+
+/**
+ * row_reinsert_req() - Reinsert request back to the scheduler
+ * @q:	requests queue
+ * @rq:	request to add
+ *
+ * Reinsert the given request back to the queue it was
+ * dispatched from as if it was never dispatched.
+ *
+ * Returns 0 on success, error code otherwise
+ */
+static int row_reinsert_req(struct request_queue *q,
+			    struct request *rq)
+{
+	struct row_data    *rd = q->elevator->elevator_data;
+	struct row_queue   *rqueue = RQ_ROWQ(rq);
+
+	/* Verify rqueue is legitimate */
+	if (rqueue->prio >= ROWQ_MAX_PRIO) {
+		pr_err("\n\nROW BUG: row_reinsert_req() rqueue->prio = %d\n",
+			   rqueue->prio);
+		blk_dump_rq_flags(rq, "");
+		return -EIO;
+	}
+
+	list_add(&rq->queuelist, &rqueue->fifo);
+	rd->nr_reqs[rq_data_dir(rq)]++;
+	rqueue->nr_req++;
+
+	row_log_rowq(rd, rqueue->prio,
+		"request reinserted (total on queue=%d)", rqueue->nr_req);
+
+	return 0;
+}
+
+/*
+ * row_urgent_pending() - Return TRUE if there is an urgent
+ *			  request on scheduler
+ * @q:	requests queue
+ *
+>>>>>>> ecd2f29... Update ROW to the latest
  */
 static bool row_urgent_pending(struct request_queue *q)
 {
@@ -647,7 +697,7 @@ row_set_request(struct request_queue *q, struct request *rq, gfp_t gfp_mask)
 	unsigned long flags;
 
 	spin_lock_irqsave(q->queue_lock, flags);
-	rq->elevator_private[0] =
+	rq->elv.priv[0] =
 		(void *)(&rd->row_queues[get_queue_type(rq)]);
 	spin_unlock_irqrestore(q->queue_lock, flags);
 
