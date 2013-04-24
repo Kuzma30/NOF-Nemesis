@@ -302,10 +302,17 @@ static void rfkill_set_block(struct rfkill *rfkill, bool blocked)
 	rfkill->state &= ~RFKILL_BLOCK_SW_SETCALL;
 	rfkill->state &= ~RFKILL_BLOCK_SW_PREV;
 	curr = rfkill->state & RFKILL_BLOCK_SW;
+<<<<<<< HEAD
 	spin_unlock_irqrestore(&rfkill->lock, flags);
 
 	rfkill_led_trigger_event(rfkill);
 
+=======
+
+	spin_unlock_irqrestore(&rfkill->lock, flags);
+
+	rfkill_led_trigger_event(rfkill);
+>>>>>>> e8d549c... rfkill: prevent unnecessary event generation" - https://patchwork.kernel.org/patch/1415121/
 	if (prev != curr)
 		rfkill_event(rfkill);
 }
