@@ -32,11 +32,7 @@
 
 #include <asm/ioctls.h>
 
-<<<<<<< HEAD
-/*
-=======
 /**
->>>>>>> f0541c9... Logger from mainline 3.9
  * struct logger_log - represents a specific log, such as 'main' or 'radio'
  * @buffer:	The actual ring buffer
  * @misc:	The "misc" device representing the log
@@ -361,11 +357,7 @@ static ssize_t do_write_log_from_user(struct logger_log *log,
 			 */
 			return -EFAULT;
 
-<<<<<<< HEAD
-	log->w_off = logger_offset(log->w_off + count);
-=======
 	log->w_off = logger_offset(log, log->w_off + count);
->>>>>>> f0541c9... Logger from mainline 3.9
 
 	return count;
 }
@@ -609,16 +601,9 @@ static int __init create_log(char *log_name, int size)
 	struct logger_log *log;
 	unsigned char *buffer;
 
-<<<<<<< HEAD
-DEFINE_LOGGER_DEVICE(log_main, LOGGER_LOG_MAIN, 256*1024)
-DEFINE_LOGGER_DEVICE(log_events, LOGGER_LOG_EVENTS, 256*1024)
-DEFINE_LOGGER_DEVICE(log_radio, LOGGER_LOG_RADIO, 256*1024)
-DEFINE_LOGGER_DEVICE(log_system, LOGGER_LOG_SYSTEM, 256*1024)
-=======
 	buffer = vmalloc(size);
 	if (buffer == NULL)
 		return -ENOMEM;
->>>>>>> f0541c9... Logger from mainline 3.9
 
 	log = kzalloc(sizeof(struct logger_log), GFP_KERNEL);
 	if (log == NULL) {
