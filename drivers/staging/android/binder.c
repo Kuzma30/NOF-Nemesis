@@ -632,14 +632,11 @@ static int binder_update_page_range(struct binder_proc *proc, int allocate,
 	if (mm) {
 		down_write(&mm->mmap_sem);
 		vma = proc->vma;
-<<<<<<< HEAD
-=======
-		if (vma && mm != proc->vma_vm_mm) {
-			pr_err("binder: %d: vma mm and task mm mismatch\n",
-				proc->pid);
-			vma = NULL;
+	if (vma && mm != proc->vma_vm_mm) {
+		pr_err("binder: %d: vma mm and task mm mismatch\n",
+		proc->pid);
+		vma = NULL;
 		}
->>>>>>> 4c38ca5... Staging: android: binder: Fix use-after-free bug
 	}
 
 	if (allocate == 0)
