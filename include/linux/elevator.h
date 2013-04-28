@@ -21,16 +21,9 @@ typedef void (elevator_bio_merged_fn) (struct request_queue *,
 typedef int (elevator_dispatch_fn) (struct request_queue *, int);
 
 typedef void (elevator_add_req_fn) (struct request_queue *, struct request *);
-<<<<<<< HEAD
-typedef int (elevator_queue_empty_fn) (struct request_queue *);
-typedef int (elevator_reinsert_req_fn) (struct request_queue *,
-					struct request *);
-typedef bool (elevator_is_urgent_fn) (struct request_queue *);
-=======
 typedef int (elevator_reinsert_req_fn) (struct request_queue *, struct request *);
 typedef bool (elevator_is_urgent_fn) (struct request_queue *);
 typedef int (elevator_queue_empty_fn) (struct request_queue *);
->>>>>>> f563e77... Set default IO scheduler to ROW and merge block&ROW improvements
 typedef struct request *(elevator_request_list_fn) (struct request_queue *, struct request *);
 typedef void (elevator_completed_req_fn) (struct request_queue *, struct request *);
 typedef int (elevator_may_queue_fn) (struct request_queue *, int);

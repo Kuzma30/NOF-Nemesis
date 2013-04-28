@@ -215,10 +215,7 @@ static void elevator_release(struct kobject *kobj)
 
 	e = container_of(kobj, struct elevator_queue, kobj);
 	elevator_put(e->type);
-<<<<<<< HEAD
-=======
 	kfree(e->hash);
->>>>>>> f563e77... Set default IO scheduler to ROW and merge block&ROW improvements
 	kfree(e);
 }
 
