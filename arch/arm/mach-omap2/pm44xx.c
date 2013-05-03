@@ -82,7 +82,6 @@ static struct clockdomain *emif_clkdm, *mpuss_clkdm;
 static struct clockdomain *abe_clkdm;
 
 /* Yet un-named erratum which requires AUTORET to be disabled for IVA PD
-<<<<<<< HEAD
 *
 * NOTE: This erratum is disabled and replaced with updated work-around relaxing
 * constraint of always holding IVA AUTO RET disabled (now only before OFF),
@@ -92,17 +91,6 @@ static struct clockdomain *abe_clkdm;
 * TODO: Once final Errata documentation is available, remove reference to this
 * previous IVA AUTO RET erratum.
 */
-=======
- *
- * NOTE: This erratum is disabled and replaced with updated work-around relaxing
- * constraint of always holding IVA AUTO RET disabled (now only before OFF),
- * which in turn was preventing IVA VDD from reaching RET and SYS_CLK from
- * being automatically gated in idle path. This previous work-around code is
- * kept and maintained for reference until Errata documentation is updated.
- * TODO: Once final Errata documentation is available, remove reference to this
- * previous IVA AUTO RET erratum.
- */
->>>>>>> 5580733... OMAP4: PM: IVA AUTO RET relaxed workaround in idle path
 #define OMAP4_PM_ERRATUM_IVA_AUTO_RET_iXXX	BIT(1)
 
 /*
@@ -143,7 +131,6 @@ static struct clockdomain *abe_clkdm;
 #define LPDDR_WD_PULL_DOWN				0x02
 
 /*
-<<<<<<< HEAD
  * The OFF mode isn't fully supported for OMAP4430GP ES2.0 - ES2.2
  * When coming back from device off mode, the Cortex-A9 WUGEN enable registers
  * are not restored by ROM code due to i625. The work around is using an
@@ -165,44 +152,6 @@ static struct clockdomain *abe_clkdm;
  * at PM initialization time for I/O pads daisy chain reseting.
  **/
 #define OMAP4_PM_ERRATUM_IO_WAKEUP_CLOCK_NOT_RECYCLED_i612	BIT(7)
-=======
- * AUTO RET for IVA VDD Cannot be permanently enabled during OFF mode due to
- * potential race between IVA VDD entering RET and start of Device OFF mode.
- *
- * It is mandatory to have AUTO RET for IVA VDD exlusive with Devide OFF mode.
- * In order to avoid lockup in OFF mode sequence, system must ensure IVA
- * voltage domain transitions straight from stable ON to OFF.
- *
- * In addition, management of IVA VDD SmartReflex sensor at exit of idle path
- * may introduce a misalignment between IVA Voltage Controller state and IVA
- * PRCM voltage FSM based on following identified scenario:
- *
- * IVA Voltage Controller is woken-up due to SmartReflex management while
- * IVA PRCM voltage FSM stays in RET in absence of any IVA module wake-up event
- * (which is not systematic in idle path as opposed to MPU and CORE VDDs being
- * necessarily woken up with MPU and CORE PDs).
- *
- * NOTE: This updated work-around relaxes constraint of always holding
- * IVA AUTO RET disabled (now only before OFF), which in turn was preventing
- * IVA VDD from reaching RET and SYS_CLK from being automatically gated in
- * idle path. Ensure previous work-around code is kept and maintained for
- * reference until Errata documentation is updated.
- * TODO: Once this is available, update with final iXXX Errata number.
- *
- * WA involves:
- * Ensure stable ON-OFF transition for IVA VDD during OFF mode sequence.
- * Ensure VCON and PRCM FSM are synced despite IVA SR handling in idle path.
- * 1) AUTO RET for IVA VDD is enabled entering in idle path, disabled exiting
- *   idle path and IVA VDD is always woken-up with a SW dummy wakeup.
- * 2) OFF mode is enabled only in Suspend path.
- * 3) AUTO RET for IVA VDD remains disabled in Suspend path (before OFF mode).
- */
-#define OMAP4_PM_ERRATUM_IVA_AUTO_RET_IDLE_iXXX        BIT(8)
-static int iva_toggle_wa_applied;
-
-u16 pm44xx_errata;
-#define is_pm44xx_erratum(erratum) (pm44xx_errata & OMAP4_PM_ERRATUM_##erratum)
->>>>>>> 5580733... OMAP4: PM: IVA AUTO RET relaxed workaround in idle path
 
 /*
  * AUTO RET for IVA VDD Cannot be permanently enabled during OFF mode due to
@@ -386,17 +335,10 @@ void omap4_enter_sleep(unsigned int cpu, unsigned int power_state, bool suspend)
 			OMAP_VC_CHANNEL_AUTO_TRANSITION_RETENTION);
 
 		/*
-<<<<<<< HEAD
 		* Do not enable IVA AUTO-RET if device targets OFF mode.
 		* In such case, purpose of IVA AUTO-RET WA is to ensure
 		* IVA domain goes straight from stable Voltage ON to OFF.
 		*/
-=======
-		 * Do not enable IVA AUTO-RET if device targets OFF mode.
-		 * In such case, purpose of IVA AUTO-RET WA is to ensure
-		 * IVA domain goes straight from stable Voltage ON to OFF.
-		 */
->>>>>>> 5580733... OMAP4: PM: IVA AUTO RET relaxed workaround in idle path
 		if (is_pm44xx_erratum(IVA_AUTO_RET_IDLE_iXXX)) {
 			if (!omap4_device_next_state_off())
 				omap_vc_set_auto_trans(iva_voltdm,
@@ -404,21 +346,12 @@ void omap4_enter_sleep(unsigned int cpu, unsigned int power_state, bool suspend)
 		/* Normal path without IVA AUTO RET IDLE work-around applied */
 		} else {
 			/*
-<<<<<<< HEAD
 			* Note: The previous erratum is deactivated and replaced
 			* with updated work-around in idle path which relaxes
 			* constraint of always holding IVA AUTO RET disabled
 			* (now only before OFF). Code is kept and maintained for
 			* reference until Errata is updated.
 			*/
-=======
-			 * Note: The previous erratum is deactivated and replaced
-			 * with updated work-around in idle path which relaxes
-			 * constraint of always holding IVA AUTO RET disabled
-			 * (now only before OFF). Code is kept and maintained for
-			 * reference until Errata is updated.
-			 */
->>>>>>> 5580733... OMAP4: PM: IVA AUTO RET relaxed workaround in idle path
 			if (!is_pm44xx_erratum(IVA_AUTO_RET_iXXX)) {
 				omap_vc_set_auto_trans(iva_voltdm,
 				OMAP_VC_CHANNEL_AUTO_TRANSITION_RETENTION);
@@ -487,7 +420,6 @@ abort_device_off:
 					__func__, iva_voltdm->name);
 				iva_toggle_wa_applied = 0;
 			/*
-<<<<<<< HEAD
 			* Ensure PRCM IVA Voltage FSM is ON upon exit of idle.
 			* Upon successful IVA AUTO-RET disabling, trigger a
 			* Dummy SW Wakup on IVA domain. Later on, upon enabling
@@ -496,16 +428,6 @@ abort_device_off:
 			* during active and for further attempts to Device OFF
 			* mode for which IVA would go straight from ON to OFF.
 			*/
-=======
-			 * Ensure PRCM IVA Voltage FSM is ON upon exit of idle.
-			 * Upon successful IVA AUTO-RET disabling, trigger a
-			 * Dummy SW Wakup on IVA domain. Later on, upon enabling
-			 * of IVA Smart-Reflex, IVA Voltage Controller state will
-			 * be ON as well. Both FSMs would now be aligned and safe
-			 * during active and for further attempts to Device OFF
-			 * mode for which IVA would go straight from ON to OFF.
-			 */
->>>>>>> 5580733... OMAP4: PM: IVA AUTO RET relaxed workaround in idle path
 			} else {
 				/* Configures ABE clockdomain in SW_WKUP */
 				if (clkdm_wakeup(abe_clkdm)) {
@@ -521,21 +443,12 @@ abort_device_off:
 		/* Normal path without IVA AUTO RET IDLE work-around applied */
 		} else {
 			/*
-<<<<<<< HEAD
 			* Note: The previous erratum is deactivated and replaced
 			* with updated work-around in idle path which relaxes
 			* constraint of always holding IVA AUTO RET disabled
 			* (now only before OFF). Code is kept and maintained for
 			* reference until Errata is updated.
 			*/
-=======
-			 * Note: The previous erratum is deactivated and replaced
-			 * with updated work-around in idle path which relaxes
-			 * constraint of always holding IVA AUTO RET disabled
-			 * (now only before OFF). Code is kept and maintained for
-			 * reference until Errata is updated.
-			 */
->>>>>>> 5580733... OMAP4: PM: IVA AUTO RET relaxed workaround in idle path
 			if (!is_pm44xx_erratum(IVA_AUTO_RET_iXXX)) {
 				omap_vc_set_auto_trans(iva_voltdm,
 				OMAP_VC_CHANNEL_AUTO_TRANSITION_DISABLE);
@@ -1529,15 +1442,8 @@ static void __init omap4_pm_setup_errata(void)
 
 	iva_toggle_wa_applied = 0;
 
-<<<<<<< HEAD
 	if (cpu_is_omap443x()) {
 		/* Dynamic Dependency errata for all silicon !=443x */
-=======
-	iva_toggle_wa_applied = 0;
-
-	/* Dynamic Dependency errata for all silicon !=443x */
-	if (cpu_is_omap443x())
->>>>>>> 5580733... OMAP4: PM: IVA AUTO RET relaxed workaround in idle path
 		pm44xx_errata |= OMAP4_PM_ERRATUM_MPU_EMIF_NO_DYNDEP_i688;
 		/* Enable errata i612 */
 		pm44xx_errata |=
