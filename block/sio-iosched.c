@@ -23,26 +23,14 @@
 enum { ASYNC, SYNC };
 
 /* Tunables */
-<<<<<<< HEAD
-static const int sync_read_expire  = HZ / 2;	/* max time before a sync read is submitted. */
-static const int sync_write_expire = 2 * HZ;	/* max time before a sync write is submitted. */
-
-static const int async_read_expire  =  4 * HZ;	/* ditto for async, these limits are SOFT! */
-static const int async_write_expire = 16 * HZ;	/* ditto for async, these limits are SOFT! */
-
-static const int writes_starved = 2;		/* max times reads can starve a write */
-static const int fifo_batch     = 8;		/* # of sequential requests treated as one
-=======
 static const int sync_read_expire = (HZ / 16) * 9;	/* max time before a sync read is submitted. */
 static const int sync_write_expire = (HZ / 16) * 28;	/* max time before a sync write is submitted. */
 
-static const int async_read_expire = (HZ / 16) * 53;	/* ditto for async, these limits are SOFT! */
+static const int async_read_expire = (HZ / 16) * 55;	/* ditto for async, these limits are SOFT! */
 static const int async_write_expire = (HZ / 16) * 192;	/* ditto for async, these limits are SOFT! */
 
-static const int writes_starved = 3;		/* max times reads can starve a write */
-static const int fifo_batch     = 2;		/* # of sequential requests treated as one
->>>>>>> 6cff303... Tweaked SIO for the new omap hsmmc driver
-						   by the above parameters. For throughput. */
+static const int writes_starved = 1;		/* max times reads can starve a write */
+static const int fifo_batch     = 1;		/* # of sequential requests treated as one by the above parameters. For throughput. */
 
 /* Elevator data */
 struct sio_data {
