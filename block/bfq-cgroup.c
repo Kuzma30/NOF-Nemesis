@@ -343,7 +343,7 @@ static void bfq_cic_change_cgroup(struct cfq_io_context *cic,
 
 	bfqd = bfq_get_bfqd_locked(&cic->key, &flags);
 	if (bfqd != NULL &&
-	    !strncmp(bfqd->queue->elevator->type->elevator_name,
+	    !strncmp(bfqd->queue->elevator->elevator_type->elevator_name,
 		     "bfq", ELV_NAME_MAX)) {
 		__bfq_cic_change_cgroup(bfqd, cic, cgroup);
 		bfq_put_bfqd_unlock(bfqd, &flags);
@@ -699,7 +699,7 @@ static struct cgroup_subsys_state *bfqio_create(struct cgroup_subsys *subsys,
 }
 
 /*
- * We cannot support shared io contexts, as we have no mean to support
+ * We cannot support shared io contexts, as we have no means to support
  * two tasks with the same ioc in two different groups without major rework
  * of the main cic/bfqq data structures.  By now we allow a task to change
  * its cgroup only if it's the only owner of its ioc; the drawback of this
