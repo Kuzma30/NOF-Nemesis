@@ -784,10 +784,10 @@ static void dirty_late_resume(struct early_suspend *handler)
 }
 
 static struct early_suspend dirty_suspend = {
-	suspend = dirty_early_suspend,
-	resume = dirty_late_resume,
+	.suspend = dirty_early_suspend,
+	.resume = dirty_late_resume,
 };
- 
+
 /*
  * Called early on to tune the page writeback dirty limits.
  *
@@ -809,7 +809,7 @@ static struct early_suspend dirty_suspend = {
 void __init page_writeback_init(void)
 {
 	int shift;
-
+	
 	register_early_suspend(&dirty_suspend);
 
 	writeback_set_ratelimit();
