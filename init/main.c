@@ -68,7 +68,6 @@
 #include <linux/shmem_fs.h>
 #include <linux/slab.h>
 #include <linux/perf_event.h>
-#include <linux/fs.h>
 
 #include <asm/io.h>
 #include <asm/bugs.h>
@@ -621,13 +620,6 @@ asmlinkage void __init start_kernel(void)
 	acpi_early_init(); /* before LAPIC and SMP init */
 	sfi_init_late();
 
-<<<<<<< HEAD
-=======
-	ftrace_init();
-
-	suspend_fstrim_init();
-
->>>>>>> 7625a1a... trim /cache partition on suspend if the partition has not been trimmed for more than 15 minutes
 	/* Do the rest non-__init'ed, we're now alive */
 	rest_init();
 }
