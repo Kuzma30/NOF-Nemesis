@@ -1197,13 +1197,13 @@ struct usbhs_omap_board_data usbhs_bdata __initdata = {
 	.reset_gpio_port[2]  = -EINVAL
 };
 
-static void __init acclaim_ehci_ohci_init(void)
+static void __init omap4_ehci_ohci_init(void)
 {
 	omap_mux_init_signal("usbb2_ulpitll_clk.gpio_157", \
 			     OMAP_PIN_OUTPUT | \
 			     OMAP_PIN_OFF_NONE);
 	
-	// Power on the ULPI PHY
+	/* Power on the ULPI PHY */
 	if (gpio_is_valid(BLAZE_MDM_PWR_EN_GPIO)) {
 		gpio_request(BLAZE_MDM_PWR_EN_GPIO, "USBB1 PHY VMDM_3V3");
 		gpio_direction_output(BLAZE_MDM_PWR_EN_GPIO, 1);
@@ -1215,7 +1215,7 @@ static void __init acclaim_ehci_ohci_init(void)
 
 }
 #else
-static void __init acclaim_ehci_ohci_init(void){}
+static void __init omap4_ehci_ohci_init(void){}
 #endif
 
 static void acclaim_set_osc_timings(void)
@@ -1321,7 +1321,7 @@ static void __init acclaim_init(void)
 #ifdef CONFIG_BATTERY_MAX17042
 	acclaim_max17042_dev_init();
 #endif
-	acclaim_ehci_ohci_init();
+	omap4_ehci_ohci_init();
 
 	usb_musb_init(&musb_board_data);
 
