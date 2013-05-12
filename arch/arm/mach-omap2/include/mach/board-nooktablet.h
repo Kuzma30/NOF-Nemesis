@@ -10,7 +10,6 @@
 
 #ifndef _BOARD_NOOKTABLET_H
 #define _BOARD_NOOKTABLET_H
-#define BLAZE_MDM_PWR_EN_GPIO	157
 #include <linux/regulator/consumer.h>
 
 #ifdef CONFIG_MACH_OMAP4_NOOKTABLET
