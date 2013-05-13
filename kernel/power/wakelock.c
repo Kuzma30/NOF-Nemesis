@@ -135,12 +135,23 @@ static int wakelock_stats_show(struct seq_file *m, void *unused)
 
 	ret = seq_puts(m, "name\tcount\texpire_count\twake_count\tactive_since"
 			"\ttotal_time\tsleep_time\tmax_time\tlast_change\n");
-	list_for_each_entry(lock, &inactive_locks, link)
+	list_for_each_entry(lock, &inactive_locks, link) {
+		if (!lock)
+			goto active_list;
+
 		ret = print_lock_stat(m, lock);
-	for (type = 0; type < WAKE_LOCK_TYPE_COUNT; type++) {
-		list_for_each_entry(lock, &active_wake_locks[type], link)
-			ret = print_lock_stat(m, lock);
 	}
+active_list:
+	for (type = 0; type < WAKE_LOCK_TYPE_COUNT; type++) {
+		list_for_each_entry(lock, &active_wake_locks[type], link) {
+			if (!lock)
+				goto exit;
+
+			ret = print_lock_stat(m, lock);
+		}
+	}
+
+exit:
 	spin_unlock_irqrestore(&list_lock, irqflags);
 	return 0;
 }
@@ -662,18 +673,14 @@ int wake_lock_active(struct wake_lock *lock)
 }
 EXPORT_SYMBOL(wake_lock_active);
 
-#ifdef CONFIG_WAKELOCK_STAT
 static int wakelock_stats_open(struct inode *inode, struct file *file)
 {
 	return single_open(file, wakelock_stats_show, NULL);
 }
-#endif
 
 static const struct file_operations wakelock_stats_fops = {
 	.owner = THIS_MODULE,
-#ifdef CONFIG_WAKELOCK_STAT	
 	.open = wakelock_stats_open,
-#endif		
 	.read = seq_read,
 	.llseek = seq_lseek,
 	.release = single_release,
