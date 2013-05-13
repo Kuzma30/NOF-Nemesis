@@ -831,6 +831,11 @@ int dpm_suspend_noirq(pm_message_t state)
 		if (!list_empty(&dev->power.entry))
 			list_move(&dev->power.entry, &dpm_noirq_list);
 		put_device(dev);
+		
+		if (pm_wakeup_pending()) {
+		    error = -EBUSY;
+		    break;
+		} 		
 	}
 	mutex_unlock(&dpm_list_mtx);
 	if (error)
@@ -1106,6 +1111,12 @@ int dpm_prepare(pm_message_t state)
 		if (!list_empty(&dev->power.entry))
 			list_move_tail(&dev->power.entry, &dpm_prepared_list);
 		put_device(dev);
+		
+		if (pm_wakeup_pending()) {
+		    error = -EBUSY;
+		break;		
+		}
+		
 	}
 	mutex_unlock(&dpm_list_mtx);
 	return error;
