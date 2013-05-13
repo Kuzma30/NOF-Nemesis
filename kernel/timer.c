@@ -63,7 +63,6 @@ EXPORT_SYMBOL(jiffies_64);
 #define TVR_SIZE (1 << TVR_BITS)
 #define TVN_MASK (TVN_SIZE - 1)
 #define TVR_MASK (TVR_SIZE - 1)
-#define MAX_TVAL ((unsigned long)((1ULL << (TVR_BITS + 4*TVN_BITS)) - 1))
 
 struct tvec {
 	struct list_head vec[TVN_SIZE];
@@ -357,12 +356,11 @@ static void internal_add_timer(struct tvec_base *base, struct timer_list *timer)
 		vec = base->tv1.vec + (base->timer_jiffies & TVR_MASK);
 	} else {
 		int i;
-		/* If the timeout is larger than MAX_TVAL (on 64-bit
-		 * architectures or with CONFIG_BASE_SMALL=1) then we
-		 * use the maximum timeout.
+		/* If the timeout is larger than 0xffffffff on 64-bit
+		 * architectures then we use the maximum timeout:
 		 */
-		if (idx > MAX_TVAL) {
-			idx = MAX_TVAL;
+		if (idx > 0xffffffffUL) {
+			idx = 0xffffffffUL;
 			expires = idx + base->timer_jiffies;
 		}
 		i = (expires >> (TVR_BITS + 3 * TVN_BITS)) & TVN_MASK;
@@ -681,23 +679,23 @@ __mod_timer(struct timer_list *timer, unsigned long expires,
 
 	debug_activate(timer, expires);
 
-	/*
-	 * Should we try to migrate timer?
-	 * However we can't change timer's base while it is running, otherwise
-	 * del_timer_sync() can't detect that the timer's handler yet has not
-	 * finished. This also guarantees that the timer is serialized wrt
-	 * itself.
-	 */
-	if (likely(base->running_timer != timer)) {
-		cpu = smp_processor_id();
+	cpu = smp_processor_id();
 
 #if defined(CONFIG_NO_HZ) && defined(CONFIG_SMP)
-	if (!pinned && get_sysctl_timer_migration())
+	if (!pinned && get_sysctl_timer_migration() && idle_cpu(cpu))
 		cpu = get_nohz_timer_target();
 #endif
-		new_base = per_cpu(tvec_bases, cpu);
+	new_base = per_cpu(tvec_bases, cpu);
 
-		if (base != new_base) {
+	if (base != new_base) {
+		/*
+		 * We are trying to schedule the timer on the local CPU.
+		 * However we can't change timer's base while it is running,
+		 * otherwise del_timer_sync() can't detect that the timer's
+		 * handler yet has not finished. This also guarantees that
+		 * the timer is serialized wrt itself.
+		 */
+		if (likely(base->running_timer != timer)) {
 			/* See the comment in lock_timer_base() */
 			timer_set_base(timer, NULL);
 			spin_unlock(&base->lock);
@@ -765,12 +763,10 @@ unsigned long apply_slack(struct timer_list *timer, unsigned long expires)
 	if (mask == 0)
 		return expires;
 
-	bit = __fls(mask);
+	bit = find_last_bit(&mask, BITS_PER_LONG);
 
-	mask = (1 << bit) - 1;
-
-	expires_limit = expires_limit & ~(mask);
-
+	expires_limit = (expires_limit >> bit) << bit;
+	
 	return expires_limit;
 }
 
