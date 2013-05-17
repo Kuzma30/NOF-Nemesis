@@ -2768,6 +2768,7 @@ static ssize_t ft5x06_calibrate_show(struct device *dev, struct device_attribute
 			DBG_PRINT(dbg_level_error, "%s: " FTX_TAG ": %s(): ERROR: Could not read from the DEVICE MODE register.\n", dev_name(dev), __func__);
 			goto error_restore_mode;
 		}
+		printk("i=%d devmode=0x%x\n", i, devmode);
 		if (FT5x06_MODE_WORKING == devmode)
 		{
 			break;
@@ -6528,10 +6529,11 @@ static int __devinit ft5x06_probe(struct i2c_client *client, const struct i2c_de
 	switch(ts->info.fw_ver)
 	{
 	case 0x0b:
-		ts->platform_data->maxy = 768;
+		{
+			ts->platform_data->flags = FLIP_DATA_FLAG | REVERSE_X_FLAG;
+			ts->platform_data->maxx = 768;
+		}
 		break;
-	default :  //stock firmware
-		ts->platform_data->flags = REVERSE_X_FLAG | REVERSE_Y_FLAG ;
 	}
 
 	/* Switch off the controller till someone starts using it */
