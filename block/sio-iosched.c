@@ -1,5 +1,5 @@
 /*
- * Simple IO scheduler plus
+ * Simple IO scheduler
  * Based on Noop, Deadline and V(R) IO schedulers.
  *
  * Copyright (C) 2012 Miguel Boton <mboton@gmail.com>
