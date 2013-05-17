@@ -66,7 +66,7 @@
 #define FT5x06_WMREG_LIB_VER_L          0xA2
 #define FT5x06_WMREG_PWR_MODE           0xA5
 #define FT5x06_WMREG_FW_VER             0xA6
-#define FT5x06_WMREG_STAT_CFG           0xA7
+#define FT5x06_WMREG_STAT_CFG          0xA7
 #define FT5x06_WMREG_FOCALTECH_ID       0xA8
 #define FT5x06_WMREG_RESET              0xFC
 
