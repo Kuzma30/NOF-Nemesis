@@ -475,13 +475,8 @@ static struct cpu_workqueue_struct *get_cwq(unsigned int cpu,
 					    struct workqueue_struct *wq)
 {
 	if (!(wq->flags & WQ_UNBOUND)) {
-		if (likely(cpu < nr_cpu_ids)) {
-#ifdef CONFIG_SMP
-			return per_cpu_ptr(wq->cpu_wq.pcpu, cpu);
-#else
-			return wq->cpu_wq.single;
-#endif
-		}
+	if (likely(cpu < nr_cpu_ids))
+	return per_cpu_ptr(wq->cpu_wq.pcpu, cpu);
 	} else if (likely(cpu == WORK_CPU_UNBOUND))
 		return wq->cpu_wq.single;
 	return NULL;

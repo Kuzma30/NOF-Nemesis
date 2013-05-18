@@ -138,7 +138,7 @@ static int do_getname(const char __user *filename, char *page)
 
 static char *getname_flags(const char __user *filename, int flags, int *empty)
 {
-	char *tmp, *result;
+	char *tmp = NULL, *result;
 
 	result = ERR_PTR(-ENOMEM);
 	tmp = __getname();
@@ -2454,7 +2454,7 @@ SYSCALL_DEFINE4(mknodat, int, dfd, const char __user *, filename, int, mode,
 		unsigned, dev)
 {
 	int error;
-	char *tmp;
+	char *tmp = NULL;
 	struct dentry *dentry;
 	struct nameidata nd;
 
