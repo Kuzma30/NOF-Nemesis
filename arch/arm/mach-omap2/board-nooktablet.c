@@ -270,14 +270,21 @@ static void ft5x06_platform_resume(void)
 }
 
 static struct ft5x06_platform_data ft5x06_platform_data = {
-        .maxx = 1024,
-        .maxy = 600,
-	.reset_gpio = OMAP_FT5x06_RESET_GPIO,
+        .maxx = 1024,//600,
+        .maxy = 600, //1024,
+//        .flags = REVERSE_Y_FLAG | REVERSE_X_FLAG, //FLIP_DATA_FLAG | REVERSE_Y_FLAG | REVERSE_X_FLAG,
+        .reset_gpio = OMAP_FT5x06_RESET_GPIO,
         .use_st = FT_USE_ST,
         .use_mt = FT_USE_MT,
         .use_trk_id = FT_USE_TRACKING_ID,
         .use_sleep = FT_USE_SLEEP,
+<<<<<<< HEAD
         .use_gestures = 0,
+=======
+        .use_gestures = 1,
+//      .platform_suspend = ft5x06_platform_suspend,
+//      .platform_resume = ft5x06_platform_resume,
+>>>>>>> parent of 78545f4... cm-10.1: leave default device rotation, otherwise bootanim is screwed up.
 };
 
 #ifdef CONFIG_CHARGER_MAX8903
