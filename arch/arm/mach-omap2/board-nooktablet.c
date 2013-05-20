@@ -278,13 +278,9 @@ static struct ft5x06_platform_data ft5x06_platform_data = {
         .use_mt = FT_USE_MT,
         .use_trk_id = FT_USE_TRACKING_ID,
         .use_sleep = FT_USE_SLEEP,
-<<<<<<< HEAD
-        .use_gestures = 0,
-=======
         .use_gestures = 1,
 //      .platform_suspend = ft5x06_platform_suspend,
 //      .platform_resume = ft5x06_platform_resume,
->>>>>>> parent of 78545f4... cm-10.1: leave default device rotation, otherwise bootanim is screwed up.
 };
 
 #ifdef CONFIG_CHARGER_MAX8903
