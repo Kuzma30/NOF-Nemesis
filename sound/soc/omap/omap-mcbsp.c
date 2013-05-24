@@ -461,6 +461,10 @@ static int omap_mcbsp_dai_set_dai_fmt(struct snd_soc_dai *cpu_dai,
 		break;
 	case SND_SOC_DAIFMT_CBM_CFM:
 		/* McBSP slave */
+<<<<<<< HEAD
+=======
+		regs->wken = XFSXEN | RFSREN;
+>>>>>>> 3c4a57d... Revert "mcbsp: remove wken register"
 		break;
 	default:
 		/* Unsupported master/slave configuration */
