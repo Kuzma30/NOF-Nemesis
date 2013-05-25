@@ -110,7 +110,6 @@
 #define OMAP_FT5x06_POWER_GPIO   	36
 #define OMAP_FT5x06_GPIO     	37 /*99*/
 #define OMAP_LCD_ENABLE_PIN      	38
->>>>>>> 9da5fad... Ported ft5x06 driver from Nook HD.
 #define OMAP_FT5x06_RESET_GPIO   	39 /*46*/
 #define LCD_CABC0_GPIO         	44
 #define LCD_CABC1_GPIO         	45
