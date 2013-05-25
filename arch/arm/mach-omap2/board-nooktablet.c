@@ -109,9 +109,6 @@
 #define FT5x06_I2C_SLAVEADDRESS  	(0x70 >> 1)
 #define OMAP_FT5x06_POWER_GPIO   	36
 #define OMAP_FT5x06_GPIO     	37 /*99*/
-<<<<<<< HEAD
-#define LCD_BL_PWR_EN_GPIO      	38
-=======
 #define OMAP_LCD_ENABLE_PIN      	38
 >>>>>>> 9da5fad... Ported ft5x06 driver from Nook HD.
 #define OMAP_FT5x06_RESET_GPIO   	39 /*46*/
@@ -273,42 +270,6 @@ static void ft5x06_platform_resume(void)
 	printk("-----------------ft5x06 platform resume-------------\n");
 }
 
-<<<<<<< HEAD
-void ft5x06_update_flags(struct ft5x06_platform_data *pd, struct i2c_client *client) {
-	int retval = 0;
-	u8 firmware_id;
-
-	retval =
-		i2c_smbus_read_i2c_block_data(client, FT5x06_WMREG_FW_VER,
-										1, &firmware_id);
-
-	if (retval < 0) {
-		printk(KERN_ERR
-		       "%s() - ERROR: Could not read from the Touch Panel registers.\n",
-		       __FUNCTION__);
-		return;
-	}
-
-	switch (firmware_id) {
-		case 0x13:
-		case 0x14:
-			printk(KERN_INFO "Stock firmware detected.\n");
-			pd->flags = FLIP_DATA_FLAG | REVERSE_Y_FLAG;
-			pd->rawx = 600;
-			break;
-		case 0x0b:
-			printk(KERN_INFO "5-touch firmware detected.\n");
-			pd->flags = FLIP_DATA_FLAG | REVERSE_X_FLAG;
-			pd->rawx = 768;
-			break;
-		default:
-			printk(KERN_ERR "Unknown firmware id. Please report it: %d.\n", firmware_id);
-			printk(KERN_INFO "Leaving flags untouched.\n");
-	}
-}
-
-=======
->>>>>>> 9da5fad... Ported ft5x06 driver from Nook HD.
 static struct ft5x06_platform_data ft5x06_platform_data = {
         .maxx = 600,
         .maxy = 1024,
