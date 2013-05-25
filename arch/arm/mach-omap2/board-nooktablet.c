@@ -305,11 +305,8 @@ void ft5x06_update_flags(struct ft5x06_platform_data *pd, struct i2c_client *cli
 static struct ft5x06_platform_data ft5x06_platform_data = {
 	.maxx = 600,
 	.maxy = 1024,
-<<<<<<< HEAD
 	.rawx = 600,
 	.rawy = 1024,
-=======
->>>>>>> eeee3e2... Update ft5x06 driver.
 	.flags = FLIP_DATA_FLAG | REVERSE_X_FLAG,
 	.reset_gpio = OMAP_FT5x06_RESET_GPIO,
 	.use_st = FT_USE_ST,
