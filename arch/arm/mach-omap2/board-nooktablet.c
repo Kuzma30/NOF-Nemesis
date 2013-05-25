@@ -269,8 +269,6 @@ static void ft5x06_platform_resume(void)
 	printk("-----------------ft5x06 platform resume-------------\n");
 }
 
-<<<<<<< HEAD
-=======
 void ft5x06_update_flags(struct ft5x06_platform_data *pd, struct i2c_client *client) {
 	int retval = 0;
 	u8 firmware_id;
@@ -303,8 +301,7 @@ void ft5x06_update_flags(struct ft5x06_platform_data *pd, struct i2c_client *cli
 			printk(KERN_INFO "Leaving flags untouched.\n");
 	}
 }
- 
->>>>>>> fc3e3e2b... ft5x06: Implement firmware detection.
+
 static struct ft5x06_platform_data ft5x06_platform_data = {
 	.maxx = 600,
 	.maxy = 1024,
