@@ -14,7 +14,7 @@
  *
  * Author: Mike Chan (mike@android.com)
  * Modified for early suspend support and hotplugging by imoseyon (imoseyon@gmail.com)
- *   interactiveX V2
+ *   interactive V2
  *
  */
 
@@ -129,8 +129,8 @@ static int cpufreq_governor_interactive(struct cpufreq_policy *policy,
 #ifndef CONFIG_CPU_FREQ_DEFAULT_GOV_INTERACTIVE
 static
 #endif
-struct cpufreq_governor cpufreq_gov_interactivex = {
-	.name = "interactivex",
+struct cpufreq_governor cpufreq_gov_interactive = {
+	.name = "interactive",
 	.governor = cpufreq_governor_interactive,
 	.max_transition_latency = 10000000,
 	.owner = THIS_MODULE,
@@ -619,10 +619,10 @@ static void interactive_suspend(int suspend)
         if (!enabled) return;
 	if (!suspend) { 
                 if (num_online_cpus() < 2) cpu_up(1);
-                pr_info("[imoseyon] interactivex awake cpu1 up\n");
+                pr_info("[imoseyon] interactive awake cpu1 up\n");
 	} else {
                 if (num_online_cpus() > 1) cpu_down(1);
-                pr_info("[imoseyon] interactivex suspended cpu1 down\n");
+                pr_info("[imoseyon] interactive suspended cpu1 down\n");
 	}
 }
 
@@ -1123,7 +1123,7 @@ static int cpufreq_governor_interactive(struct cpufreq_policy *policy,
 		registration = 1;
                 register_early_suspend(&interactive_power_suspend);
 		registration = 0;
-                pr_info("[imoseyon] interactivex start\n");
+                pr_info("[imoseyon] interactive start\n");
 		break;
 
 	case CPUFREQ_GOV_STOP:
@@ -1149,7 +1149,7 @@ static int cpufreq_governor_interactive(struct cpufreq_policy *policy,
 
 		enabled = 0;
                 unregister_early_suspend(&interactive_power_suspend);
-                pr_info("[imoseyon] interactivex inactive\n");
+                pr_info("[imoseyon] interactive inactive\n");
 
 		break;
 
@@ -1203,7 +1203,7 @@ static int __init cpufreq_interactive_init(void)
 	/* NB: wake up so the thread does not look hung to the freezer */
 	wake_up_process(speedchange_task);
 
-	return cpufreq_register_governor(&cpufreq_gov_interactivex);
+	return cpufreq_register_governor(&cpufreq_gov_interactive);
 }
 
 #ifdef CONFIG_CPU_FREQ_DEFAULT_GOV_INTERACTIVE
@@ -1214,7 +1214,7 @@ module_init(cpufreq_interactive_init);
 
 static void __exit cpufreq_interactive_exit(void)
 {
-	cpufreq_unregister_governor(&cpufreq_gov_interactivex);
+	cpufreq_unregister_governor(&cpufreq_gov_interactive);
 	kthread_stop(speedchange_task);
 	put_task_struct(speedchange_task);
 }
@@ -1222,6 +1222,6 @@ static void __exit cpufreq_interactive_exit(void)
 module_exit(cpufreq_interactive_exit);
 
 MODULE_AUTHOR("Mike Chan <mike@android.com>");
-MODULE_DESCRIPTION("'cpufreq_interactivex' - A cpufreq governor for "
+MODULE_DESCRIPTION("'cpufreq_interactive' - A cpufreq governor for "
 	"Latency sensitive workloads");
 MODULE_LICENSE("GPL");
