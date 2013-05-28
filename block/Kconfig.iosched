@@ -4,7 +4,7 @@ menu "IO Schedulers"
 
 config IOSCHED_NOOP
 	bool
-	default n
+	default y
 	---help---
 	  The no-op I/O scheduler is a minimal scheduler that does basic merging
 	  and sorting. Its main uses include non-disk based block devices like
@@ -14,7 +14,7 @@ config IOSCHED_NOOP
 
 config IOSCHED_DEADLINE
 	tristate "Deadline I/O scheduler"
-	default n
+	default y
 	---help---
 	  The deadline I/O scheduler is simple and compact. It will provide
 	  CSCAN service with FIFO expiration of requests, switching to
@@ -74,7 +74,7 @@ config IOSCHED_SIO
 
 config IOSCHED_VR
 	tristate "V(R) I/O scheduler"
-	default n
+	default y
 	---help---
 	  Requests are chosen according to SSTF with a penalty of rev_penalty
 	  for switching head direction.
@@ -101,14 +101,6 @@ config CGROUP_BFQIO
 	  filesystem interface.  The name of the subsystem will be
 	  bfqio.
 
-config IOSCHED_FIOPS
-  tristate "IOPS based I/O scheduler"
-  default n
-  ---help---
-    This is an IOPS based I/O scheduler. It will try to distribute
-          IOPS equally among all processes in the system. Its mainly for
-          Flash based storage.
- 
 choice
 	prompt "Default I/O scheduler"
 	default DEFAULT_ROW
@@ -128,9 +120,6 @@ choice
 		  Dispatching is done in a RR manner when the dispatch quantum
 		  for each queue is defined according to queue priority.
 		  Most suitable for mobile devices.
-
-	config DEFAULT_FIOPS
-		bool "FIOPS" if IOSCHED_FIOPS=y
 
 	config DEFAULT_CFQ
 		bool "CFQ" if IOSCHED_CFQ=y
@@ -158,7 +147,6 @@ config DEFAULT_IOSCHED
 	default "vr" if DEFAULT_VR
 	default "bfq" if DEFAULT_BFQ
 	default "noop" if DEFAULT_NOOP
-	default "fiops" if DEFAULT_FIOPS
 
 endmenu
 
