@@ -57,43 +57,6 @@
 #define GCZONE_NONE		0
 #define GCZONE_ALL		(~0U)
 #define GCZONE_FORMAT		(1 << 0)
-<<<<<<< HEAD
-#define GCZONE_FORMAT_VERBOSE	(1 << 1)
-#define GCZONE_BLEND		(1 << 2)
-#define GCZONE_OFFSET		(1 << 3)
-#define GCZONE_DEST		(1 << 4)
-#define GCZONE_SRC		(1 << 5)
-#define GCZONE_SCALING		(1 << 6)
-
-GCDBG_FILTERDEF(gcparser, GCZONE_NONE,
-		"format",
-		"formatverbose",
-		"blend",
-		"offset",
-		"dest",
-		"src",
-		"scaling")
-
-
-/*******************************************************************************
- * Internal macros.
- */
-
-#define GCCONVERT_RECT(zone, name, bvrect, gcrect) \
-{ \
-	(gcrect)->left = (bvrect)->left; \
-	(gcrect)->top = (bvrect)->top; \
-	(gcrect)->right = (bvrect)->left + (bvrect)->width; \
-	(gcrect)->bottom = (bvrect)->top + (bvrect)->height; \
-	\
-	GCPRINT_RECT(zone, name, gcrect); \
-}
-
-
-/*******************************************************************************
- * Pixel format parser.
- */
-=======
 #define GCZONE_BLEND		(1 << 1)
 #define GCZONE_DEST		(1 << 2)
 #define GCZONE_SRC		(1 << 3)
@@ -121,13 +84,10 @@ GCDBG_FILTERDEF(gcparser, GCZONE_NONE,
 
 #define OCDFMTDEF_ALPHA_SHIFT 18
 #define OCDFMTDEF_ALPHA_MASK (1 << OCDFMTDEF_ALPHA_SHIFT)
->>>>>>> d005644... gcx: split in several files by function.
 
 #define OCDFMTDEF_PLACEMENT_SHIFT 9
 #define OCDFMTDEF_PLACEMENT_MASK (3 << OCDFMTDEF_PLACEMENT_SHIFT)
 
-<<<<<<< HEAD
-=======
 #define OCDFMTDEF_BITS_SHIFT 3
 #define OCDFMTDEF_BITS_MASK (3 << OCDFMTDEF_BITS_SHIFT)
 
@@ -145,7 +105,6 @@ GCDBG_FILTERDEF(gcparser, GCZONE_NONE,
 	{ R, G, B, A } \
 }
 
->>>>>>> d005644... gcx: split in several files by function.
 #define BVCOMP(Shift, Size) \
 	{ Shift, Size, ((1 << Size) - 1) << Shift }
 
@@ -161,123 +120,6 @@ GCDBG_FILTERDEF(gcparser, GCZONE_NONE,
 #define BVALPHA(Shift, Size) \
 	BVCOMP(Shift, Size)
 
-<<<<<<< HEAD
-static const unsigned int rgba16swizzle[] = {
-	GCREG_DE_SWIZZLE_ARGB,
-	GCREG_DE_SWIZZLE_RGBA,
-	GCREG_DE_SWIZZLE_ABGR,
-	GCREG_DE_SWIZZLE_BGRA
-};
-
-static const unsigned int rgb16swizzle[] = {
-	GCREG_DE_SWIZZLE_ARGB,
-	GCREG_DE_SWIZZLE_ARGB,
-	GCREG_DE_SWIZZLE_ABGR,
-	GCREG_DE_SWIZZLE_ABGR
-};
-
-static const unsigned int rgba32swizzle[] = {
-	GCREG_DE_SWIZZLE_BGRA,
-	GCREG_DE_SWIZZLE_ABGR,
-	GCREG_DE_SWIZZLE_RGBA,
-	GCREG_DE_SWIZZLE_ARGB
-};
-
-static const struct bvcsrgb xrgb4444_bits[] = {
-	{ BVRED(8,  4), BVGREEN(4, 4), BVBLUE(0,  4), BVALPHA(12, 0) },
-	{ BVRED(12, 4), BVGREEN(8, 4), BVBLUE(4,  4), BVALPHA(0,  0) },
-	{ BVRED(0,  4), BVGREEN(4, 4), BVBLUE(8,  4), BVALPHA(12, 0) },
-	{ BVRED(4,  4), BVGREEN(8, 4), BVBLUE(12, 4), BVALPHA(0,  0) }
-};
-
-static const struct bvcsrgb argb4444_bits[] = {
-	{ BVRED(8,  4), BVGREEN(4, 4), BVBLUE(0,  4), BVALPHA(12, 4) },
-	{ BVRED(12, 4), BVGREEN(8, 4), BVBLUE(4,  4), BVALPHA(0,  4) },
-	{ BVRED(0,  4), BVGREEN(4, 4), BVBLUE(8,  4), BVALPHA(12, 4) },
-	{ BVRED(4,  4), BVGREEN(8, 4), BVBLUE(12, 4), BVALPHA(0,  4) }
-};
-
-static const struct bvcsrgb xrgb1555_bits[] = {
-	{ BVRED(10, 5), BVGREEN(5, 5), BVBLUE(0,  5), BVALPHA(15, 0) },
-	{ BVRED(11, 5), BVGREEN(6, 5), BVBLUE(1,  5), BVALPHA(0,  0) },
-	{ BVRED(0,  5), BVGREEN(5, 5), BVBLUE(10, 5), BVALPHA(15, 0) },
-	{ BVRED(1,  5), BVGREEN(6, 5), BVBLUE(11, 5), BVALPHA(0,  0) }
-};
-
-static const struct bvcsrgb argb1555_bits[] = {
-	{ BVRED(10, 5), BVGREEN(5, 5), BVBLUE(0,  5), BVALPHA(15, 1) },
-	{ BVRED(11, 5), BVGREEN(6, 5), BVBLUE(1,  5), BVALPHA(0,  1) },
-	{ BVRED(0,  5), BVGREEN(5, 5), BVBLUE(10, 5), BVALPHA(15, 1) },
-	{ BVRED(1,  5), BVGREEN(6, 5), BVBLUE(11, 5), BVALPHA(0,  1) }
-};
-
-static const struct bvcsrgb rgb565_bits[] = {
-	{ BVRED(11, 5), BVGREEN(5, 6), BVBLUE(0,  5), BVALPHA(0, 0) },
-	{ BVRED(11, 5), BVGREEN(5, 6), BVBLUE(0,  5), BVALPHA(0, 0) },
-	{ BVRED(0,  5), BVGREEN(5, 6), BVBLUE(11, 5), BVALPHA(0, 0) },
-	{ BVRED(0,  5), BVGREEN(5, 6), BVBLUE(11, 5), BVALPHA(0, 0) }
-};
-
-static const struct bvcsrgb xrgb8888_bits[] = {
-	{ BVRED(8,  8), BVGREEN(16, 8), BVBLUE(24, 8), BVALPHA(0,  0) },
-	{ BVRED(0,  8), BVGREEN(8,  8), BVBLUE(16, 8), BVALPHA(24, 0) },
-	{ BVRED(24, 8), BVGREEN(16, 8), BVBLUE(8,  8), BVALPHA(0,  0) },
-	{ BVRED(16, 8), BVGREEN(8,  8), BVBLUE(0,  8), BVALPHA(24, 0) }
-};
-
-static const struct bvcsrgb argb8888_bits[] = {
-	{ BVRED(8,  8), BVGREEN(16, 8), BVBLUE(24, 8), BVALPHA(0,  8) },
-	{ BVRED(0,  8), BVGREEN(8,  8), BVBLUE(16, 8), BVALPHA(24, 8) },
-	{ BVRED(24, 8), BVGREEN(16, 8), BVBLUE(8,  8), BVALPHA(0,  8) },
-	{ BVRED(16, 8), BVGREEN(8,  8), BVBLUE(0,  8), BVALPHA(24, 8) }
-};
-
-static const unsigned int container[] = {
-	  8,	/* OCDFMTDEF_CONTAINER_8BIT */
-	 16,	/* OCDFMTDEF_CONTAINER_16BIT */
-	 24,	/* OCDFMTDEF_CONTAINER_24BIT */
-	 32,	/* OCDFMTDEF_CONTAINER_32BIT */
-	~0U,	/* reserved */
-	 48,	/* OCDFMTDEF_CONTAINER_48BIT */
-	~0U,	/* reserved */
-	 64	/* OCDFMTDEF_CONTAINER_64BIT */
-};
-
-enum bverror parse_format(struct bvbltparams *bvbltparams,
-			  struct surfaceinfo *surfaceinfo)
-{
-	enum bverror bverror = BVERR_NONE;
-	struct bvformatxlate *format;
-	enum ocdformat ocdformat;
-	unsigned int cs, std, alpha, subsample, layout;
-	unsigned int reversed, leftjust, swizzle, cont, bits;
-
-	format = &surfaceinfo->format;
-	ocdformat = surfaceinfo->geom->format;
-	GCENTERARG(GCZONE_FORMAT, "ocdformat = 0x%08X\n", ocdformat);
-
-	cs = (ocdformat & OCDFMTDEF_CS_MASK)
-		>> OCDFMTDEF_CS_SHIFT;
-	std = (ocdformat & OCDFMTDEF_STD_MASK)
-		>> OCDFMTDEF_STD_SHIFT;
-	alpha = ocdformat & OCDFMTDEF_ALPHA;
-	subsample = (ocdformat & OCDFMTDEF_SUBSAMPLE_MASK)
-		>> OCDFMTDEF_SUBSAMPLE_SHIFT;
-	layout = (ocdformat & OCDFMTDEF_LAYOUT_MASK)
-		>> OCDFMTDEF_LAYOUT_SHIFT;
-	cont = (ocdformat & OCDFMTDEF_CONTAINER_MASK)
-		>> OCDFMTDEF_CONTAINER_SHIFT;
-	bits = ((ocdformat & OCDFMTDEF_COMPONENTSIZEMINUS1_MASK)
-		>> OCDFMTDEF_COMPONENTSIZEMINUS1_SHIFT) + 1;
-
-	GCDBG(GCZONE_FORMAT_VERBOSE, "std = %d\n", std);
-	GCDBG(GCZONE_FORMAT_VERBOSE, "cs = %d\n", cs);
-	GCDBG(GCZONE_FORMAT_VERBOSE, "alpha = %d\n", alpha ? 1 : 0);
-	GCDBG(GCZONE_FORMAT_VERBOSE, "subsample = %d\n", subsample);
-	GCDBG(GCZONE_FORMAT_VERBOSE, "layout = %d\n", layout);
-	GCDBG(GCZONE_FORMAT_VERBOSE, "cont = %d\n", cont);
-	GCDBG(GCZONE_FORMAT_VERBOSE, "bits = %d\n", bits);
-=======
 #define BVFORMATINVALID \
 	{ 0, 0, 0, 0, { { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 } } }
 
@@ -490,118 +332,11 @@ enum bverror parse_format(struct bvbltparams *bvbltparams,
 	GCDBG(GCZONE_FORMAT, "cs = %d\n", cs);
 	GCDBG(GCZONE_FORMAT, "bits = %d\n", bits);
 	GCDBG(GCZONE_FORMAT, "cont = %d\n", cont);
->>>>>>> d005644... gcx: split in several files by function.
 
 	switch (cs) {
 	case (OCDFMTDEF_CS_RGB >> OCDFMTDEF_CS_SHIFT):
 		GCDBG(GCZONE_FORMAT, "OCDFMTDEF_CS_RGB\n");
 
-<<<<<<< HEAD
-		/* Determine the swizzle. */
-		swizzle = (ocdformat & OCDFMTDEF_PLACEMENT_MASK)
-			>> OCDFMTDEF_PLACEMENT_SHIFT;
-		GCDBG(GCZONE_FORMAT, "swizzle = %d\n", swizzle);
-
-		/* RGB color space. */
-		format->type = BVFMT_RGB;
-
-		/* Has to be 0 for RGB. */
-		if (std != 0) {
-			BVSETBLTERROR(BVERR_UNK,
-				      "unsupported standard");
-			goto exit;
-		}
-
-		/* Determine premultuplied or not. */
-		if (alpha == OCDFMTDEF_ALPHA) {
-			format->premultiplied
-				= ((ocdformat & OCDFMTDEF_NON_PREMULT) == 0);
-		} else {
-			format->premultiplied = true;
-
-			if ((ocdformat & OCDFMTDEF_FILL_EMPTY_0) != 0) {
-				BVSETBLTERROR(BVERR_UNK,
-					      "0 filling is not supported");
-				goto exit;
-			}
-		}
-		GCDBG(GCZONE_FORMAT, "premultiplied = %d\n",
-		      format->premultiplied);
-
-		/* No subsample support. */
-		if (subsample !=
-		    (OCDFMTDEF_SUBSAMPLE_NONE >> OCDFMTDEF_SUBSAMPLE_SHIFT)) {
-			BVSETBLTERROR(BVERR_UNK,
-					"subsampling for RGB is not supported");
-			goto exit;
-		}
-
-		/* Only packed RGB is supported. */
-		if (layout !=
-		    (OCDFMTDEF_PACKED >> OCDFMTDEF_LAYOUT_SHIFT)) {
-			BVSETBLTERROR(BVERR_UNK,
-				      "only packed RGBA formats are supported");
-			goto exit;
-		}
-
-		/* Determine the format. */
-		switch (bits) {
-		case 12:
-			format->bitspp = 16;
-			format->allocbitspp = 16;
-			format->swizzle = rgba16swizzle[swizzle];
-
-			if (alpha == OCDFMTDEF_ALPHA) {
-				format->format = GCREG_DE_FORMAT_A4R4G4B4;
-				format->cs.rgb.comp = &argb4444_bits[swizzle];
-			} else {
-				format->format = GCREG_DE_FORMAT_X4R4G4B4;
-				format->cs.rgb.comp = &xrgb4444_bits[swizzle];
-			}
-			break;
-
-		case 15:
-			format->bitspp = 16;
-			format->allocbitspp = 16;
-			format->swizzle = rgba16swizzle[swizzle];
-
-			if (alpha == OCDFMTDEF_ALPHA) {
-				format->format = GCREG_DE_FORMAT_A1R5G5B5;
-				format->cs.rgb.comp = &argb1555_bits[swizzle];
-			} else {
-				format->format = GCREG_DE_FORMAT_X1R5G5B5;
-				format->cs.rgb.comp = &xrgb1555_bits[swizzle];
-			}
-			break;
-
-		case 16:
-			if (alpha == OCDFMTDEF_ALPHA) {
-				BVSETBLTERROR(BVERR_UNK,
-					      "alpha component is not supported"
-					      "for this format.");
-				goto exit;
-			}
-
-			format->bitspp = 16;
-			format->allocbitspp = 16;
-			format->swizzle = rgb16swizzle[swizzle];
-			format->format = GCREG_DE_FORMAT_R5G6B5;
-			format->cs.rgb.comp = &rgb565_bits[swizzle];
-			break;
-
-		case 24:
-			format->bitspp = 32;
-			format->allocbitspp = 32;
-			format->swizzle = rgba32swizzle[swizzle];
-
-			if (alpha == OCDFMTDEF_ALPHA) {
-				format->format = GCREG_DE_FORMAT_A8R8G8B8;
-				format->cs.rgb.comp = &argb8888_bits[swizzle];
-			} else {
-				format->format = GCREG_DE_FORMAT_X8R8G8B8;
-				format->cs.rgb.comp = &xrgb8888_bits[swizzle];
-			}
-=======
 		if ((ocdformat & OCDFMTDEF_LAYOUT_MASK) != OCDFMTDEF_PACKED) {
 			BVSETBLTERROR(BVERR_UNK,
 				      "only packed RGBA formats are supported");
@@ -633,7 +368,6 @@ enum bverror parse_format(struct bvbltparams *bvbltparams,
 
 		case 24 - 1:
 			index |= OCDFMTDEF_BITS24;
->>>>>>> d005644... gcx: split in several files by function.
 			break;
 
 		default:
@@ -642,160 +376,12 @@ enum bverror parse_format(struct bvbltparams *bvbltparams,
 			goto exit;
 		}
 
-<<<<<<< HEAD
-		if (format->allocbitspp != container[cont]) {
-			BVSETBLTERROR(BVERR_UNK,
-				      "unsupported container");
-			goto exit;
-		}
-=======
 		GCDBG(GCZONE_FORMAT, "index = %d\n", index);
->>>>>>> d005644... gcx: split in several files by function.
 		break;
 
 	case (OCDFMTDEF_CS_YCbCr >> OCDFMTDEF_CS_SHIFT):
 		GCDBG(GCZONE_FORMAT, "OCDFMTDEF_CS_YCbCr\n");
 
-<<<<<<< HEAD
-		/* YUV color space. */
-		format->type = BVFMT_YUV;
-
-		/* Determine the swizzle. */
-		reversed = ocdformat & OCDFMTDEF_REVERSED;
-		leftjust = ocdformat & OCDFMTDEF_LEFT_JUSTIFIED;
-		GCDBG(GCZONE_FORMAT_VERBOSE, "reversed = %d\n",
-		      reversed ? 1 : 0);
-		GCDBG(GCZONE_FORMAT_VERBOSE, "leftjust = %d\n",
-		      leftjust ? 1 : 0);
-
-		/* Parse the standard. */
-		switch (std) {
-		case OCDFMTDEF_STD_ITUR_601_YCbCr >> OCDFMTDEF_STD_SHIFT:
-			GCDBG(GCZONE_FORMAT, "OCDFMTDEF_STD_ITUR_601_YCbCr\n");
-			format->cs.yuv.std = GCREG_PE_CONTROL_YUV_601;
-			break;
-
-		case OCDFMTDEF_STD_ITUR_709_YCbCr >> OCDFMTDEF_STD_SHIFT:
-			GCDBG(GCZONE_FORMAT, "OCDFMTDEF_STD_ITUR_709_YCbCr\n");
-			format->cs.yuv.std = GCREG_PE_CONTROL_YUV_709;
-			break;
-
-		default:
-			BVSETBLTERROR(BVERR_UNK,
-				      "unsupported color standard");
-			goto exit;
-		}
-
-		/* Alpha is not supported. */
-		if (alpha == OCDFMTDEF_ALPHA) {
-			BVSETBLTERROR(BVERR_UNK,
-				      "alpha channel is not supported");
-			goto exit;
-		}
-
-		format->premultiplied = true;
-
-		/* Parse subsampling. */
-		switch (subsample) {
-		case OCDFMTDEF_SUBSAMPLE_422_YCbCr >> OCDFMTDEF_SUBSAMPLE_SHIFT:
-			GCDBG(GCZONE_FORMAT, "OCDFMTDEF_SUBSAMPLE_422_YCbCr\n");
-
-			/* Parse layout. */
-			switch (layout) {
-			case OCDFMTDEF_PACKED >> OCDFMTDEF_LAYOUT_SHIFT:
-				GCDBG(GCZONE_FORMAT, "OCDFMTDEF_PACKED\n");
-
-				if (container[cont] != 32) {
-					BVSETBLTERROR(BVERR_UNK,
-						      "unsupported container");
-					goto exit;
-				}
-
-				format->bitspp = 16;
-				format->allocbitspp = 16;
-				format->format = leftjust
-					? GCREG_DE_FORMAT_YUY2
-					: GCREG_DE_FORMAT_UYVY;
-				format->swizzle = reversed
-					? GCREG_PE_CONTROL_UV_SWIZZLE_VU
-					: GCREG_PE_CONTROL_UV_SWIZZLE_UV;
-				format->cs.yuv.planecount = 1;
-				break;
-
-			default:
-				BVSETBLTERROR(BVERR_UNK,
-					      "specified 4:2:2 layout "
-					      "is not supported");
-				goto exit;
-			}
-			break;
-
-		case OCDFMTDEF_SUBSAMPLE_420_YCbCr >> OCDFMTDEF_SUBSAMPLE_SHIFT:
-
-			/* Parse layout. */
-			switch (layout) {
-			case OCDFMTDEF_2_PLANE_YCbCr
-						>> OCDFMTDEF_LAYOUT_SHIFT:
-				GCDBG(GCZONE_FORMAT,
-				      "OCDFMTDEF_2_PLANE_YCbCr\n");
-
-				if (container[cont] != 48) {
-					BVSETBLTERROR(BVERR_UNK,
-						      "unsupported container");
-					goto exit;
-				}
-
-				format->bitspp = 8;
-				format->allocbitspp = 12;
-				format->format = GCREG_DE_FORMAT_NV12;
-				format->swizzle = reversed
-					? GCREG_PE_CONTROL_UV_SWIZZLE_VU
-					: GCREG_PE_CONTROL_UV_SWIZZLE_UV;
-				format->cs.yuv.planecount = 2;
-				break;
-
-			case OCDFMTDEF_3_PLANE_STACKED
-						>> OCDFMTDEF_LAYOUT_SHIFT:
-				GCDBG(GCZONE_FORMAT,
-				      "OCDFMTDEF_3_PLANE_STACKED\n");
-
-				if (container[cont] != 48) {
-					BVSETBLTERROR(BVERR_UNK,
-						      "unsupported container");
-					goto exit;
-				}
-
-				format->bitspp = 8;
-				format->allocbitspp = 12;
-				format->format = GCREG_DE_FORMAT_YV12;
-				format->swizzle = reversed
-					? GCREG_PE_CONTROL_UV_SWIZZLE_VU
-					: GCREG_PE_CONTROL_UV_SWIZZLE_UV;
-				format->cs.yuv.planecount = 3;
-				break;
-
-			default:
-				BVSETBLTERROR(BVERR_UNK,
-					      "specified 4:2:2 layout "
-					      "is not supported");
-				goto exit;
-			}
-			break;
-
-		default:
-			BVSETBLTERROR(BVERR_UNK,
-				      "specified subsampling is not supported");
-			goto exit;
-		}
-
-		if (format->allocbitspp != bits) {
-			BVSETBLTERROR(BVERR_UNK,
-				      "unsupported bit width %d", bits);
-			goto exit;
-		}
-		break;
-
-=======
 		/* FIXME/TODO: add proper YUV parsing. */
 		switch (ocdformat) {
 		case OCDFMT_NV12:
@@ -819,18 +405,12 @@ enum bverror parse_format(struct bvbltparams *bvbltparams,
 			goto exit;
 		}
 
->>>>>>> d005644... gcx: split in several files by function.
 	default:
 		BVSETBLTERROR(BVERR_UNK,
 			      "unsupported color space %d", cs);
 		goto exit;
 	}
 
-<<<<<<< HEAD
-	GCDBG(GCZONE_FORMAT, "bpp = %d\n", format->bitspp);
-	GCDBG(GCZONE_FORMAT, "gcformat = %d\n", format->format);
-	GCDBG(GCZONE_FORMAT, "gcswizzle = %d\n", format->swizzle);
-=======
 	if (formatxlate[index].bitspp != containers[cont]) {
 		BVSETBLTERROR(BVERR_UNK,
 			      "unsupported bit width %d", bits);
@@ -844,7 +424,6 @@ enum bverror parse_format(struct bvbltparams *bvbltparams,
 	GCDBG(GCZONE_FORMAT, "  bpp = %d\n", formatxlate[index].bitspp);
 	GCDBG(GCZONE_FORMAT, "  format = %d\n", formatxlate[index].format);
 	GCDBG(GCZONE_FORMAT, "  swizzle = %d\n", formatxlate[index].swizzle);
->>>>>>> d005644... gcx: split in several files by function.
 
 	bverror = BVERR_NONE;
 
@@ -1446,13 +1025,8 @@ static struct bvblendxlate blendxlate[64] = {
 };
 
 enum bverror parse_blend(struct bvbltparams *bvbltparams,
-<<<<<<< HEAD
-			 enum bvblend blend,
-			 struct gcalpha *gca)
-=======
 			   enum bvblend blend,
 			   struct gcalpha *gca)
->>>>>>> d005644... gcx: split in several files by function.
 {
 	enum bverror bverror;
 	unsigned int global;
@@ -1612,62 +1186,6 @@ static inline int get_angle(int orientation)
  * Surface compare and validation.
  */
 
-<<<<<<< HEAD
-bool valid_rect(struct bvsurfgeom *bvsurfgeom, struct gcrect *gcrect)
-{
-	return ((gcrect->left >= 0) &&
-		(gcrect->top  >= 0) &&
-		((gcrect->right  - gcrect->left) > 0) &&
-		((gcrect->bottom - gcrect->top)  > 0) &&
-		 (gcrect->right  <= (int) bvsurfgeom->width) &&
-		 (gcrect->bottom <= (int) bvsurfgeom->height));
-}
-
-static bool valid_geom(struct surfaceinfo *surfaceinfo)
-{
-	unsigned int size;
-	unsigned int height;
-
-	/* Compute the size of the surface. */
-	size = (surfaceinfo->geom->width *
-		surfaceinfo->geom->height *
-		surfaceinfo->format.bitspp) / 8;
-
-	/* Make sure the size is not greater then the surface. */
-	if (size > surfaceinfo->buf.desc->length) {
-		GCERR("invalid geometry detected:\n");
-		GCERR("  specified dimensions: %dx%d, %d bitspp\n",
-		      surfaceinfo->geom->width,
-		      surfaceinfo->geom->height,
-		      surfaceinfo->format.bitspp);
-		GCERR("  surface size based on the dimensions: %d\n",
-		      size);
-		GCERR("  specified surface size: %lu\n",
-		      surfaceinfo->buf.desc->length);
-		return false;
-	}
-
-	/* Determine the height of the image. */
-	height = ((surfaceinfo->angle % 2) == 0)
-	       ? surfaceinfo->geom->height
-	       : surfaceinfo->geom->width;
-
-	/* Compute the size using the stide. */
-	size = surfaceinfo->geom->virtstride * height;
-
-	/* Make sure the size is not greater then the surface. */
-	if (size > surfaceinfo->buf.desc->length) {
-		GCERR("invalid geometry detected:\n");
-		GCERR("  specified dimensions: %dx%d, %d bitspp\n",
-		      surfaceinfo->geom->width,
-		      surfaceinfo->geom->height,
-		      surfaceinfo->format.bitspp);
-		GCERR("  physical image height = %d\n", height);
-		GCERR("  image stride = %d\n", surfaceinfo->geom->virtstride);
-		GCERR("  computed surface size = %d\n", size);
-		GCERR("  specified surface size: %lu\n",
-		      surfaceinfo->buf.desc->length);
-=======
 static bool valid_geom(struct bvbuffdesc *buffdesc,
 		       struct bvsurfgeom *geom,
 		       struct bvformatxlate *format)
@@ -1686,57 +1204,21 @@ static bool valid_geom(struct bvbuffdesc *buffdesc,
 			size);
 		GCERR("  specified surface size: %lu\n",
 			buffdesc->length);
->>>>>>> d005644... gcx: split in several files by function.
 		return false;
 	}
 
 	return true;
 }
 
-<<<<<<< HEAD
-int get_pixel_offset(struct surfaceinfo *surfaceinfo, int offset)
-=======
 int get_pixel_offset(struct bvbuffdesc *bvbuffdesc,
 		     struct bvformatxlate *format,
 		     int offset)
->>>>>>> d005644... gcx: split in several files by function.
 {
 	unsigned int alignment;
 	int byteoffset;
 	unsigned int alignedoffset;
 	int pixeloffset;
 
-<<<<<<< HEAD
-	GCENTERARG(GCZONE_OFFSET, "surfaceinfo=0x%08X, offset=%d\n",
-		   surfaceinfo, offset);
-
-	alignment = (surfaceinfo->format.type == BVFMT_YUV)
-		? (64 - 1)
-		: (16 - 1);
-
-	GCDBG(GCZONE_OFFSET, "bpp = %d\n", surfaceinfo->format.bitspp);
-	GCDBG(GCZONE_OFFSET, "alignment = %d\n", alignment);
-
-	/* Determine offset in bytes from the base modified by the
-	 * given offset. */
-	if (surfaceinfo->buf.desc->auxtype == BVAT_PHYSDESC) {
-		struct bvphysdesc *bvphysdesc;
-
-		bvphysdesc = (struct bvphysdesc *)
-			     surfaceinfo->buf.desc->auxptr;
-		GCDBG(GCZONE_OFFSET, "physical descriptor @ 0x%08X\n",
-		      bvphysdesc);
-
-		byteoffset = bvphysdesc->pageoffset + offset;
-	} else {
-		GCDBG(GCZONE_OFFSET, "no physical descriptor.\n");
-		byteoffset = (unsigned int)
-			     surfaceinfo->buf.desc->virtaddr + offset;
-	}
-
-	GCDBG(GCZONE_OFFSET, "byteoffset = %d\n", byteoffset);
-
-=======
 	alignment = (format->type == BVFMT_YUV)
 		? (64 - 1)
 		: (16 - 1);
@@ -1751,416 +1233,21 @@ int get_pixel_offset(struct bvbuffdesc *bvbuffdesc,
 		byteoffset = (unsigned int) bvbuffdesc->virtaddr + offset;
 	}
 
->>>>>>> d005644... gcx: split in several files by function.
 	/* Compute the aligned offset. */
 	alignedoffset = byteoffset & alignment;
 
 	/* Convert to pixels. */
-<<<<<<< HEAD
-	pixeloffset = alignedoffset * 8 / surfaceinfo->format.bitspp;
-
-	GCDBG(GCZONE_OFFSET, "alignedoffset = %d\n", alignedoffset);
-	GCDBG(GCZONE_OFFSET, "pixeloffset = %d\n", pixeloffset);
-
-	GCEXIT(GCZONE_OFFSET);
-=======
 	pixeloffset = alignedoffset * 8 / format->bitspp;
->>>>>>> d005644... gcx: split in several files by function.
 	return -pixeloffset;
 }
 
 enum bverror parse_destination(struct bvbltparams *bvbltparams,
-<<<<<<< HEAD
-			       struct gcbatch *batch)
-=======
 				 struct gcbatch *batch)
->>>>>>> d005644... gcx: split in several files by function.
 {
 	enum bverror bverror = BVERR_NONE;
 
 	GCENTER(GCZONE_DEST);
 
-<<<<<<< HEAD
-	GCDBG(GCZONE_DEST, "parsing destination\n");
-
-	/* Did the destination surface change? */
-	if ((batch->batchflags & BVBATCH_DST) != 0) {
-		struct surfaceinfo *dstinfo;
-
-		/* Initialize the destination descriptor. */
-		dstinfo = &batch->dstinfo;
-		dstinfo->index = -1;
-		dstinfo->buf.desc = bvbltparams->dstdesc;
-		dstinfo->geom = bvbltparams->dstgeom;
-
-		/* Initialize members that are not used. */
-		dstinfo->mirror = GCREG_MIRROR_NONE;
-		dstinfo->rop = 0;
-		dstinfo->gca = NULL;
-
-		/* Parse the destination format. */
-		if (parse_format(bvbltparams, dstinfo) != BVERR_NONE) {
-			bverror = BVERR_DSTGEOM_FORMAT;
-			goto exit;
-		}
-
-		/* Check for unsupported dest formats. */
-		if ((dstinfo->format.type == BVFMT_YUV) &&
-		    (dstinfo->format.cs.yuv.planecount > 1)) {
-			BVSETBLTERROR(BVERR_DSTGEOM_FORMAT,
-				      "destination format unsupported");
-			goto exit;
-		}
-
-		/* Destination stride must be 8 pixel aligned. */
-		if ((dstinfo->geom->virtstride
-				& (dstinfo->format.bitspp - 1)) != 0) {
-			BVSETBLTERROR(BVERR_DSTGEOM_STRIDE,
-				      "destination stride must be 8 pixel "
-				      "aligned.");
-			goto exit;
-		}
-
-		/* Parse orientation. */
-		dstinfo->angle = get_angle(dstinfo->geom->orientation);
-		if (dstinfo->angle == ROT_ANGLE_INVALID) {
-			BVSETBLTERROR(BVERR_DSTGEOM,
-				      "unsupported destination orientation %d.",
-				      dstinfo->geom->orientation);
-			goto exit;
-		}
-
-		/* Compute the destination alignments needed to compensate
-		 * for the surface base address misalignment if any. */
-		dstinfo->pixalign = get_pixel_offset(dstinfo, 0);
-		dstinfo->bytealign = (dstinfo->pixalign
-				   * (int) dstinfo->format.bitspp) / 8;
-
-		GCDBG(GCZONE_DEST, "  buffer length = %d\n",
-		      dstinfo->buf.desc->length);
-		GCDBG(GCZONE_DEST, "  rotation %d degrees.\n",
-		      dstinfo->angle * 90);
-
-		if (dstinfo->buf.desc->auxtype == BVAT_PHYSDESC) {
-			struct bvphysdesc *bvphysdesc;
-			bvphysdesc = (struct bvphysdesc *)
-				     dstinfo->buf.desc->auxptr;
-			GCDBG(GCZONE_DEST, "  page offset = 0x%08X\n",
-			      bvphysdesc->pageoffset);
-		} else {
-			GCDBG(GCZONE_DEST, "  virtual address = 0x%08X\n",
-			      (unsigned int) dstinfo->buf.desc->virtaddr);
-		}
-
-		GCDBG(GCZONE_DEST, "  stride = %ld\n",
-		      dstinfo->geom->virtstride);
-		GCDBG(GCZONE_DEST, "  geometry size = %dx%d\n",
-		      dstinfo->geom->width, dstinfo->geom->height);
-		GCDBG(GCZONE_DEST, "  surface offset (pixels) = %d,0\n",
-		      dstinfo->pixalign);
-		GCDBG(GCZONE_DEST, "  surface offset (bytes) = %d\n",
-		      dstinfo->bytealign);
-
-		/* Validate geometry. */
-		if (!valid_geom(dstinfo)) {
-			BVSETBLTERROR(BVERR_DSTGEOM,
-				      "destination geom exceeds surface size");
-			goto exit;
-		}
-	}
-
-	/* Did clipping/destination rects change? */
-	if ((batch->batchflags & (BVBATCH_CLIPRECT |
-				  BVBATCH_DESTRECT |
-				  BVBATCH_DST)) != 0) {
-		struct surfaceinfo *dstinfo;
-		struct gcrect cliprect;
-		struct gcrect *dstrect;
-		struct gcrect *dstrectaux;
-
-		/* Get a shortcut to the destination surface. */
-		dstinfo = &batch->dstinfo;
-
-		/* Determine destination rectangle. */
-		dstrect = &dstinfo->rect;
-		GCCONVERT_RECT(GCZONE_DEST,
-			       "  rect",
-			       &bvbltparams->dstrect,
-			       dstrect);
-
-		/* Determine whether aux destination is specified. */
-		batch->haveaux
-			= ((bvbltparams->flags & BVFLAG_SRC2_AUXDSTRECT) != 0);
-		GCDBG(GCZONE_DEST, "  have aux dest = %d\n", batch->haveaux);
-
-		/* Is clipping rectangle specified? */
-		if ((bvbltparams->flags & BVFLAG_CLIP) == BVFLAG_CLIP) {
-			/* Convert the clipping rectangle. */
-			GCCONVERT_RECT(GCZONE_DEST,
-				       "  clipping",
-				       &bvbltparams->cliprect,
-				       &cliprect);
-
-			if ((cliprect.left   < GC_CLIP_RESET_LEFT)  ||
-			    (cliprect.top    < GC_CLIP_RESET_TOP)   ||
-			    (cliprect.right  > GC_CLIP_RESET_RIGHT) ||
-			    (cliprect.bottom > GC_CLIP_RESET_BOTTOM)) {
-				BVSETERROR(BVERR_CLIP_RECT,
-					   "clip rect is invalid");
-				goto exit;
-			}
-
-			/* Compute clipping deltas and the adjusted
-			 * destination rect. */
-			if (cliprect.left <= dstrect->left) {
-				batch->clipdelta.left = 0;
-				batch->dstclipped.left = dstrect->left;
-			} else {
-				batch->clipdelta.left = cliprect.left
-						      - dstrect->left;
-				batch->dstclipped.left = cliprect.left;
-			}
-
-			if (cliprect.top <= dstrect->top) {
-				batch->clipdelta.top = 0;
-				batch->dstclipped.top = dstrect->top;
-			} else {
-				batch->clipdelta.top = cliprect.top
-						     - dstrect->top;
-				batch->dstclipped.top = cliprect.top;
-			}
-
-			if (cliprect.right >= dstrect->right) {
-				batch->clipdelta.right = 0;
-				batch->dstclipped.right = dstrect->right;
-			} else {
-				batch->clipdelta.right = cliprect.right
-						       - dstrect->right;
-				batch->dstclipped.right = cliprect.right;
-			}
-
-			if (cliprect.bottom >= dstrect->bottom) {
-				batch->clipdelta.bottom = 0;
-				batch->dstclipped.bottom = dstrect->bottom;
-			} else {
-				batch->clipdelta.bottom = cliprect.bottom
-							- dstrect->bottom;
-				batch->dstclipped.bottom = cliprect.bottom;
-			}
-
-			/* Clip the aux destination. */
-			if (batch->haveaux) {
-				/* Convert the aux rectangle. */
-				dstrectaux = &batch->dstrectaux;
-				GCCONVERT_RECT(GCZONE_DEST,
-					       "  aux rect",
-					       &bvbltparams->src2auxdstrect,
-					       dstrectaux);
-
-				if (cliprect.left <= dstrectaux->left)
-					batch->dstclippedaux.left
-						= dstrectaux->left;
-				else
-					batch->dstclippedaux.left
-						= cliprect.left;
-
-				if (cliprect.top <= dstrectaux->top)
-					batch->dstclippedaux.top
-						= dstrectaux->top;
-				else
-					batch->dstclippedaux.top
-						= cliprect.top;
-
-				if (cliprect.right >= dstrectaux->right)
-					batch->dstclippedaux.right
-						= dstrectaux->right;
-				else
-					batch->dstclippedaux.right
-						= cliprect.right;
-
-				if (cliprect.bottom >= dstrectaux->bottom)
-					batch->dstclippedaux.bottom
-						= dstrectaux->bottom;
-				else
-					batch->dstclippedaux.bottom
-						= cliprect.bottom;
-			}
-		} else {
-			batch->clipdelta.left =
-			batch->clipdelta.top =
-			batch->clipdelta.right =
-			batch->clipdelta.bottom = 0;
-
-			batch->dstclipped = *dstrect;
-			if (batch->haveaux)
-				/* Convert the aux rectangle. */
-				GCCONVERT_RECT(GCZONE_DEST,
-					       "   aux rect",
-					       &bvbltparams->src2auxdstrect,
-					       &batch->dstclippedaux);
-		}
-
-		GCPRINT_RECT(GCZONE_DEST, "  clipped rect",
-			     &batch->dstclipped);
-
-		/* Validate the destination rectangle. */
-		if (!valid_rect(dstinfo->geom, &batch->dstclipped)) {
-			BVSETBLTERROR(BVERR_DSTRECT,
-				      "invalid destination rectangle.");
-			goto exit;
-		}
-
-		if (batch->haveaux) {
-			GCPRINT_RECT(GCZONE_DEST, "  clipped aux rect",
-				     &batch->dstclippedaux);
-
-			/* Validate the aux destination rectangle. */
-			if (!valid_rect(dstinfo->geom, &batch->dstclippedaux)) {
-				BVSETBLTERROR(BVERR_DSTRECT,
-					      "invalid aux destination "
-					      "rectangle.");
-				goto exit;
-			}
-		}
-
-		GCDBG(GCZONE_DEST,
-		      "  clipping delta = (%d,%d)-(%d,%d)\n",
-		      batch->clipdelta.left,
-		      batch->clipdelta.top,
-		      batch->clipdelta.right,
-		      batch->clipdelta.bottom);
-	}
-
-exit:
-	GCEXITARG(GCZONE_DEST, "bv%s = %d\n",
-		  (bverror == BVERR_NONE) ? "result" : "error", bverror);
-	return bverror;
-}
-
-void process_dest_rotation(struct bvbltparams *bvbltparams,
-			   struct gcbatch *batch)
-{
-	GCENTER(GCZONE_DEST);
-
-	/* Did clipping/destination rects change? */
-	if ((batch->batchflags & (BVBATCH_CLIPRECT |
-				  BVBATCH_DESTRECT |
-				  BVBATCH_DST)) != 0) {
-		struct surfaceinfo *dstinfo;
-		int dstoffsetX, dstoffsetY;
-
-		/* Initialize the destination descriptor. */
-		dstinfo = &batch->dstinfo;
-
-		switch (dstinfo->angle) {
-		case ROT_ANGLE_0:
-			/* Determine the origin offset. */
-			dstoffsetX = dstinfo->pixalign;
-			dstoffsetY = 0;
-
-			/* Determine geometry size. */
-			batch->dstwidth  = dstinfo->geom->width
-					 - dstinfo->pixalign;
-			batch->dstheight = dstinfo->geom->height;
-
-			/* Determine the physical size. */
-			dstinfo->physwidth  = batch->dstwidth;
-			dstinfo->physheight = batch->dstheight;
-			break;
-
-		case ROT_ANGLE_90:
-			/* Determine the origin offset. */
-			dstoffsetX = 0;
-			dstoffsetY = dstinfo->pixalign;
-
-			/* Determine geometry size. */
-			batch->dstwidth  = dstinfo->geom->width;
-			batch->dstheight = dstinfo->geom->height
-					 - dstinfo->pixalign;
-
-			/* Determine the physical size. */
-			dstinfo->physwidth  = dstinfo->geom->height
-					    - dstinfo->pixalign;
-			dstinfo->physheight = dstinfo->geom->width;
-			break;
-
-		case ROT_ANGLE_180:
-			/* Determine the origin offset. */
-			dstoffsetX = 0;
-			dstoffsetY = 0;
-
-			/* Determine geometry size. */
-			batch->dstwidth  = dstinfo->geom->width
-					 - dstinfo->pixalign;
-			batch->dstheight = dstinfo->geom->height;
-
-			/* Determine the physical size. */
-			dstinfo->physwidth  = batch->dstwidth;
-			dstinfo->physheight = batch->dstheight;
-			break;
-
-		case ROT_ANGLE_270:
-			/* Determine the origin offset. */
-			dstoffsetX = 0;
-			dstoffsetY = 0;
-
-			/* Determine geometry size. */
-			batch->dstwidth  = dstinfo->geom->width;
-			batch->dstheight = dstinfo->geom->height
-					 - dstinfo->pixalign;
-
-			/* Determine the physical size. */
-			dstinfo->physwidth  = dstinfo->geom->height
-					    - dstinfo->pixalign;
-			dstinfo->physheight = dstinfo->geom->width;
-			break;
-
-		default:
-			dstoffsetX = 0;
-			dstoffsetY = 0;
-		}
-
-		/* Compute adjusted destination rectangles. */
-		batch->dstadjusted.left
-			= batch->dstclipped.left
-			- dstoffsetX;
-		batch->dstadjusted.top
-			= batch->dstclipped.top
-			- dstoffsetY;
-		batch->dstadjusted.right
-			= batch->dstclipped.right
-			- dstoffsetX;
-		batch->dstadjusted.bottom
-			= batch->dstclipped.bottom
-			- dstoffsetY;
-
-		GCPRINT_RECT(GCZONE_DEST, "adjusted dest",
-			     &batch->dstadjusted);
-
-		GCDBG(GCZONE_DEST, "aligned geometry size = %dx%d\n",
-		      batch->dstwidth, batch->dstheight);
-		GCDBG(GCZONE_DEST, "aligned physical size = %dx%d\n",
-		      dstinfo->physwidth, dstinfo->physheight);
-		GCDBG(GCZONE_DEST, "origin offset (pixels) = %d,%d\n",
-		      dstoffsetX, dstoffsetY);
-	}
-
-	GCEXIT(GCZONE_DEST);
-}
-
-enum bverror parse_source(struct bvbltparams *bvbltparams,
-			  struct gcbatch *batch,
-			  struct bvrect *srcrect,
-			  struct surfaceinfo *srcinfo)
-{
-	enum bverror bverror = BVERR_NONE;
-
-	GCDBG(GCZONE_SRC, "parsing source #%d\n",
-	      srcinfo->index + 1);
-
-	/* Parse the source format. */
-	if (parse_format(bvbltparams, srcinfo) != BVERR_NONE) {
-=======
 	/* Did clipping/destination rects change? */
 	if ((batch->batchflags & (BVBATCH_CLIPRECT |
 				  BVBATCH_DESTRECT)) != 0) {
@@ -2442,18 +1529,12 @@ enum bverror parse_source(struct bvbltparams *bvbltparams,
 	      srcinfo->index + 1);
 	if (parse_format(bvbltparams, srcgeom->format,
 			   &srcinfo->format) != BVERR_NONE) {
->>>>>>> d005644... gcx: split in several files by function.
 		bverror = (srcinfo->index == 0)
 			? BVERR_SRC1GEOM_FORMAT
 			: BVERR_SRC2GEOM_FORMAT;
 		goto exit;
 	}
 
-<<<<<<< HEAD
-	/* Source must be 8 pixel aligned. */
-	if ((srcinfo->geom->virtstride
-			& (srcinfo->format.bitspp - 1)) != 0) {
-=======
 	/* Validate source geometry. */
 	if (!valid_geom(srcdesc, srcgeom, srcinfo->format)) {
 		BVSETBLTERROR((srcinfo->index == 0)
@@ -2467,7 +1548,6 @@ enum bverror parse_source(struct bvbltparams *bvbltparams,
 	/* Source must be 8 pixel aligned. */
 	stridealign = srcinfo->format->bitspp - 1;
 	if ((srcgeom->virtstride & stridealign) != 0) {
->>>>>>> d005644... gcx: split in several files by function.
 		BVSETBLTERROR((srcinfo->index == 0)
 					? BVERR_SRC1GEOM_STRIDE
 					: BVERR_SRC2GEOM_STRIDE,
@@ -2475,50 +1555,15 @@ enum bverror parse_source(struct bvbltparams *bvbltparams,
 		goto exit;
 	}
 
-<<<<<<< HEAD
-	/* Check base address alignment for planar YUV. */
-	if ((srcinfo->format.type == BVFMT_YUV) &&
-	    (srcinfo->format.cs.yuv.planecount > 1)) {
-		int pixalign;
-		pixalign = get_pixel_offset(srcinfo, 0);
-		if (pixalign != 0) {
-			BVSETBLTERROR((srcinfo->index == 0)
-					? BVERR_SRC1DESC_ALIGNMENT
-					: BVERR_SRC2DESC_ALIGNMENT,
-				      "planar YUV base address must be "
-				      "64 byte aligned.");
-			goto exit;
-		}
-	}
-
-	/* Parse orientation. */
-	srcinfo->angle = get_angle(srcinfo->geom->orientation);
-=======
 	/* Parse orientation. */
 	srcinfo->angle = get_angle(srcgeom->orientation);
->>>>>>> d005644... gcx: split in several files by function.
 	if (srcinfo->angle == ROT_ANGLE_INVALID) {
 		BVSETBLTERROR((srcinfo->index == 0)
 					? BVERR_SRC1GEOM
 					: BVERR_SRC2GEOM,
 			      "unsupported source%d orientation %d.",
 			      srcinfo->index + 1,
-<<<<<<< HEAD
-			      srcinfo->geom->orientation);
-		goto exit;
-	}
-
-	/* Rotated YUV (packed and planar) source is not supported. */
-	if ((srcinfo->angle != ROT_ANGLE_0) &&
-	    (srcinfo->format.type == BVFMT_YUV)) {
-		BVSETBLTERROR((srcinfo->index == 0)
-					? BVERR_SRC1_ROT
-					: BVERR_SRC2_ROT,
-			      "rotation of YUV is not supported");
-		goto exit;
-=======
 			      srcgeom->orientation);
->>>>>>> d005644... gcx: split in several files by function.
 	}
 
 	/* Determine source mirror. */
@@ -2528,247 +1573,6 @@ enum bverror parse_source(struct bvbltparams *bvbltparams,
 			: (bvbltparams->flags >> BVFLAG_FLIP_SRC2_SHIFT)
 			   & BVFLAG_FLIP_MASK;
 
-<<<<<<< HEAD
-	GCDBG(GCZONE_SRC, "  buffer length = %d\n", srcinfo->buf.desc->length);
-	GCDBG(GCZONE_SRC, "  rotation %d degrees.\n", srcinfo->angle * 90);
-
-	if (srcinfo->buf.desc->auxtype == BVAT_PHYSDESC) {
-		struct bvphysdesc *bvphysdesc;
-		bvphysdesc = (struct bvphysdesc *) srcinfo->buf.desc->auxptr;
-		GCDBG(GCZONE_SRC, "  page offset = 0x%08X\n",
-			bvphysdesc->pageoffset);
-	} else {
-		GCDBG(GCZONE_SRC, "  virtual address = 0x%08X\n",
-			(unsigned int) srcinfo->buf.desc->virtaddr);
-	}
-
-	GCDBG(GCZONE_SRC, "  stride = %ld\n",
-	      srcinfo->geom->virtstride);
-	GCDBG(GCZONE_SRC, "  geometry size = %dx%d\n",
-	      srcinfo->geom->width, srcinfo->geom->height);
-	GCDBG(GCZONE_SRC, "  mirror = %d\n", srcinfo->mirror);
-
-	/* Convert the rectangle. */
-	GCCONVERT_RECT(GCZONE_SRC,
-		       "  rect", srcrect, &srcinfo->rect);
-
-	/* Validate source geometry. */
-	if (!valid_geom(srcinfo)) {
-		BVSETBLTERROR((srcinfo->index == 0)
-					? BVERR_SRC1GEOM
-					: BVERR_SRC2GEOM,
-			      "source%d geom exceeds surface size.",
-			      srcinfo->index + 1);
-		goto exit;
-	}
-
-exit:
-	return bverror;
-}
-
-static enum bverror parse_implicitscale(struct bvbltparams *bvbltparams,
-					struct gcbatch *batch)
-{
-	enum bverror bverror = BVERR_NONE;
-	unsigned int quality;
-	unsigned int technique;
-	unsigned int imagetype;
-
-	GCENTER(GCZONE_SCALING);
-
-	quality = (bvbltparams->scalemode & BVSCALEDEF_QUALITY_MASK)
-		>> BVSCALEDEF_QUALITY_SHIFT;
-	technique = (bvbltparams->scalemode & BVSCALEDEF_TECHNIQUE_MASK)
-		  >> BVSCALEDEF_TECHNIQUE_SHIFT;
-	imagetype = (bvbltparams->scalemode & BVSCALEDEF_TYPE_MASK)
-		  >> BVSCALEDEF_TYPE_SHIFT;
-
-	GCDBG(GCZONE_SCALING, "quality = %d\n", quality);
-	GCDBG(GCZONE_SCALING, "technique = %d\n", technique);
-	GCDBG(GCZONE_SCALING, "imagetype = %d\n", imagetype);
-
-	switch (quality) {
-	case BVSCALEDEF_FASTEST >> BVSCALEDEF_QUALITY_SHIFT:
-		batch->op.filter.horkernelsize = 3;
-		batch->op.filter.verkernelsize = 3;
-		break;
-
-	case BVSCALEDEF_GOOD >> BVSCALEDEF_QUALITY_SHIFT:
-		batch->op.filter.horkernelsize = 5;
-		batch->op.filter.verkernelsize = 5;
-		break;
-
-	case BVSCALEDEF_BETTER >> BVSCALEDEF_QUALITY_SHIFT:
-		batch->op.filter.horkernelsize = 7;
-		batch->op.filter.verkernelsize = 7;
-		break;
-
-	case BVSCALEDEF_BEST >> BVSCALEDEF_QUALITY_SHIFT:
-		batch->op.filter.horkernelsize = 9;
-		batch->op.filter.verkernelsize = 9;
-		break;
-
-	default:
-		BVSETBLTERROR(BVERR_SCALE_MODE,
-			      "unsupported scale quality 0x%02X", quality);
-		goto exit;
-	}
-
-	switch (technique) {
-	case BVSCALEDEF_DONT_CARE >> BVSCALEDEF_TECHNIQUE_SHIFT:
-	case BVSCALEDEF_NOT_NEAREST_NEIGHBOR >> BVSCALEDEF_TECHNIQUE_SHIFT:
-		break;
-
-	case BVSCALEDEF_POINT_SAMPLE >> BVSCALEDEF_TECHNIQUE_SHIFT:
-		batch->op.filter.horkernelsize = 1;
-		batch->op.filter.verkernelsize = 1;
-		break;
-
-	case BVSCALEDEF_INTERPOLATED >> BVSCALEDEF_TECHNIQUE_SHIFT:
-		break;
-
-	default:
-		BVSETBLTERROR(BVERR_SCALE_MODE,
-			      "unsupported scale technique %d", technique);
-		goto exit;
-	}
-
-	switch (imagetype) {
-	case 0:
-	case BVSCALEDEF_PHOTO >> BVSCALEDEF_TYPE_SHIFT:
-	case BVSCALEDEF_DRAWING >> BVSCALEDEF_TYPE_SHIFT:
-		break;
-
-	default:
-		BVSETBLTERROR(BVERR_SCALE_MODE,
-			      "unsupported image type %d", imagetype);
-		goto exit;
-	}
-
-	GCDBG(GCZONE_SCALING, "kernel size = %dx%d\n",
-	      batch->op.filter.horkernelsize,
-	      batch->op.filter.verkernelsize);
-
-exit:
-	GCEXIT(GCZONE_SCALING);
-	return bverror;
-}
-
-static enum bverror parse_explicitscale(struct bvbltparams *bvbltparams,
-					struct gcbatch *batch)
-{
-	enum bverror bverror = BVERR_NONE;
-	unsigned int horsize;
-	unsigned int versize;
-
-	GCENTER(GCZONE_SCALING);
-
-	horsize = (bvbltparams->scalemode & BVSCALEDEF_HORZ_MASK)
-		>> BVSCALEDEF_HORZ_SHIFT;
-	versize = (bvbltparams->scalemode & BVSCALEDEF_VERT_MASK)
-		  >> BVSCALEDEF_VERT_SHIFT;
-
-	GCDBG(GCZONE_SCALING, "horsize = %d\n", horsize);
-	GCDBG(GCZONE_SCALING, "versize = %d\n", versize);
-
-	switch (horsize) {
-	case BVSCALEDEF_NEAREST_NEIGHBOR:
-		batch->op.filter.horkernelsize = 1;
-		break;
-
-	case BVSCALEDEF_LINEAR:
-	case BVSCALEDEF_CUBIC:
-	case BVSCALEDEF_3_TAP:
-		batch->op.filter.horkernelsize = 3;
-		break;
-
-	case BVSCALEDEF_5_TAP:
-		batch->op.filter.horkernelsize = 5;
-		break;
-
-	case BVSCALEDEF_7_TAP:
-		batch->op.filter.horkernelsize = 7;
-		break;
-
-	case BVSCALEDEF_9_TAP:
-		batch->op.filter.horkernelsize = 9;
-		break;
-
-	default:
-		BVSETBLTERROR(BVERR_SCALE_MODE,
-			      "unsupported horizontal kernel size %d", horsize);
-		goto exit;
-	}
-
-	switch (versize) {
-	case BVSCALEDEF_NEAREST_NEIGHBOR:
-		batch->op.filter.verkernelsize = 1;
-		break;
-
-	case BVSCALEDEF_LINEAR:
-	case BVSCALEDEF_CUBIC:
-	case BVSCALEDEF_3_TAP:
-		batch->op.filter.verkernelsize = 3;
-		break;
-
-	case BVSCALEDEF_5_TAP:
-		batch->op.filter.verkernelsize = 5;
-		break;
-
-	case BVSCALEDEF_7_TAP:
-		batch->op.filter.verkernelsize = 7;
-		break;
-
-	case BVSCALEDEF_9_TAP:
-		batch->op.filter.verkernelsize = 9;
-		break;
-
-	default:
-		BVSETBLTERROR(BVERR_SCALE_MODE,
-			      "unsupported vertical kernel size %d", versize);
-		goto exit;
-	}
-
-	GCDBG(GCZONE_SCALING, "kernel size = %dx%d\n",
-	      batch->op.filter.horkernelsize,
-	      batch->op.filter.verkernelsize);
-
-exit:
-	GCEXIT(GCZONE_SCALING);
-	return bverror;
-}
-
-enum bverror parse_scalemode(struct bvbltparams *bvbltparams,
-			     struct gcbatch *batch)
-{
-	enum bverror bverror;
-	unsigned int scaleclass;
-
-	GCENTER(GCZONE_SCALING);
-
-	scaleclass = (bvbltparams->scalemode & BVSCALEDEF_CLASS_MASK)
-		   >> BVSCALEDEF_CLASS_SHIFT;
-
-	GCDBG(GCZONE_SCALING, "scaleclass = %d\n", scaleclass);
-
-	switch (scaleclass) {
-	case BVSCALEDEF_IMPLICIT >> BVSCALEDEF_CLASS_SHIFT:
-		bverror = parse_implicitscale(bvbltparams, batch);
-		break;
-
-	case BVSCALEDEF_EXPLICIT >> BVSCALEDEF_CLASS_SHIFT:
-		bverror = parse_explicitscale(bvbltparams, batch);
-		break;
-
-	default:
-		BVSETBLTERROR(BVERR_SCALE_MODE,
-			      "unsupported scale class %d", scaleclass);
-		goto exit;
-	}
-
-exit:
-	GCEXIT(GCZONE_SCALING);
-=======
 	GCDBG(GCZONE_SRC, "source surface %d:\n", srcinfo->index + 1);
 	GCDBG(GCZONE_SRC, "  rotation %d degrees.\n", srcinfo->angle * 90);
 
@@ -2794,6 +1598,5 @@ exit:
 	GCDBG(GCZONE_SRC, "  mirror = %d\n", srcinfo->mirror);
 
 exit:
->>>>>>> d005644... gcx: split in several files by function.
 	return bverror;
 }

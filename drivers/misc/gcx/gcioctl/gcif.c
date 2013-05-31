@@ -32,16 +32,14 @@
 #define GCZONE_NONE		0
 #define GCZONE_ALL		(~0U)
 #define GCZONE_INIT		(1 << 0)
-#define GCZONE_CAPS		(1 << 1)
-#define GCZONE_MAPPING		(1 << 2)
-#define GCZONE_CACHE		(1 << 3)
-#define GCZONE_COMMIT		(1 << 4)
-#define GCZONE_IOCTL		(1 << 5)
-#define GCZONE_CALLBACK		(1 << 6)
+#define GCZONE_MAPPING		(1 << 1)
+#define GCZONE_CACHE		(1 << 2)
+#define GCZONE_COMMIT		(1 << 3)
+#define GCZONE_IOCTL		(1 << 4)
+#define GCZONE_CALLBACK		(1 << 5)
 
 GCDBG_FILTERDEF(ioctl, GCZONE_NONE,
 		"init",
-		"caps",
 		"mapping",
 		"cache",
 		"commit",
@@ -355,12 +353,12 @@ static enum gcerror alloc_callbackinfo(unsigned long handle,
 			gcerror = GCERR_OODM;
 			goto exit;
 		}
-		list_add_tail(&temp->link, &gccallbackhandle->scheduled);
+		list_add(&temp->link, &gccallbackhandle->scheduled);
 	} else {
 		struct list_head *head;
 		head = g_vacinfo.next;
 		temp = list_entry(head, struct gccallbackinfo, link);
-		list_move_tail(head, &gccallbackhandle->scheduled);
+		list_move(head, &gccallbackhandle->scheduled);
 	}
 
 	temp->handle = handle;
@@ -445,37 +443,12 @@ static void destroy_callback(void)
  * API user wrappers.
  */
 
-static int gc_getcaps_wrapper(struct gcicaps *gcicaps)
+static int gc_commit_wrapper(struct gccommit *gccommit)
 {
 	int ret = 0;
-<<<<<<< HEAD
-	struct gcicaps cpcaps;
-
-	GCENTER(GCZONE_CAPS);
-
-	/* Call the core driver. */
-	gc_caps(&cpcaps);
-
-	if (copy_to_user(gcicaps, &cpcaps, sizeof(struct gcicaps))) {
-		GCERR("failed to write data.\n");
-		ret = -EFAULT;
-	}
-
-	GCEXIT(GCZONE_CAPS);
-	return ret;
-}
-
-static int gc_commit_wrapper(struct gcicommit *gcicommit)
-{
-	int ret = 0;
-	bool buffercopied = false;
-	bool unmapcopied = false;
-	struct gcicommit cpcommit;
-=======
 	bool buffercopied = false;
 	bool unmapcopied = false;
 	struct gccommit cpcommit;
->>>>>>> d005644... gcx: split in several files by function.
 	struct gccallbackinfo *gccallbackinfo;
 
 	struct list_head *gcbufferhead;
@@ -494,7 +467,7 @@ static int gc_commit_wrapper(struct gcicommit *gcicommit)
 	GCENTER(GCZONE_COMMIT);
 
 	/* Get IOCTL parameters. */
-	if (copy_from_user(&cpcommit, gcicommit, sizeof(struct gcicommit))) {
+	if (copy_from_user(&cpcommit, gccommit, sizeof(struct gccommit))) {
 		GCERR("failed to read data.\n");
 		cpcommit.gcerror = GCERR_USER_READ;
 		goto exit;
@@ -502,11 +475,7 @@ static int gc_commit_wrapper(struct gcicommit *gcicommit)
 
 	/* Make a copy of the user buffer list. */
 	gcbufferhead = cpcommit.buffer.next;
-<<<<<<< HEAD
-	while (gcbufferhead != &gcicommit->buffer) {
-=======
 	while (gcbufferhead != &gccommit->buffer) {
->>>>>>> d005644... gcx: split in several files by function.
 		gcbuffer = list_entry(gcbufferhead, struct gcbuffer, link);
 		GCDBG(GCZONE_COMMIT, "copying buffer 0x%08X.\n",
 		      (unsigned int) gcbuffer);
@@ -584,11 +553,7 @@ static int gc_commit_wrapper(struct gcicommit *gcicommit)
 	/* Copy scheduled unmappings to the local list. */
 	GCDBG(GCZONE_COMMIT, "copying unmaps.\n");
 	gcschedunmaphead = cpcommit.unmap.next;
-<<<<<<< HEAD
-	while (gcschedunmaphead != &gcicommit->unmap) {
-=======
 	while (gcschedunmaphead != &gccommit->unmap) {
->>>>>>> d005644... gcx: split in several files by function.
 		/* Get a pointer to the user structure. */
 		gcschedunmap = list_entry(gcschedunmaphead,
 					  struct gcschedunmap,
@@ -647,7 +612,7 @@ static int gc_commit_wrapper(struct gcicommit *gcicommit)
 	gc_commit(&cpcommit, true);
 
 exit:
-	if (copy_to_user(&gcicommit->gcerror, &cpcommit.gcerror,
+	if (copy_to_user(&gccommit->gcerror, &cpcommit.gcerror,
 			 sizeof(enum gcerror))) {
 		GCERR("failed to write data.\n");
 		ret = -EFAULT;
@@ -661,16 +626,16 @@ exit:
 	return ret;
 }
 
-static int gc_map_wrapper(struct gcimap *gcimap)
+static int gc_map_wrapper(struct gcmap *gcmap)
 {
 	int ret = 0;
 	int mapped = 0;
-	struct gcimap cpmap;
+	struct gcmap cpmap;
 
 	GCENTER(GCZONE_MAPPING);
 
 	/* Get IOCTL parameters. */
-	if (copy_from_user(&cpmap, gcimap, sizeof(struct gcimap))) {
+	if (copy_from_user(&cpmap, gcmap, sizeof(struct gcmap))) {
 		GCERR("failed to read data.\n");
 		cpmap.gcerror = GCERR_USER_READ;
 		goto exit;
@@ -685,7 +650,7 @@ static int gc_map_wrapper(struct gcimap *gcimap)
 	mapped = 1;
 
 exit:
-	if (copy_to_user(gcimap, &cpmap, offsetof(struct gcimap, buf))) {
+	if (copy_to_user(gcmap, &cpmap, offsetof(struct gcmap, buf))) {
 		GCERR("failed to write data.\n");
 		cpmap.gcerror = GCERR_USER_WRITE;
 		ret = -EFAULT;
@@ -700,15 +665,15 @@ exit:
 	return ret;
 }
 
-static int gc_unmap_wrapper(struct gcimap *gcimap)
+static int gc_unmap_wrapper(struct gcmap *gcmap)
 {
 	int ret = 0;
-	struct gcimap cpmap;
+	struct gcmap cpmap;
 
 	GCENTER(GCZONE_MAPPING);
 
 	/* Get IOCTL parameters. */
-	if (copy_from_user(&cpmap, gcimap, sizeof(struct gcimap))) {
+	if (copy_from_user(&cpmap, gcmap, sizeof(struct gcmap))) {
 		GCERR("failed to read data.\n");
 		cpmap.gcerror = GCERR_USER_READ;
 		goto exit;
@@ -718,7 +683,7 @@ static int gc_unmap_wrapper(struct gcimap *gcimap)
 	gc_unmap(&cpmap, true);
 
 exit:
-	if (copy_to_user(gcimap, &cpmap, offsetof(struct gcimap, buf))) {
+	if (copy_to_user(gcmap, &cpmap, offsetof(struct gcmap, buf))) {
 		GCERR("failed to write data.\n");
 		ret = -EFAULT;
 	}
@@ -727,15 +692,15 @@ exit:
 	return ret;
 }
 
-static int gc_cache_wrapper(struct gcicache *gcicache)
+static int gc_cache_wrapper(struct gccachexfer *gccachexfer)
 {
 	int ret = 0;
-	struct gcicache cpcache;
+	struct gccachexfer cpcache;
 
 	GCENTER(GCZONE_CACHE);
 
 	/* Get IOCTL parameters. */
-	if (copy_from_user(&cpcache, gcicache, sizeof(struct gcicache))) {
+	if (copy_from_user(&cpcache, gccachexfer, sizeof(struct gccachexfer))) {
 		GCERR("failed to read data.\n");
 		goto exit;
 	}
@@ -762,10 +727,10 @@ exit:
 	return ret;
 }
 
-static int gc_callback_alloc(struct gcicallback *gcicallback)
+static int gc_callback_alloc(struct gccmdcallback *gccmdcallback)
 {
 	int ret = 0;
-	struct gcicallback cpcmdcallback;
+	struct gccmdcallback cpcmdcallback;
 	struct gccallbackhandle *gccallbackhandle;
 
 	GCENTER(GCZONE_CALLBACK);
@@ -782,8 +747,8 @@ static int gc_callback_alloc(struct gcicallback *gcicallback)
 	cpcmdcallback.handle = (unsigned long) gccallbackhandle;
 
 exit:
-	if (copy_to_user(gcicallback, &cpcmdcallback,
-			 sizeof(struct gcicallback))) {
+	if (copy_to_user(gccmdcallback, &cpcmdcallback,
+			 sizeof(struct gccmdcallback))) {
 		GCERR("failed to write data.\n");
 		ret = -EFAULT;
 	}
@@ -792,17 +757,17 @@ exit:
 	return ret;
 }
 
-static int gc_callback_free(struct gcicallback *gcicallback)
+static int gc_callback_free(struct gccmdcallback *gccmdcallback)
 {
 	int ret = 0;
-	struct gcicallback cpcmdcallback;
+	struct gccmdcallback cpcmdcallback;
 	struct gccallbackhandle *gccallbackhandle;
 
 	GCENTER(GCZONE_CALLBACK);
 
 	/* Get IOCTL parameters. */
-	if (copy_from_user(&cpcmdcallback, gcicallback,
-			   sizeof(struct gcicallback))) {
+	if (copy_from_user(&cpcmdcallback, gccmdcallback,
+			   sizeof(struct gccmdcallback))) {
 		GCERR("failed to read data.\n");
 		cpcmdcallback.gcerror = GCERR_USER_READ;
 		goto exit;
@@ -817,8 +782,8 @@ static int gc_callback_free(struct gcicallback *gcicallback)
 	cpcmdcallback.gcerror = GCERR_NONE;
 
 exit:
-	if (copy_to_user(gcicallback, &cpcmdcallback,
-			 sizeof(struct gcicallback))) {
+	if (copy_to_user(gccmdcallback, &cpcmdcallback,
+			 sizeof(struct gccmdcallback))) {
 		GCERR("failed to write data.\n");
 		ret = -EFAULT;
 	}
@@ -827,10 +792,10 @@ exit:
 	return ret;
 }
 
-static int gc_callback_wait(struct gcicallbackwait *gcicallbackwait)
+static int gc_callback_wait(struct gccmdcallbackwait *gccmdcallbackwait)
 {
 	int ret = 0;
-	struct gcicallbackwait cpcmdcallbackwait;
+	struct gccmdcallbackwait cpcmdcallbackwait;
 	struct gccallbackhandle *gccallbackhandle;
 	struct gccallbackinfo *gccallbackinfo;
 	struct list_head *head;
@@ -839,8 +804,8 @@ static int gc_callback_wait(struct gcicallbackwait *gcicallbackwait)
 	GCENTER(GCZONE_CALLBACK);
 
 	/* Get IOCTL parameters. */
-	if (copy_from_user(&cpcmdcallbackwait, gcicallbackwait,
-			   sizeof(struct gcicallbackwait))) {
+	if (copy_from_user(&cpcmdcallbackwait, gccmdcallbackwait,
+			   sizeof(struct gccmdcallbackwait))) {
 		GCERR("failed to read data.\n");
 		cpcmdcallbackwait.gcerror = GCERR_USER_READ;
 		goto exit;
@@ -858,16 +823,14 @@ static int gc_callback_wait(struct gcicallbackwait *gcicallbackwait)
 	timeout = wait_for_completion_interruptible_timeout(
 		&gccallbackhandle->ready, timeout);
 
-	if (timeout < 0) {
-		/* Error occurred. */
+	if (timeout < 0)
 		ret = timeout;
-	} else if (timeout == 0) {
-		/* Timeout. */
+
+	else if (timeout == 0) {
 		cpcmdcallbackwait.gcerror = GCERR_TIMEOUT;
 		cpcmdcallbackwait.callback = NULL;
 		cpcmdcallbackwait.callbackparam = NULL;
 	} else {
-		/* Callback event triggered. */
 		GCLOCK(&g_callbacklock);
 
 		if (list_empty(&gccallbackhandle->triggered)) {
@@ -894,52 +857,8 @@ static int gc_callback_wait(struct gcicallbackwait *gcicallbackwait)
 	}
 
 exit:
-	if (copy_to_user(gcicallbackwait, &cpcmdcallbackwait,
-			 sizeof(struct gcicallbackwait))) {
-		GCERR("failed to write data.\n");
-		ret = -EFAULT;
-	}
-
-	GCEXIT(GCZONE_CALLBACK);
-	return ret;
-}
-
-static int gc_callback_arm(struct gcicallbackarm *gcicallbackarm)
-{
-	int ret = 0;
-	struct gcicallbackarm cpcallbackarm;
-	struct gccallbackinfo *gccallbackinfo;
-
-	GCENTER(GCZONE_CALLBACK);
-
-	/* Get IOCTL parameters. */
-	if (copy_from_user(&cpcallbackarm, gcicallbackarm,
-			   sizeof(struct gcicallbackarm))) {
-		GCERR("failed to read data.\n");
-		cpcallbackarm.gcerror = GCERR_USER_READ;
-		goto exit;
-	}
-
-	/* Allocate callback info. */
-	cpcallbackarm.gcerror = alloc_callbackinfo(cpcallbackarm.handle,
-						   &gccallbackinfo);
-	if (cpcallbackarm.gcerror != GCERR_NONE)
-		goto exit;
-
-	/* Initialize callback info. */
-	gccallbackinfo->callback = cpcallbackarm.callback;
-	gccallbackinfo->callbackparam = cpcallbackarm.callbackparam;
-
-	/* Substiture the callback. */
-	cpcallbackarm.callback = gccallback;
-	cpcallbackarm.callbackparam = gccallbackinfo;
-
-	/* Call the core driver. */
-	gc_callback(&cpcallbackarm, true);
-
-exit:
-	if (copy_to_user(&gcicallbackarm->gcerror, &cpcallbackarm.gcerror,
-			 sizeof(enum gcerror))) {
+	if (copy_to_user(gccmdcallbackwait, &cpcmdcallbackwait,
+			 sizeof(struct gccmdcallbackwait))) {
 		GCERR("failed to write data.\n");
 		ret = -EFAULT;
 	}
@@ -976,49 +895,39 @@ static long dev_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 	int ret;
 
 	switch (cmd) {
-	case GCIOCTL_GETCAPS:
-		GCDBG(GCZONE_IOCTL, "GCIOCTL_GETCAPS\n");
-		ret = gc_getcaps_wrapper((struct gcicaps *) arg);
-		break;
-
 	case GCIOCTL_COMMIT:
 		GCDBG(GCZONE_IOCTL, "GCIOCTL_COMMIT\n");
-		ret = gc_commit_wrapper((struct gcicommit *) arg);
+		ret = gc_commit_wrapper((struct gccommit *) arg);
 		break;
 
 	case GCIOCTL_MAP:
 		GCDBG(GCZONE_IOCTL, "GCIOCTL_MAP\n");
-		ret = gc_map_wrapper((struct gcimap *) arg);
+		ret = gc_map_wrapper((struct gcmap *) arg);
 		break;
 
 	case GCIOCTL_UNMAP:
 		GCDBG(GCZONE_IOCTL, "GCIOCTL_UNMAP\n");
-		ret = gc_unmap_wrapper((struct gcimap *) arg);
+		ret = gc_unmap_wrapper((struct gcmap *) arg);
 		break;
 
 	case GCIOCTL_CACHE:
 		GCDBG(GCZONE_IOCTL, "GCIOCTL_CACHE\n");
-		ret = gc_cache_wrapper((struct gcicache *) arg);
+		ret = gc_cache_wrapper((struct gccachexfer *) arg);
 		break;
 
 	case GCIOCTL_CALLBACK_ALLOC:
 		GCDBG(GCZONE_IOCTL, "GCIOCTL_CALLBACK_ALLOC\n");
-		ret = gc_callback_alloc((struct gcicallback *) arg);
+		ret = gc_callback_alloc((struct gccmdcallback *) arg);
 		break;
 
 	case GCIOCTL_CALLBACK_FREE:
 		GCDBG(GCZONE_IOCTL, "GCIOCTL_CALLBACK_FREE\n");
-		ret = gc_callback_free((struct gcicallback *) arg);
+		ret = gc_callback_free((struct gccmdcallback *) arg);
 		break;
 
 	case GCIOCTL_CALLBACK_WAIT:
 		GCDBG(GCZONE_IOCTL, "GCIOCTL_CALLBACK_WAIT\n");
-		ret = gc_callback_wait((struct gcicallbackwait *) arg);
-		break;
-
-	case GCIOCTL_CALLBACK_ARM:
-		GCDBG(GCZONE_IOCTL, "GCIOCTL_CALLBACK_ARM\n");
-		ret = gc_callback_arm((struct gcicallbackarm *) arg);
+		ret = gc_callback_wait((struct gccmdcallbackwait *) arg);
 		break;
 
 	default:

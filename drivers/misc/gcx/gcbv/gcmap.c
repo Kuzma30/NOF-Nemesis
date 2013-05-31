@@ -80,11 +80,7 @@ enum bverror do_map(struct bvbuffdesc *bvbuffdesc,
 	struct bvbuffmapinfo *bvbuffmapinfo;
 	struct bvphysdesc *bvphysdesc;
 	bool mappedbyothers;
-<<<<<<< HEAD
-	struct gcimap gcimap;
-=======
 	struct gcmap gcmap;
->>>>>>> d005644... gcx: split in several files by function.
 	struct gcschedunmap *gcschedunmap;
 
 	GCENTERARG(GCZONE_MAPPING, "bvbuffdesc = 0x%08X\n",
@@ -124,13 +120,8 @@ enum bverror do_map(struct bvbuffdesc *bvbuffdesc,
 		 * that the buffer starts at a location that is supported by
 		 * the hw. If it is not, offset is computed and the buffer is
 		 * extended by the value of the offset. */
-<<<<<<< HEAD
-		gcimap.gcerror = GCERR_NONE;
-		gcimap.handle = 0;
-=======
 		gcmap.gcerror = GCERR_NONE;
 		gcmap.handle = 0;
->>>>>>> d005644... gcx: split in several files by function.
 
 		if (bvbuffdesc->auxtype == BVAT_PHYSDESC) {
 			bvphysdesc = (struct bvphysdesc *) bvbuffdesc->auxptr;
@@ -142,17 +133,10 @@ enum bverror do_map(struct bvbuffdesc *bvbuffdesc,
 				goto fail;
 			}
 
-<<<<<<< HEAD
-			gcimap.buf.offset = bvphysdesc->pageoffset;
-			gcimap.pagesize = bvphysdesc->pagesize;
-			gcimap.pagearray = bvphysdesc->pagearray;
-			gcimap.size = bvbuffdesc->length;
-=======
 			gcmap.buf.offset = bvphysdesc->pageoffset;
 			gcmap.pagesize = bvphysdesc->pagesize;
 			gcmap.pagearray = bvphysdesc->pagearray;
 			gcmap.size = bvbuffdesc->length;
->>>>>>> d005644... gcx: split in several files by function.
 
 			GCDBG(GCZONE_MAPPING, "new mapping (%s):\n",
 			      (batch == NULL) ? "explicit" : "implicit");
@@ -163,36 +147,18 @@ enum bverror do_map(struct bvbuffdesc *bvbuffdesc,
 			GCDBG(GCZONE_MAPPING, "pageoffset = %lu\n",
 			      bvphysdesc->pageoffset);
 			GCDBG(GCZONE_MAPPING, "mapping size = %d\n",
-<<<<<<< HEAD
-			      gcimap.size);
-		} else {
-			gcimap.buf.logical = bvbuffdesc->virtaddr;
-			gcimap.pagesize = 0;
-			gcimap.pagearray = NULL;
-			gcimap.size = bvbuffdesc->length;
-=======
 			      gcmap.size);
 		} else {
 			gcmap.buf.logical = bvbuffdesc->virtaddr;
 			gcmap.pagesize = 0;
 			gcmap.pagearray = NULL;
 			gcmap.size = bvbuffdesc->length;
->>>>>>> d005644... gcx: split in several files by function.
 
 			GCDBG(GCZONE_MAPPING, "new mapping (%s):\n",
 			      (batch == NULL) ? "explicit" : "implicit");
 			GCDBG(GCZONE_MAPPING, "specified virtaddr = 0x%08X\n",
 			      (unsigned int) bvbuffdesc->virtaddr);
 			GCDBG(GCZONE_MAPPING, "aligned virtaddr = 0x%08X\n",
-<<<<<<< HEAD
-			      (unsigned int) gcimap.buf.logical);
-			GCDBG(GCZONE_MAPPING, "mapping size = %d\n",
-			      gcimap.size);
-		}
-
-		gc_map_wrapper(&gcimap);
-		if (gcimap.gcerror != GCERR_NONE) {
-=======
 			      (unsigned int) gcmap.buf.logical);
 			GCDBG(GCZONE_MAPPING, "mapping size = %d\n",
 			      gcmap.size);
@@ -200,7 +166,6 @@ enum bverror do_map(struct bvbuffdesc *bvbuffdesc,
 
 		gc_map_wrapper(&gcmap);
 		if (gcmap.gcerror != GCERR_NONE) {
->>>>>>> d005644... gcx: split in several files by function.
 			BVSETERROR(BVERR_OOM,
 				   "unable to allocate gccore memory");
 			goto fail;
@@ -208,11 +173,7 @@ enum bverror do_map(struct bvbuffdesc *bvbuffdesc,
 
 		/* Set map handle. */
 		bvbuffmapinfo = (struct bvbuffmapinfo *) bvbuffmap->handle;
-<<<<<<< HEAD
-		bvbuffmapinfo->handle = gcimap.handle;
-=======
 		bvbuffmapinfo->handle = gcmap.handle;
->>>>>>> d005644... gcx: split in several files by function.
 
 		/* Initialize reference counters. */
 		if (batch == NULL) {
