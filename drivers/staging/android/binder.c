@@ -375,57 +375,6 @@ static int task_get_unused_fd_flags(struct binder_proc *proc, int flags)
 	if (files == NULL)
 		return -ESRCH;
 
-<<<<<<< HEAD
-=======
-	error = -EMFILE;
-	spin_lock(&files->file_lock);
-
-repeat:
-	fdt = files_fdtable(files);
-	fd = find_next_zero_bit(fdt->open_fds->fds_bits, fdt->max_fds,
-				files->next_fd);
-
-	/*
-	 * N.B. For clone tasks sharing a files structure, this test
-	 * will limit the total number of files that can be opened.
-	 */
-	rlim_cur = 0;
-	if (lock_task_sighand(proc->tsk, &irqs)) {
-		rlim_cur = proc->tsk->signal->rlim[RLIMIT_NOFILE].rlim_cur;
-		unlock_task_sighand(proc->tsk, &irqs);
-	}
-	if (fd >= rlim_cur)
-		goto out;
-
-	/* Do we need to expand the fd array or fd set?  */
-	error = expand_files(files, fd);
-	if (error < 0)
-		goto out;
-
-	if (error) {
-		/*
-		 * If we needed to expand the fs array we
-		 * might have blocked - try again.
-		 */
-		error = -EMFILE;
-		goto repeat;
-	}
-
-	__set_open_fd(fd, fdt);
-	if (flags & O_CLOEXEC)
-		__set_close_on_exec(fd, fdt);
-	else
-		__clear_close_on_exec(fd, fdt);
-	files->next_fd = fd + 1;
-#if 1
-	/* Sanity check */
-	if (fdt->fd[fd] != NULL) {
-		printk(KERN_WARNING "get_unused_fd: slot %d not NULL!\n", fd);
-		fdt->fd[fd] = NULL;
-	}
-#endif
-	error = fd;
->>>>>>> b878892... Wrap accesses to the fd_sets in struct fdtable
 
 	if (!lock_task_sighand(proc->tsk, &irqs))
 		return -EMFILE;
@@ -443,15 +392,8 @@ repeat:
 static void task_fd_install(
 	struct binder_proc *proc, unsigned int fd, struct file *file)
 {
-<<<<<<< HEAD
 	if (proc->files)
 		__fd_install(proc->files, fd, file);
-=======
-	struct fdtable *fdt = files_fdtable(files);
-	__clear_open_fd(fd, fdt);
-	if (fd < files->next_fd)
-		files->next_fd = fd;
->>>>>>> b878892... Wrap accesses to the fd_sets in struct fdtable
 }
 
 /*
@@ -464,23 +406,7 @@ static long task_close_fd(struct binder_proc *proc, unsigned int fd)
 	if (proc->files == NULL)
 		return -ESRCH;
 
-<<<<<<< HEAD
 	retval = __close_fd(proc->files, fd);
-=======
-	spin_lock(&files->file_lock);
-	fdt = files_fdtable(files);
-	if (fd >= fdt->max_fds)
-		goto out_unlock;
-	filp = fdt->fd[fd];
-	if (!filp)
-		goto out_unlock;
-	rcu_assign_pointer(fdt->fd[fd], NULL);
-	__clear_close_on_exec(fd, fdt);
-	__put_unused_fd(files, fd);
-	spin_unlock(&files->file_lock);
-	retval = filp_close(filp, files);
-
->>>>>>> b878892... Wrap accesses to the fd_sets in struct fdtable
 	/* can't restart close syscall because file table entry was cleared */
 	if (unlikely(retval == -ERESTARTSYS ||
 		     retval == -ERESTARTNOINTR ||
