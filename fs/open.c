@@ -851,8 +851,6 @@ struct file *dentry_open(struct dentry *dentry, struct vfsmount *mnt, int flags,
 }
 EXPORT_SYMBOL(dentry_open);
 
-<<<<<<< HEAD
-=======
 static void __put_unused_fd(struct files_struct *files, unsigned int fd)
 {
 	struct fdtable *fdt = files_fdtable(files);
@@ -897,7 +895,6 @@ void fd_install(unsigned int fd, struct file *file)
 
 EXPORT_SYMBOL(fd_install);
 
->>>>>>> b878892... Wrap accesses to the fd_sets in struct fdtable
 static inline int build_open_flags(int flags, int mode, struct open_flags *op)
 {
 	int lookup_flags = 0;
@@ -1089,9 +1086,6 @@ EXPORT_SYMBOL(filp_close);
  */
 SYSCALL_DEFINE1(close, unsigned int, fd)
 {
-<<<<<<< HEAD
-	int retval = __close_fd(current->files, fd);
-=======
 	struct file * filp;
 	struct files_struct *files = current->files;
 	struct fdtable *fdt;
@@ -1109,7 +1103,6 @@ SYSCALL_DEFINE1(close, unsigned int, fd)
 	__put_unused_fd(files, fd);
 	spin_unlock(&files->file_lock);
 	retval = filp_close(filp, files);
->>>>>>> b878892... Wrap accesses to the fd_sets in struct fdtable
 
 	/* can't restart close syscall because file table entry was cleared */
 	if (unlikely(retval == -ERESTARTSYS ||
@@ -1119,6 +1112,10 @@ SYSCALL_DEFINE1(close, unsigned int, fd)
 		retval = -EINTR;
 
 	return retval;
+
+out_unlock:
+	spin_unlock(&files->file_lock);
+	return -EBADF;
 }
 EXPORT_SYMBOL(sys_close);
 
