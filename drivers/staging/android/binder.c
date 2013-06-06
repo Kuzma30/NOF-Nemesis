@@ -430,19 +430,6 @@ static inline void binder_unlock(const char *tag)
 	mutex_unlock(&binder_main_lock);
 }
 
-static inline void binder_lock(const char *tag)
-{
-	trace_binder_lock(tag);
-	mutex_lock(&binder_main_lock);
-	trace_binder_locked(tag);
-}
-
-static inline void binder_unlock(const char *tag)
-{
-	trace_binder_unlock(tag);
-	mutex_unlock(&binder_main_lock);
-}
-
 static void binder_set_nice(long nice)
 {
 	long min_nice;
@@ -580,11 +567,7 @@ static int binder_update_page_range(struct binder_proc *proc, int allocate,
 		down_write(&mm->mmap_sem);
 		vma = proc->vma;
 		if (vma && mm != proc->vma_vm_mm) {
-<<<<<<< HEAD
-			pr_err("binder: %d: vma mm and task mm mismatch\n",
-=======
 			pr_err("%d: vma mm and task mm mismatch\n",
->>>>>>> parent of a5eacda... fix commit
 				proc->pid);
 			vma = NULL;
 		}
@@ -761,9 +744,6 @@ static struct binder_buffer *binder_alloc_buf(struct binder_proc *proc,
 			      proc->pid, size, proc->free_async_space);
 	}
 
-	kmemleak_alloc(buffer, sizeof(*buffer), 0,
-		       GFP_KERNEL | __GFP_HIGHMEM | __GFP_ZERO);
-
 	return buffer;
 }
 
@@ -826,8 +806,6 @@ static void binder_free_buf(struct binder_proc *proc,
 			    struct binder_buffer *buffer)
 {
 	size_t size, buffer_size;
-
-	kmemleak_free(buffer);
 
 	buffer_size = binder_buffer_size(proc, buffer);
 
@@ -1472,7 +1450,7 @@ static void binder_transaction(struct binder_proc *proc,
 		t->from = thread;
 	else
 		t->from = NULL;
-	t->sender_euid = make_kuid(current_user_ns(), proc->tsk->cred->euid);
+	t->sender_euid = proc->tsk->cred->euid;
 	t->to_proc = target_proc;
 	t->to_thread = target_thread;
 	t->code = tr->code;
@@ -2426,11 +2404,7 @@ static void binder_release_work(struct list_head *list)
 				binder_send_failed_reply(t, BR_DEAD_REPLY);
 			} else {
 				binder_debug(BINDER_DEBUG_DEAD_TRANSACTION,
-<<<<<<< HEAD
-					"binder: undelivered transaction %d\n",
-=======
 					"undelivered transaction %d\n",
->>>>>>> parent of a5eacda... fix commit
 					t->debug_id);
 				t->buffer->transaction = NULL;
 				kfree(t);
@@ -2439,11 +2413,7 @@ static void binder_release_work(struct list_head *list)
 		} break;
 		case BINDER_WORK_TRANSACTION_COMPLETE: {
 			binder_debug(BINDER_DEBUG_DEAD_TRANSACTION,
-<<<<<<< HEAD
-				"binder: undelivered TRANSACTION_COMPLETE\n");
-=======
 				"undelivered TRANSACTION_COMPLETE\n");
->>>>>>> parent of a5eacda... fix commit
 			kfree(w);
 			binder_stats_deleted(BINDER_STAT_TRANSACTION_COMPLETE);
 		} break;
@@ -2453,21 +2423,13 @@ static void binder_release_work(struct list_head *list)
 
 			death = container_of(w, struct binder_ref_death, work);
 			binder_debug(BINDER_DEBUG_DEAD_TRANSACTION,
-<<<<<<< HEAD
-				"binder: undelivered death notification, %p\n",
-=======
 				"undelivered death notification, %p\n",
->>>>>>> parent of a5eacda... fix commit
 				death->cookie);
 			kfree(death);
 			binder_stats_deleted(BINDER_STAT_DEATH);
 		} break;
 		default:
-<<<<<<< HEAD
-			pr_err("binder: unexpected work type, %d, not freed\n",
-=======
 			pr_err("unexpected work type, %d, not freed\n",
->>>>>>> parent of a5eacda... fix commit
 			       w->type);
 			break;
 		}
@@ -2595,8 +2557,6 @@ static long binder_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 
 	trace_binder_ioctl(cmd, arg);
 
-	trace_binder_ioctl(cmd, arg);
-
 	ret = wait_event_interruptible(binder_user_error_wait, binder_stop_on_user_error < 2);
 	if (ret)
 		goto err_unlocked;
@@ -2668,14 +2628,15 @@ static long binder_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 			goto err;
 		}
 		if (uid_valid(binder_context_mgr_uid)) {
-			if (!uid_eq(binder_context_mgr_uid, make_kuid(current_user_ns(), current->cred->euid))) {
+			if (!uid_eq(binder_context_mgr_uid, current->cred->euid)) {
 				pr_err("BINDER_SET_CONTEXT_MGR bad uid %d != %d\n",
-					current->cred->euid, from_kuid(&init_user_ns, binder_context_mgr_uid));
+				       from_kuid(&init_user_ns, current->cred->euid),
+				       from_kuid(&init_user_ns, binder_context_mgr_uid));
 				ret = -EPERM;
 				goto err;
 			}
 		} else
-			binder_context_mgr_uid = make_kuid(current_user_ns(), current->cred->euid);
+			binder_context_mgr_uid = current->cred->euid;
 		binder_context_mgr_node = binder_new_node(proc, NULL, NULL);
 		if (binder_context_mgr_node == NULL) {
 			ret = -ENOMEM;
@@ -2713,11 +2674,7 @@ err:
 	binder_unlock(__func__);
 	wait_event_interruptible(binder_user_error_wait, binder_stop_on_user_error < 2);
 	if (ret && ret != -ERESTARTSYS)
-<<<<<<< HEAD
-		printk(KERN_INFO "binder: %d:%d ioctl %x %lx returned %d\n", proc->pid, current->pid, cmd, arg, ret);
-=======
 		pr_info("%d:%d ioctl %x %lx returned %d\n", proc->pid, current->pid, cmd, arg, ret);
->>>>>>> parent of a5eacda... fix commit
 err_unlocked:
 	trace_binder_ioctl_done(ret);
 	return ret;
