@@ -90,11 +90,7 @@ next:
 
 		m_len = 4;
 		{
-<<<<<<< HEAD
-#if defined(CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS) && defined(LZO_USE_CTZ64)
-=======
 #if defined(LZO_USE_CTZ64)
->>>>>>> c46bbe7... lib/lzo: Update LZO compression to current upstream version
 		u64 v;
 		v = get_unaligned((const u64 *) (ip + m_len)) ^
 		    get_unaligned((const u64 *) (m_pos + m_len));
@@ -114,11 +110,7 @@ next:
 #  else
 #    error "missing endian definition"
 #  endif
-<<<<<<< HEAD
-#elif defined(CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS) && defined(LZO_USE_CTZ32)
-=======
 #elif defined(LZO_USE_CTZ32)
->>>>>>> c46bbe7... lib/lzo: Update LZO compression to current upstream version
 		u32 v;
 		v = get_unaligned((const u32 *) (ip + m_len)) ^
 		    get_unaligned((const u32 *) (m_pos + m_len));
@@ -127,14 +119,6 @@ next:
 				m_len += 4;
 				v = get_unaligned((const u32 *) (ip + m_len)) ^
 				    get_unaligned((const u32 *) (m_pos + m_len));
-<<<<<<< HEAD
-				if (v != 0)
-					break;
-				m_len += 4;
-				v = get_unaligned((const u32 *) (ip + m_len)) ^
-				    get_unaligned((const u32 *) (m_pos + m_len));
-=======
->>>>>>> c46bbe7... lib/lzo: Update LZO compression to current upstream version
 				if (unlikely(ip + m_len >= ip_end))
 					goto m_len_done;
 			} while (v == 0);
@@ -150,30 +134,6 @@ next:
 		if (unlikely(ip[m_len] == m_pos[m_len])) {
 			do {
 				m_len += 1;
-<<<<<<< HEAD
-				if (ip[m_len] != m_pos[m_len])
-					break;
-				m_len += 1;
-				if (ip[m_len] != m_pos[m_len])
-					break;
-				m_len += 1;
-				if (ip[m_len] != m_pos[m_len])
-					break;
-				m_len += 1;
-				if (ip[m_len] != m_pos[m_len])
-					break;
-				m_len += 1;
-				if (ip[m_len] != m_pos[m_len])
-					break;
-				m_len += 1;
-				if (ip[m_len] != m_pos[m_len])
-					break;
-				m_len += 1;
-				if (ip[m_len] != m_pos[m_len])
-					break;
-				m_len += 1;
-=======
->>>>>>> c46bbe7... lib/lzo: Update LZO compression to current upstream version
 				if (unlikely(ip + m_len >= ip_end))
 					goto m_len_done;
 			} while (ip[m_len] == m_pos[m_len]);
