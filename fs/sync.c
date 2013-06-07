@@ -213,11 +213,7 @@ static int do_fsync(unsigned int fd, int datasync)
 	file = fget_light(fd, &fput_needed);
 	if (file) {
 		ret = vfs_fsync(file, datasync);
-<<<<<<< HEAD
 	fput_light(file, fput_needed);
-=======
-		fput_light(file, fput_needed);
->>>>>>> 7b3079a... switch do_fsync() to fget_light()
 	}
 	return ret;
 }
