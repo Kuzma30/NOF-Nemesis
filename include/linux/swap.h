@@ -196,14 +196,8 @@ struct swap_info_struct {
 	unsigned int old_block_size;	/* seldom referenced */
 #ifdef CONFIG_FRONTSWAP
 	unsigned long *frontswap_map;	/* frontswap in-use, one bit per page */
-<<<<<<< HEAD
-	atomic_t frontswap_pages;		/* frontswap pages in-use counter */
-#endif
-				
-=======
 	atomic_t frontswap_pages;	/* frontswap pages in-use counter */
 #endif
->>>>>>> 70091ac... mm: frontswap: core swap subsystem hooks and headers
 };
 
 struct swap_list_t {
