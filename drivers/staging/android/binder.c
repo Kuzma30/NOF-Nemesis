@@ -375,8 +375,6 @@ static int task_get_unused_fd_flags(struct binder_proc *proc, int flags)
 	if (files == NULL)
 		return -ESRCH;
 
-<<<<<<< HEAD
-=======
 	error = -EMFILE;
 	spin_lock(&files->file_lock);
 
@@ -425,7 +423,6 @@ repeat:
 	}
 
 	error = fd;
->>>>>>> 1a021f1... Staging: android: binder: Remove an inconsequential conditional macro
 
 	if (!lock_task_sighand(proc->tsk, &irqs))
 		return -EMFILE;
