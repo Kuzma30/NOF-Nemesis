@@ -9,10 +9,6 @@ struct frontswap_ops {
 	void (*init)(unsigned);
 	int (*put_page)(unsigned, pgoff_t, struct page *);
 	int (*get_page)(unsigned, pgoff_t, struct page *);
-<<<<<<< HEAD
-	void (*invalidate_page)(unsigned, pgoff_t);
-	void (*invalidate_area)(unsigned);
-=======
 	/*
 	 * NOTE: per akpm, flush_page and flush_area will be renamed to
 	 * invalidate_page and invalidate_area in a later commit in which
@@ -20,7 +16,6 @@ struct frontswap_ops {
 	 */
 	void (*flush_page)(unsigned, pgoff_t);
 	void (*flush_area)(unsigned);
->>>>>>> fcfb81f... mm: frontswap: add frontswap header file
 };
 
 extern int frontswap_enabled;
