@@ -460,10 +460,7 @@ IS_OMAP_TYPE(3517, 0x3517)
 #define CHIP_IS_TI816X			(1 << 15)
 #define CHIP_IS_OMAP4460ES1_0		(1 << 16)
 #define CHIP_IS_OMAP4460ES1_1		(1 << 17)
-<<<<<<< HEAD
 #define CHIP_IS_OMAP4470ES1_0		(1 << 18)
-=======
->>>>>>> a375681... omap4: add 4430 ES2.3 support
 
 #define CHIP_IS_OMAP24XX		(CHIP_IS_OMAP2420 | CHIP_IS_OMAP2430)
 
