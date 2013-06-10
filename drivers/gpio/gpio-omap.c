@@ -1326,15 +1326,10 @@ static void omap2_gpio_set_wakeupenables(struct gpio_bank *bank, bool suspend)
 				"failed\n", __func__, bank->id);
 		return;
 	}
-<<<<<<< HEAD
 	if (suspend)
 		pad_wakeup = bank->suspend_wakeup;
 	else
 		pad_wakeup = __raw_readl(bank->base + bank->regs->irqenable);
-=======
-
-	pad_wakeup = __raw_readl(bank->base + bank->regs->irqenable);
->>>>>>> 7027559... ARM: OMAP4: Add put/get sync clocks in setwakeenable
 
 	/*
 	 * HACK: Ignore gpios that have multiple sources.
