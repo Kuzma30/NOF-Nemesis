@@ -33,13 +33,8 @@
  */
 static DEFINE_MUTEX(fsync_mutex);
 
-<<<<<<< HEAD
 bool early_suspend_active __read_mostly = false;
 bool dyn_fsync_active __read_mostly = true;
-=======
-bool early_suspend_active = false;
-bool dyn_fsync_active = true;
->>>>>>> 3b9cf64... fs/dyn_fsync: check dyn fsync control's active prior to performing fsync ops
 
 static ssize_t dyn_fsync_active_show(struct kobject *kobj,
 		struct kobj_attribute *attr, char *buf)
