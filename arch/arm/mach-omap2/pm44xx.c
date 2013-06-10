@@ -127,7 +127,6 @@ static struct clockdomain *abe_clkdm;
  *
  * CDDS no: OMAP4460-1.0BUG00291 (OMAP official errata ID yet to be available).
  */
-<<<<<<< HEAD
 #define OMAP4_PM_ERRATUM_LPDDR_CLK_IO_i736		BIT(5)
 #define LPDDR_WD_PULL_DOWN				0x02
 
@@ -190,12 +189,6 @@ static struct clockdomain *abe_clkdm;
 static int iva_toggle_wa_applied;
 
 u16 pm44xx_errata;
-=======
-#define OMAP4_PM_ERRATUM_LPDDR_CLK_IO_iXXX		BIT(5)
-#define LPDDR_WD_PULL_DOWN				0x02
-
-u8 pm44xx_errata;
->>>>>>> ea54d56... OMAP4: PM: Handle LPDDR CLK IO errata during suspend/idle
 #define is_pm44xx_erratum(erratum) (pm44xx_errata & OMAP4_PM_ERRATUM_##erratum)
 
 #define MAX_IOPAD_LATCH_TIME 1000
@@ -222,33 +215,6 @@ void syscontrol_lpddr_clk_io_errata(bool enable)
 	omap4_ctrl_pad_writel(v, OMAP4_CTRL_MODULE_PAD_CORE_CONTROL_LPDDR2IO2_2);
 }
 
-<<<<<<< HEAD
-=======
-#define MAX_IOPAD_LATCH_TIME 1000
-
-void syscontrol_lpddr_clk_io_errata(bool enable)
-{
-	u32 v = 0;
-
-	if (!is_pm44xx_erratum(LPDDR_CLK_IO_iXXX))
-		return;
-
-	v = omap4_ctrl_pad_readl(OMAP4_CTRL_MODULE_PAD_CORE_CONTROL_LPDDR2IO1_2);
-	if (enable)
-		v &= ~OMAP4_LPDDR2IO1_GR10_WD_MASK;
-	else
-		v |= LPDDR_WD_PULL_DOWN << OMAP4_LPDDR2IO1_GR10_WD_SHIFT;
-	omap4_ctrl_pad_writel(v, OMAP4_CTRL_MODULE_PAD_CORE_CONTROL_LPDDR2IO1_2);
-
-	v = omap4_ctrl_pad_readl(OMAP4_CTRL_MODULE_PAD_CORE_CONTROL_LPDDR2IO2_2);
-	if (enable)
-		v &= ~OMAP4_LPDDR2IO2_GR10_WD_MASK;
-	else
-		v |= LPDDR_WD_PULL_DOWN << OMAP4_LPDDR2IO1_GR10_WD_SHIFT;
-	omap4_ctrl_pad_writel(v, OMAP4_CTRL_MODULE_PAD_CORE_CONTROL_LPDDR2IO2_2);
-}
-
->>>>>>> ea54d56... OMAP4: PM: Handle LPDDR CLK IO errata during suspend/idle
 void omap4_trigger_ioctrl(void)
 {
 	int i = 0;
@@ -1470,7 +1436,6 @@ static void __init omap4_pm_setup_errata(void)
 	 * all OMAP4 silica
 	 */
 	if (cpu_is_omap44xx())
-<<<<<<< HEAD
 		pm44xx_errata |= OMAP4_PM_ERRATUM_IVA_AUTO_RET_IDLE_iXXX |
 				 OMAP4_PM_ERRATUM_HSI_SWAKEUP_iXXX |
 				 OMAP4_PM_ERRATUM_LPDDR_CLK_IO_i736;
@@ -1479,14 +1444,6 @@ static void __init omap4_pm_setup_errata(void)
 
 	if (cpu_is_omap443x()) {
 		/* Dynamic Dependency errata for all silicon !=443x */
-=======
-		pm44xx_errata |= OMAP4_PM_ERRATUM_IVA_AUTO_RET_iXXX |
-				 OMAP4_PM_ERRATUM_HSI_SWAKEUP_iXXX |
-				 OMAP4_PM_ERRATUM_LPDDR_CLK_IO_iXXX;
-
-	/* Dynamic Dependency errata for all silicon !=443x */
-	if (cpu_is_omap443x())
->>>>>>> ea54d56... OMAP4: PM: Handle LPDDR CLK IO errata during suspend/idle
 		pm44xx_errata |= OMAP4_PM_ERRATUM_MPU_EMIF_NO_DYNDEP_i688;
 		/* Enable errata i612 */
 		pm44xx_errata |=
