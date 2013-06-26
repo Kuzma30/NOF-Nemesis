@@ -89,11 +89,11 @@ struct omap4_ldo_abb_trim_data {
  * voltage dependent data for each VDD.
  */
 
-#define OMAP4430_VDD_MPU_OPP50_UV        745000
-#define OMAP4430_VDD_MPU_OPP100_UV       900000
-#define OMAP4430_VDD_MPU_OPPTURBO_UV    1100000
-#define OMAP4430_VDD_MPU_OPPNITRO_UV    1250000
-#define OMAP4430_VDD_MPU_OPPNITROSB_UV  1275000
+#define OMAP4430_VDD_MPU_OPP50_UV        975000
+#define OMAP4430_VDD_MPU_OPP100_UV      1145000
+#define OMAP4430_VDD_MPU_OPPTURBO_UV    1250000
+#define OMAP4430_VDD_MPU_OPPNITRO_UV    1300000
+#define OMAP4430_VDD_MPU_OPPNITROSB_UV  1325000
 
 
 struct omap_volt_data omap443x_vdd_mpu_volt_data[] = {
@@ -116,8 +116,8 @@ struct omap_volt_data omap443x_vdd_iva_volt_data[] = {
 	VOLT_DATA_DEFINE(0, 0, 0, 0, 0, 0),
 };
 
-#define OMAP4430_VDD_CORE_OPP50_UV		 900000
-#define OMAP4430_VDD_CORE_OPP100_UV		1070000
+#define OMAP4430_VDD_CORE_OPP50_UV		 962000
+#define OMAP4430_VDD_CORE_OPP100_UV		1127000
 
 struct omap_volt_data omap443x_vdd_core_volt_data[] = {
 	VOLT_DATA_DEFINE(OMAP4430_VDD_CORE_OPP50_UV, 0, OMAP44XX_CONTROL_FUSE_CORE_OPP50, 0xf4, 0x0c, OMAP_ABB_NONE),
